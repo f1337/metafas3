@@ -112,13 +112,15 @@ package ras3r
 
 		protected function instance_sprite (name:*, object_name:String, property:String, attributes:Object = null, styles:Object = null) :DisplayObject
 		{
-			attributes = new Hash(attributes);
-			attributes.id = object_name + '_' + property;
+			// infer default instance id, but allow for manual override
+			attributes = new Hash({ id: (object_name + '_' + property) }).update(attributes);
 			return sprite(name, attributes, styles);
 		}
 
 		protected function label (object_name:String, property:String, html:String, attributes:Object = null, styles:Object = null) :Label
 		{
+			// infer default instance id, but allow for manual override
+			attributes = new Hash({ id: (object_name + '_' + property + '_label') }).update(attributes);
 			var label:Label = (instance_sprite(Label, object_name, property, attributes, styles) as Label);
 			label.htmlText = html;
 			return label;
@@ -209,6 +211,11 @@ package ras3r
 		protected function text_field (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextField
 		{
 			return (instance_sprite(TextField, object_name, property, attributes, styles) as TextField);
+		}
+
+		protected function text_input (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextInput
+		{
+			return (instance_sprite(TextInput, object_name, property, attributes, styles) as TextInput);
 		}
 
 		protected function truncate (tf:TextField, suffix:String = '...') :void

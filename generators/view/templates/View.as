@@ -22,24 +22,10 @@ package <%= package_name %>
 
 	dynamic public class <%= class_name %> extends ReactionView
 	{
-		// >>> STATIC PUBLIC METHODS
-		// >>> STATIC PUBLIC PROPERTIES
-
-		// >>> PUBLIC PROPERTIES
-		// >>> PROTECTED PROPERTIES (incl STATIC)
-		// >>> PRIVATE PROPERTIES (incl STATIC)
-
-		// >>> PUBLIC METHODS
-		override public function build (w:Number, h:Number) :void
+		public function <%= class_name %> () :void
+/*		override public function build (w:Number, h:Number) :void*/
 		{
-			// put your view code here
-			// INSTANTIATION HAPPENS HERE
-			// properties set AFTER build()
+			super();
 		}
-
-
-		// >>> PROTECTED METHODS
-		// >>> PRIVATE METHODS
-		// >>> EVENT HANDLERS
 	}
 }
