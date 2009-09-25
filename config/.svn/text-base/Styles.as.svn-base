@@ -1,0 +1,41 @@
+//
+//  .Styles 
+//
+//	Created by Ustrive2 Skunkwerkz (skunkwerkz [at] ustrive [dot] com)
+//  Copyright (c) 2009 Ustrive2, Inc. All rights reserved.
+//
+//  This file is a temporary solution to runtime skinning for ShopBOTs on Ning.com
+
+package 
+{
+
+	public class Styles
+	{	
+		// >>> PUBLIC METHODS
+		public static function getStyles (obj:String) : Object
+		{
+			// Logger.info('Styles#getStyle :: Styles[obj] = '+Styles[obj]);													
+			return (Styles[obj]) ? Styles[obj] : null;
+		}
+		
+		public static function setStyle (obj:String, prop:String, val:*) :void
+		{
+			Styles[obj][prop] = val;
+		}
+		
+		public static function setStyles (obj:String, val:Object) :void
+		{
+			for (var pname:String in val)
+			{
+				Styles[pname] = val[pname];
+			}
+		}
+		
+		// >>> PRIVATE PROPERTIES
+		protected static var ningStyles:Object = {
+			bgColor: 0xffffff,
+			fontColor: 0x666666,
+			linkColor: 0x00518B
+		}
+	}
+}

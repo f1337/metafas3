@@ -1,0 +1,24 @@
+class ResourceGenerator < Sprout::Generator::NamedBase  # :nodoc:
+
+  def manifest
+    record do |m|
+      if (! user_requested_test)
+        m.directory resource_class_dir
+        m.template 'Resource.as', resource_class_path
+      end
+ 
+      m.directory resource_class_dir.gsub(src_dir, test_dir)
+      m.template 'TestCase.as', resource_class_path.gsub(src_dir, test_dir).sub('.as', 'Test.as')
+      
+      m.template 'TestSuite.as', File.join(test_dir, 'AllTests.as')
+    end
+  end
+
+  def resource_class_dir
+    File.join(src_dir, 'resources').gsub(/\/$/, '')
+  end
+
+  def resource_class_path
+    File.join(resource_class_dir, "#{class_name.singularize}.as")
+  end
+end
