@@ -3,6 +3,7 @@ class ControllerGenerator < Sprout::Generator::NamedBase  # :nodoc:
     record do |m|
       if (!user_requested_test)
         m.directory full_class_dir
+        m.template 'ApplicationController.as', File.join(src_dir, 'controllers', 'ApplicationController.as')
         m.template 'Controller.as', full_class_path
       end
  

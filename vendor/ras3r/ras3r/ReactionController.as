@@ -1,22 +1,3 @@
-/*
-MVC overview:
-
-MODEL
-+ dispatches change events
-- all business logic here
-
-VIEW
-+ dispatches user input events
-- responds to MODEL change events
-- modifies ITSELF (not other views!)
- 
-CONTROLLER
-- responds to VIEW user input events
-- modifies VIEW and/or MODEL
-
-
-
-*/
 package ras3r
 {
 	import ras3r.utils.*;
@@ -120,7 +101,7 @@ package ras3r
 		public function class_name (template:String) :String
 		{
 			// template: 'products/list'
-			// className: 'views.products.ListProductsView'
+			// className: 'views.products.ListProducts'
 			var t:Array = template.split('/');
 			var className:String = 'views.';
 			if (! t[1])
@@ -131,7 +112,7 @@ package ras3r
 			className += t[0] + '.';
 			className += Inflector.camelize(t[1]);
 			className += Inflector.camelize((t[1].indexOf('list') == -1 ? Inflector.singularize(t[0]) : t[0]));
-			className += 'View';
+/*			className += 'View';*/
 			return className;
 		}
 
@@ -313,7 +294,7 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 		protected static function render_with_layout (me:ReactionController, options:Object = null, attr:Object = null) :*
 		{
 			// options.template: 'products/list'
-			// className: 'views.products.ListProductsView'
+			// className: 'views.products.ListProducts'
 			var className:String = me.class_name(options.update ? options.update : options.template);
 
 			// lookup cached view
@@ -401,7 +382,7 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 		protected static function update_content (me:ReactionController, options:Object = null, attr:Object = null) :void
 		{
 			// options.template: 'products/list'
-			// className: 'views.products.ListProductsView'
+			// className: 'views.products.ListProducts'
 			var className:String = me.class_name(options.update ? options.update : options.template);
 
 			// lookup cached view

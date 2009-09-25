@@ -25,7 +25,11 @@ package models.domain
 		ReactiveResource.extend(prototype.constructor);
 		static public var find:Function; // = ReactiveResource.find;
 
-		// >>> PROPERTIES
-		// >>> METHODS
+		// >>> PUBLIC PROPERTIES
+		// >>> PUBLIC METHODS
+		public function <%= class_name %> (attributes:* = null) 
+		{
+			super(attributes);
+		}
 	}
 }

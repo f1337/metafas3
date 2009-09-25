@@ -431,7 +431,7 @@ package ras3r
 				for each (var item:Object in items)
 				{
 					members.push(new self(item));
-					if (limit && member.length >= limit) break;
+					if (limit && members.length >= limit) break;
 				}
 				collection.addItems(members);
 			}

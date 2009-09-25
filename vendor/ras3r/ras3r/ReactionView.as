@@ -102,18 +102,30 @@ package ras3r
 
 		protected function combo_box (object_name:String, property:String, attributes:Object = null, styles:Object = null) :ComboBox
 		{
-			return (instance_sprite(ComboBox, object_name, property, attributes, styles) as ComboBox);
+			return (instance_sprite(ComboBox, 'dataProvider', object_name, property, attributes, styles) as ComboBox);
 		}
 
 		protected function image (object_name:String, property:String, attributes:Object = null, styles:Object = null) :Image
 		{
-			return (instance_sprite(Image, object_name, property, attributes, styles) as Image);
+			return (instance_sprite(Image, 'source', object_name, property, attributes, styles) as Image);
 		}
 
-		protected function instance_sprite (name:*, object_name:String, property:String, attributes:Object = null, styles:Object = null) :DisplayObject
+		protected function instance_sprite (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :DisplayObject
 		{
 			// infer default instance id, but allow for manual override
-			attributes = new Hash({ id: (object_name + '_' + property) }).update(attributes);
+			attributes = new Hash({ id: (object_name + '_' + object_property) }).update(attributes);
+			// instantiation
+			var instance:* = sprite(name, attributes, styles);
+			// assignment
+			try
+			{
+				instance[assign_property] = this[object_name][object_property];
+			}
+			catch (exception:*)
+			{
+				// do nothing, just a sand trap
+			}
+			// return
 			return sprite(name, attributes, styles);
 		}
 
@@ -121,7 +133,7 @@ package ras3r
 		{
 			// infer default instance id, but allow for manual override
 			attributes = new Hash({ id: (object_name + '_' + property + '_label') }).update(attributes);
-			var label:Label = (instance_sprite(Label, object_name, property, attributes, styles) as Label);
+			var label:Label = (instance_sprite(Label, 'htmlText', object_name, property, attributes, styles) as Label);
 			label.htmlText = html;
 			return label;
 		}
@@ -210,12 +222,12 @@ package ras3r
 
 		protected function text_field (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextField
 		{
-			return (instance_sprite(TextField, object_name, property, attributes, styles) as TextField);
+			return (instance_sprite(TextField, 'htmlText', object_name, property, attributes, styles) as TextField);
 		}
 
 		protected function text_input (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextInput
 		{
-			return (instance_sprite(TextInput, object_name, property, attributes, styles) as TextInput);
+			return (instance_sprite(TextInput, 'text', object_name, property, attributes, styles) as TextInput);
 		}
 
 		protected function truncate (tf:TextField, suffix:String = '...') :void
