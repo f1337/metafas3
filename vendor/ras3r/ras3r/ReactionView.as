@@ -112,14 +112,16 @@ package ras3r
 
 		protected function instance_sprite (name:*, object_name:String, property:String, attributes:Object = null, styles:Object = null) :DisplayObject
 		{
+			attributes = new Hash(attributes);
 			attributes.id = object_name + '_' + property;
 			return sprite(name, attributes, styles);
 		}
 
 		protected function label (object_name:String, property:String, html:String, attributes:Object = null, styles:Object = null) :Label
 		{
-			attributes.htmlText = html;
-			return (instance_sprite(Label, object_name, property, attributes, styles) as Label);
+			var label:Label = (instance_sprite(Label, object_name, property, attributes, styles) as Label);
+			label.htmlText = html;
+			return label;
 		}
 
 		// elem: Object. Visual element for whom the handler is being wired
