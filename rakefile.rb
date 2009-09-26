@@ -4,6 +4,7 @@ require 'sprout'
 sprout 'as3'
 
 require 'lib/tasks/flashplayer_redgreen_task'
+require 'lib/tasks/mxmlc_spec'
 
 ############################################
 # Configure your Project Model
@@ -26,10 +27,11 @@ model = project_model :model do |m|
   # m.asset_dir             = 'assets'
   # m.compiler_gem_name     = 'sprout-flex4sdk-tool'
   # m.compiler_gem_version  = '>= 4.0.0'
-  # m.source_path           << "#{m.lib_dir}/somelib"
+  m.source_path           	<< "#{m.lib_dir}/ras3r"
 	m.libraries								<< :corelib
 	m.libraries								<< :as3spec
 	m.test_output							= "#{m.bin_dir}/#{m.project_name}-test.swf"
+	m.library_path						<< "#{m.swc_dir}/cs3_components.swc"
 end
 
 desc 'Compile and debug the application'
@@ -37,19 +39,20 @@ debug :debug
 
 #unit :test
 desc 'Compile run the test harness'
-flashplayer :spec => model.test_output
-mxmlc model.test_output => :model do |t|
-	t.debug					= true
-	t.use_network		= false # for using filesystem fixtures
-	t.input					= "#{model.src_dir}/#{model.project_name}Runner.as"
-	t.output				= model.test_output
-	t.source_path		<< model.test_dir
-	t.source_path		<< "#{model.lib_dir}/ras3r"
-	t.library_path	<< "#{model.swc_dir}/as3spec.swc"
-	t.library_path	<< "#{model.swc_dir}/corelib.swc"
-	t.library_path	<< "#{model.swc_dir}/cs3_components.swc"
-end
-task :test => :spec
+spec :spec
+# flashplayer :spec => model.test_output
+# mxmlc model.test_output => :model do |t|
+# 	t.debug					= true
+# 	t.use_network		= false # for using filesystem fixtures
+# 	t.input					= "#{model.src_dir}/#{model.project_name}Runner.as"
+# 	t.output				= model.test_output
+# 	t.source_path		<< model.test_dir
+# 	t.source_path		<< "#{model.lib_dir}/ras3r"
+# 	t.library_path	<< "#{model.swc_dir}/as3spec.swc"
+# 	t.library_path	<< "#{model.swc_dir}/corelib.swc"
+# 	t.library_path	<< "#{model.swc_dir}/cs3_components.swc"
+# end
+# task :test => :spec
 
 desc 'Compile the optimized deployment'
 deploy :deploy
