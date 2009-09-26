@@ -132,9 +132,9 @@ package ras3r
 			return button;
 		}
 
-		protected function combo_box (object_name:String, property:String, attributes:Object = null, styles:Object = null) :ComboBox
+		protected function combo_box_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :ComboBox
 		{
-			return (instance_sprite(ComboBox, 'dataProvider', object_name, property, attributes, styles) as ComboBox);
+			return (sprite_for(ComboBox, 'dataProvider', object_name, property, attributes, styles) as ComboBox);
 		}
 
 		// horizontal layout helper:
@@ -144,41 +144,19 @@ package ras3r
 			return box.apply(null, args);
 		}
 
-		protected function image (object_name:String, property:String, attributes:Object = null, styles:Object = null) :Image
+		protected function image_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :Image
 		{
-			return (instance_sprite(Image, 'source', object_name, property, attributes, styles) as Image);
+			return (sprite_for(Image, 'source', object_name, property, attributes, styles) as Image);
 		}
 
-		protected function instance_sprite (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :DisplayObject
-		{
-			// infer default instance id, but allow for manual override
-			attributes = new Hash({ id: (object_name + '_' + object_property) }).update(attributes);
-			// assignment via attributes hash
-			try
-			{
-				attributes[assign_property] = this[object_name][object_property];
-				//instance[assign_property] = this[object_name][object_property];
-			}
-			catch (exception:*)
-			{
-				// do nothing, just a sand trap
-				// to debug:
-				// Logger.info('ReactionView#instance_sprite exception: ' + exception);
-			}
-			// instantiation
-			var instance:* = sprite(name, attributes, styles);
-			// return
-			return instance;
-		}
-
-		protected function label (object_name:String, property:String, html:String, attributes:Object = null, styles:Object = null) :TextField
+		protected function label_for (object_name:String, property:String, html:String, attributes:Object = null, styles:Object = null) :Text
 		{
 			// infer default instance id, but allow for manual override
 			attributes = new Hash({ 
 				id: 		(object_name + '_' + property + '_label'),
 				htmlText:	html
 			}).update(attributes);
-			return (sprite(TextField, attributes, styles) as TextField);
+			return (sprite(Text, attributes, styles) as Text);
 		}
 
 		// elem: Object. Visual element for whom the handler is being wired
@@ -265,14 +243,33 @@ package ras3r
 			return addChild(sprite);
 		}
 
-		protected function text_field (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextField
+		protected function sprite_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :DisplayObject
 		{
-			return (instance_sprite(TextField, 'htmlText', object_name, property, attributes, styles) as TextField);
+			// infer default instance id, but allow for manual override
+			attributes = new Hash({ id: (object_name + '_' + object_property) }).update(attributes);
+			// assignment via attributes hash
+			try
+			{
+				attributes[assign_property] = this[object_name][object_property];
+			}
+			catch (exception:*)
+			{
+				// do nothing, just a sand trap
+				// to debug:
+				// Logger.info('ReactionView#sprite_for exception: ' + exception);
+			}
+
+			return sprite(name, attributes, styles);
 		}
 
-		protected function text_input (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextInput
+		protected function text_for (object_name:String, property:String, attributes:Object = null) :Text
 		{
-			return (instance_sprite(TextInput, 'text', object_name, property, attributes, styles) as TextInput);
+			return (sprite_for(Text, 'htmlText', object_name, property, attributes) as Text);
+		}
+
+		protected function text_input_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextInput
+		{
+			return (sprite_for(TextInput, 'text', object_name, property, attributes, styles) as TextInput);
 		}
 
 		protected function truncate (tf:TextField, suffix:String = '...') :void
