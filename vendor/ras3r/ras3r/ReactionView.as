@@ -105,6 +105,42 @@ package ras3r
 			return (instance_sprite(ComboBox, 'dataProvider', object_name, property, attributes, styles) as ComboBox);
 		}
 
+		// horizontal layout helper:
+		protected function hbox (options:Object, ...args) :DisplayObjectContainer
+		{
+			options = new Hash({ padding: 4 }).update(options);
+
+			var container:Sprite = new Sprite();
+			addChild(container);
+
+			var previous:*;
+			while (previous = args.shift())
+			{
+				container.addChild(previous);
+				if (args.length) args[0].x = previous.x + previous.width + options.padding;
+			}
+
+			return container;
+		}
+
+		// vertical layout helper:
+		protected function vbox (options:Object, ...args) :DisplayObjectContainer
+		{
+			options = new Hash({ padding: 4 }).update(options);
+
+			var container:Sprite = new Sprite();
+			addChild(container);
+
+			var previous:*;
+			while (previous = args.shift())
+			{
+				container.addChild(previous);
+				if (args.length) args[0].y = previous.y + previous.height + options.padding;
+			}
+
+			return container;
+		}
+
 		protected function image (object_name:String, property:String, attributes:Object = null, styles:Object = null) :Image
 		{
 			return (instance_sprite(Image, 'source', object_name, property, attributes, styles) as Image);
@@ -124,9 +160,11 @@ package ras3r
 			catch (exception:*)
 			{
 				// do nothing, just a sand trap
+				// to debug:
+				// Logger.info('ReactionView#instance_sprite exception: ' + exception);
 			}
 			// return
-			return sprite(name, attributes, styles);
+			return instance;
 		}
 
 		protected function label (object_name:String, property:String, html:String, attributes:Object = null, styles:Object = null) :Label
@@ -222,7 +260,9 @@ package ras3r
 
 		protected function text_field (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextField
 		{
-			return (instance_sprite(TextField, 'htmlText', object_name, property, attributes, styles) as TextField);
+			var instance:* = (instance_sprite(TextField, 'htmlText', object_name, property, attributes, styles) as TextField);
+			instance.height = (instance.textHeight ? (instance.textHeight + 4) : 4);
+			return instance;
 		}
 
 		protected function text_input (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextInput
