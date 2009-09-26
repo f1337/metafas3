@@ -261,9 +261,6 @@ package ras3r
 				}
 			}
 
-			// TextField size sanity check
-//			if (sprite.hasOwnProperty('textHeight') && sprite.textHeight) sprite.height = (sprite.textHeight + 4);
-
 			// add to display list
 			return addChild(sprite);
 		}
