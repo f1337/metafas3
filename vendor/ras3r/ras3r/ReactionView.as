@@ -54,6 +54,37 @@ package ras3r
 		
 		// >>> PROTECTED METHODS
 		// >>> HELPERS
+		// box layout helper:
+		protected function box (options:Object, ...args) :DisplayObjectContainer
+		{
+			options = new Hash({ direction: 'horizontal', padding: 4 }).update(options);
+
+			var direction:String = options.remove('direction');
+			var padding:uint = options.remove('padding');
+
+			var axis_property:String = (direction == 'horizontal' ? 'x' : 'y');
+			var size_property:String = (direction == 'horizontal' ? 'width' : 'height');
+
+			// create container for positional grouping
+			var container:Sprite = new Sprite();
+			addChild(container);
+
+			var previous:*;
+			while (previous = args.shift())
+			{
+				if (options.width) previous.width = options.width;
+
+				container.addChild(previous);
+
+				if (args.length) 
+				{
+					args[0][axis_property] = previous[axis_property] + previous[size_property] + padding;
+				}
+			}
+
+			return container;
+		}
+
 		// label: String. Text label to display on button.
 		// attr: Hash. Optional. Properties to be applied to button upon creation (w, h, x, y, etc).
 		protected function button (label:String, attr:Object = null, styles:Object = null) :*
@@ -108,37 +139,8 @@ package ras3r
 		// horizontal layout helper:
 		protected function hbox (options:Object, ...args) :DisplayObjectContainer
 		{
-			options = new Hash({ padding: 4 }).update(options);
-
-			var container:Sprite = new Sprite();
-			addChild(container);
-
-			var previous:*;
-			while (previous = args.shift())
-			{
-				container.addChild(previous);
-				if (args.length) args[0].x = previous.x + previous.width + options.padding;
-			}
-
-			return container;
-		}
-
-		// vertical layout helper:
-		protected function vbox (options:Object, ...args) :DisplayObjectContainer
-		{
-			options = new Hash({ padding: 4 }).update(options);
-
-			var container:Sprite = new Sprite();
-			addChild(container);
-
-			var previous:*;
-			while (previous = args.shift())
-			{
-				container.addChild(previous);
-				if (args.length) args[0].y = previous.y + previous.height + options.padding;
-			}
-
-			return container;
+			args.unshift(options);
+			return box.apply(null, args);
 		}
 
 		protected function image (object_name:String, property:String, attributes:Object = null, styles:Object = null) :Image
@@ -150,12 +152,11 @@ package ras3r
 		{
 			// infer default instance id, but allow for manual override
 			attributes = new Hash({ id: (object_name + '_' + object_property) }).update(attributes);
-			// instantiation
-			var instance:* = sprite(name, attributes, styles);
-			// assignment
+			// assignment via attributes hash
 			try
 			{
-				instance[assign_property] = this[object_name][object_property];
+				attributes[assign_property] = this[object_name][object_property];
+				//instance[assign_property] = this[object_name][object_property];
 			}
 			catch (exception:*)
 			{
@@ -163,17 +164,20 @@ package ras3r
 				// to debug:
 				// Logger.info('ReactionView#instance_sprite exception: ' + exception);
 			}
+			// instantiation
+			var instance:* = sprite(name, attributes, styles);
 			// return
 			return instance;
 		}
 
-		protected function label (object_name:String, property:String, html:String, attributes:Object = null, styles:Object = null) :Label
+		protected function label (object_name:String, property:String, html:String, attributes:Object = null, styles:Object = null) :TextField
 		{
 			// infer default instance id, but allow for manual override
-			attributes = new Hash({ id: (object_name + '_' + property + '_label') }).update(attributes);
-			var label:Label = (instance_sprite(Label, 'htmlText', object_name, property, attributes, styles) as Label);
-			label.htmlText = html;
-			return label;
+			attributes = new Hash({ 
+				id: 		(object_name + '_' + property + '_label'),
+				htmlText:	html
+			}).update(attributes);
+			return (sprite(TextField, attributes, styles) as TextField);
 		}
 
 		// elem: Object. Visual element for whom the handler is being wired
@@ -245,6 +249,7 @@ package ras3r
 			{
 				sprite[p] = attr[p];
 			}
+
 			// assign styles
 			var ui:UIComponent = sprite as UIComponent;
 			if (ui)
@@ -254,15 +259,17 @@ package ras3r
 					ui.setStyle(s, styles[s]);
 				}
 			}
+
+			// TextField size sanity check
+			if (sprite.hasOwnProperty('textHeight') && sprite.textHeight) sprite.height = (sprite.textHeight + 4);
+
 			// add to display list
 			return addChild(sprite);
 		}
 
 		protected function text_field (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextField
 		{
-			var instance:* = (instance_sprite(TextField, 'htmlText', object_name, property, attributes, styles) as TextField);
-			instance.height = (instance.textHeight ? (instance.textHeight + 4) : 4);
-			return instance;
+			return (instance_sprite(TextField, 'htmlText', object_name, property, attributes, styles) as TextField);
 		}
 
 		protected function text_input (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextInput
@@ -291,6 +298,14 @@ package ras3r
 		protected function url_request_for (absolute_path:String, subdomain:String = null) :URLRequest
 		{
 			return ReactionController.url_request_for(absolute_path, subdomain);
+		}
+
+		// vertical layout helper:
+		protected function vbox (options:Object, ...args) :DisplayObjectContainer
+		{
+			options.direction = 'vertical';
+			args.unshift(options);
+			return box.apply(null, args);
 		}
 
 
