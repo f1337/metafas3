@@ -39,7 +39,8 @@ package ras3r
 		public function build (w:Number, h:Number) :void
 		{
 			// override this method in subclasses (think: configUI())
-			throw new Error('You must override build() in subclasses!');
+			Logger.info('DEPRECATION NOTICE: ReactionView#build');
+			//throw new Error('You must override build() in subclasses!');
 		}
 
 		public function hide (...args) :void

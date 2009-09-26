@@ -102,7 +102,7 @@ package ras3r
 			// load environment config
 			Environment.load(url);
 
-			var params:Hash = parameters.merge({ controller: 'products', action: 'list' });
+			var params:Hash = parameters.merge({ controller: 'products', action: 'show' });
 
 			// HACK! ROUTES NEEDED?
 			ReactionController.redirect_to(params);
