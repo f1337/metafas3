@@ -72,11 +72,12 @@ package ras3r
 			var previous:*;
 			while (previous = args.shift())
 			{
+				// if box has explicit width, apply to children
 				if (options.width) previous.width = options.width;
 
 				container.addChild(previous);
 
-				if (args.length) 
+				if (args.length > 0) 
 				{
 					args[0][axis_property] = previous[axis_property] + previous[size_property] + padding;
 				}
@@ -261,7 +262,7 @@ package ras3r
 			}
 
 			// TextField size sanity check
-			if (sprite.hasOwnProperty('textHeight') && sprite.textHeight) sprite.height = (sprite.textHeight + 4);
+//			if (sprite.hasOwnProperty('textHeight') && sprite.textHeight) sprite.height = (sprite.textHeight + 4);
 
 			// add to display list
 			return addChild(sprite);

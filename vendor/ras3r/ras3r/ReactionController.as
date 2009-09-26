@@ -406,29 +406,9 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			contextMenu = new ContextMenu();
 			contextMenu.hideBuiltInItems();
 			var menuItems:Array = new Array();
-			
-			var cartflyItem:ContextMenuItem = new ContextMenuItem("Learn More About Cartfly");
-			var sellitItem:ContextMenuItem = new ContextMenuItem("Learn More About Sellit");
-
-			cartflyItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, goToCartfly);				
-			sellitItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, goToSellit);				
-
-			menuItems.push(cartflyItem);
-			menuItems.push(sellitItem);
-
 			contextMenu.customItems = menuItems;
 		}
 		
-		private function goToCartfly(e:Event) :void
-		{
-			redirect_to_url("http://www.cartfly.com");
-		}
-
-		private function goToSellit(e:Event) :void
-		{
-			redirect_to_url("http://www.sellit.com");
-		}
-
 		private function build_content (content_rect:Object) :void
 		{
 			content.x = content_rect.x;
