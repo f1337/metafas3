@@ -227,7 +227,14 @@ package ras3r
 			// assign attributes
 			for (var p:String in attr)
 			{
-				sprite[p] = attr[p];
+				try
+				{
+					sprite[p] = attr[p];
+				}
+				catch (exception:*)
+				{
+					Logger.info('ReactionView#sprite attribute assignment exception: ' + exception);
+				}
 			}
 
 			// assign styles
@@ -248,17 +255,9 @@ package ras3r
 		{
 			// infer default instance id, but allow for manual override
 			attributes = new Hash({ id: (object_name + '_' + object_property) }).update(attributes);
+
 			// assignment via attributes hash
-			try
-			{
-				attributes[assign_property] = this[object_name][object_property];
-			}
-			catch (exception:*)
-			{
-				// do nothing, just a sand trap
-				// to debug:
-				// Logger.info('ReactionView#sprite_for exception: ' + exception);
-			}
+			attributes[assign_property] = this[object_name][object_property];
 
 			return sprite(name, attributes, styles);
 		}

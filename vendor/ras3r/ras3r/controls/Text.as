@@ -18,6 +18,7 @@ package ras3r.controls
 				tf[key] = hash[key];
 			}
 			defaultTextFormat = tf;
+			setTextFormat(tf);
 		}
 
 

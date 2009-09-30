@@ -12,17 +12,17 @@ package ras3r
 
 	public class ReactionController extends Sprite
 	{
+		static public var asset_host:String = '';
 		static public var canvas:DisplayObjectContainer; // ONLY for getting width + height
 		static public var container:DisplayObjectContainer; // ONLY for addChild
-		static public var site:String = '';
 
-		// >>> PUBLIC PROPERTIES
-		public var content:*;
-		public var layout:*;
-		public var params:Hash;
+		// >>> PROTECTED PROPERTIES
+		protected var params:Hash;
 
+		// >>> PRIVATE PROPERTIES
+		private var content:*;
+		private var layout:*;
 
-		//private var rex:Rex;
 		static private var views:Object = new Object();
 
 
@@ -51,10 +51,7 @@ package ras3r
 		// takes absolute path, returns String url (proto://host.domain.com/absolute_path)
 		static public function url_for (absolute_path:String, subdomain:String = null) :String
 		{
-			var url:String;
-			//url = (Capabilities.playerType == 'StandAlone') ? 'http://localhost:3000' : site;
-			url = (Capabilities.playerType == 'StandAlone') ? 'http://www.cartfly.net' : site;
-			url += absolute_path;
+			var url:String = asset_host + absolute_path;
 
 			if (subdomain && subdomain.length > 0)
 			{
@@ -224,12 +221,16 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			TweenManager.grow(this, options);
 		}
 
-/*		private function hide (...args) :void
+		public function hide_view (...args) :void
 		{
-			layout.visible = false;
-			content.visible = false;
+			visible = false;
 		}
-*/
+
+		public function show_view (...args) :void
+		{
+			visible = true;
+		}
+
 		public function shrink (event:Event) :void
 		{
 			var options:Object = { 
@@ -253,8 +254,8 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			var klass:Class = getDefinitionByName(className) as Class;
 			var view:* = new klass();
 
-			if (options.hide) view.addEventListener('hide_view', controller[options.hide]);
-			if (options.show) view.addEventListener('show_view', controller[options.show]);
+			view.addEventListener('hide_view', (options.hide ? controller[options.hide]: controller.hide_view));
+			view.addEventListener('show_view', (options.show ? controller[options.show]: controller.show_view));
 
 			return view;
 		}
@@ -269,7 +270,7 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 		}
 
 		//protected function layout (template_name:String) :*
-		protected function render (options:Object = null, attr:Object = null) :*
+		protected function render (options:Object = null) :*
 		{
 			// TODO?: * root.parent.parent ? root.parent.parent.width : stage.stageWidth
 
@@ -287,11 +288,11 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 /*								root.loaderInfo.loader ? root.loaderInfo.loader.height :
 								stage.stageHeight;
 */
-			var controller:* = render_with_layout(this, options, attr);
+			var controller:* = render_with_layout(this, options);
 			return controller;
 		}
 
-		protected static function render_with_layout (me:ReactionController, options:Object = null, attr:Object = null) :*
+		protected static function render_with_layout (me:ReactionController, options:Object = null) :*
 		{
 			// options.template: 'products/list'
 			// className: 'views.products.ListProducts'
@@ -322,11 +323,8 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 				}
 			}
 
-			// build new view
-			// store reference to view so we can remove it later
-			//if (! controller) views[className] = controller = me;
-
 			// render layout
+			options.layout = controller.has_layout(options.layout);
 			if (options.layout)
 			{
 				var lclassName:String = 'views.layouts.';
@@ -342,12 +340,8 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			controller.content = new_view(controller, className, options);
 			controller.addChild(controller.content);
 
-			// copy passed attributes to view (new or old)
-			for (var p:String in attr)
-			{
-				if (controller.content.hasOwnProperty(p)) controller.content[p] = attr[p];
-				if ((p != 'x') && (p != 'y') && controller.layout && controller.layout.hasOwnProperty(p)) controller.layout[p] = attr[p];
-			}
+			// copy public controller properties to view
+			controller.assign_view_properties();
 
 			if (controller.layout)
 			{
@@ -374,7 +368,7 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			return controller;
 		}
 
-		protected function update (options:Object = null, attr:Object = null) :void
+/*		protected function update (options:Object = null, attr:Object = null) :void
 		{
 			update_content(this, options, attr);
 		}
@@ -396,9 +390,21 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 				if (controller.content.hasOwnProperty(p)) controller.content[p] = attr[p];
 			}
 		}
-
+*/
 
 		// >>> PRIVATE METHODS
+		private function assign_view_properties () :void
+		{
+            var properties:XMLList = describeType(this).variable;
+			var p:String;
+            for (var n:String in properties)
+			{
+				p = properties.@name[n];
+				content[p] = this[p];
+				if (layout) layout[p] = this[p];
+			}
+		}
+
 		// replaces default context menu with custom, empty menu
 		// add items to menu with new_context_menu_item()
 		private function create_context_menu () :void
@@ -416,6 +422,45 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			content.build(content_rect.width, content_rect.height);
 		}
 
+		private function has_layout (layout:String = null) :String
+		{
+			// explicit layout: false option
+			if (layout === false)
+			{
+				return null;
+			}
+			// No layout defined:
+			else if (! layout)
+			{
+				//  First, attempt to locate controller-specific layout
+				try
+				{
+					layout = controller_name();
+					// Logger.info('views.layouts.' + Inflector.camelize(layout) + 'Layout');
+					getDefinitionByName('views.layouts.' + Inflector.camelize(layout) + 'Layout');
+					
+				}
+				//  If controller-specific layout does not exist,
+				//  attempt to use ApplicationLayout
+				catch (exception:*)
+				{
+					try
+					{
+						layout = 'application';
+						// Logger.info('views.layouts.' + Inflector.camelize(layout) + 'Layout');
+						getDefinitionByName('views.layouts.' + Inflector.camelize(layout) + 'Layout');
+					}
+					// ApplicationLayout doesn't exist,
+					// proceed as if layout: false was passed
+					catch (exception2:*)
+					{
+						return null;
+					}
+				}
+			}
+
+			return layout;
+		}
 
 		// >>> EVENT HANDLERS
 		protected function after_show () :void
