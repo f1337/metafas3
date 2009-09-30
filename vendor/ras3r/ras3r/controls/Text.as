@@ -5,11 +5,6 @@ package ras3r.controls
 	public class Text extends TextField
 	{
 		// >>> PUBLIC PROPERTIES
-		public function get format () :Object
-		{
-			return defaultTextFormat;
-		}
-
 		public function set format (hash:Object) :void
 		{
 			var tf:TextFormat = defaultTextFormat;

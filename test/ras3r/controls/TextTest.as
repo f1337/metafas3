@@ -52,7 +52,7 @@ package ras3r.controls
 
 					for (var key:String in format)
 					{
-						so(text.format[key]).should.equal(format[key]);
+						so(text.defaultTextFormat[key]).should.equal(format[key]);
 					}
 				});
 			});
