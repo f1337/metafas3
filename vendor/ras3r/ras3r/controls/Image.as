@@ -12,6 +12,13 @@ package ras3r.controls
 	public class Image extends UILoader
 	{
 		// >>> PUBLIC PROPERTIES
+		override public function set source (s:Object) :void
+		{
+			if (s is String) s = ReactionController.asset_host + s.toString();
+			super.source = s;
+		}
+
+		// >>> PUBLIC METHODS
 		public function Image ()
 		{
 			super();
