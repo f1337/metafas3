@@ -1,5 +1,7 @@
 package ras3r
 {
+	import com.gigya.*;
+
 	import ras3r.*;
 	import ras3r.controls.*;
 	import ras3r.utils.*;
@@ -303,6 +305,10 @@ package ras3r
 			return box.apply(null, args);
 		}
 
+		protected function wildfire (options) :Wildfire
+		{
+			return addChild(new Wildfire(options));
+		}
 
 		// >>> PRIVATE METHODS
 		private function name_to_class (name:String) :Class
