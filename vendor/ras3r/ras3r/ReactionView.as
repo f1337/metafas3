@@ -32,13 +32,24 @@ package ras3r
 			return c;
 		}
 
+/*		protected function get h () :Number
+		{
+			return scrollRect.height;
+		}
+
+		protected function get w () :Number
+		{
+			return scrollRect.width;
+		}
+*/
+
 		// >>> PUBLIC METHODS
 		public function ReactionView ()
 		{
 			super();
 		}
 
-		public function build (w:Number, h:Number) :void
+		public function build () :void
 		{
 			// override this method in subclasses (think: configUI())
 			Logger.info('DEPRECATION NOTICE: ReactionView#build');
@@ -305,8 +316,10 @@ package ras3r
 			return box.apply(null, args);
 		}
 
-		protected function wildfire (options) :Wildfire
+		// USAGE: wildfire(1234567, { height: 260, width: 340 });
+		protected function wildfire (partner_id:int, options:Object = null) :DisplayObject
 		{
+			options.partner = partner_id;
 			return addChild(new Wildfire(options));
 		}
 

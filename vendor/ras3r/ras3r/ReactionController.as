@@ -277,6 +277,17 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			// width/height specified in the options hash of the call to render take precidence
 			// width/height specified in the params hash (directly from query string of swf's url) are second
 			// followed by stageWidth and stageHeight
+			try
+			{
+				Logger.info('root: ' + root);
+				Logger.info('root.parent: ' + root.parent);
+				Logger.info('root.parent.parent: ' + root.parent.parent);
+			}
+			catch (exception:*)
+			{
+				Logger.info('render() exception: ' + exception);
+			}
+
 			options.width 	= 	options.width ? options.width :
 								Environment.params.width ? Environment.params.width :
 							 	canvas.hasOwnProperty('stageWidth') ? canvas['stageWidth'] : canvas.width;
@@ -345,7 +356,9 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 
 			if (controller.layout)
 			{
-				controller.layout.build(options.width, options.height);
+				if (Logger.verbose) controller.layout.opaqueBackground = 0xddddff;
+				controller.layout.scrollRect = new Rectangle(0, 0, options.width, options.height);
+				controller.layout.build();
 			}
 			else
 			{
@@ -419,7 +432,9 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 		{
 			content.x = content_rect.x;
 			content.y = content_rect.y;
-			content.build(content_rect.width, content_rect.height);
+			if (Logger.verbose) content.opaqueBackground = 0xffdddd;
+			content.scrollRect = new Rectangle(0, 0, content_rect.width, content_rect.height);
+			content.build();
 		}
 
 		private function has_layout (layout:String = null) :String
