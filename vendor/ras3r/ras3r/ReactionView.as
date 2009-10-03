@@ -4,6 +4,7 @@ package ras3r
 
 	import ras3r.*;
 	import ras3r.controls.*;
+	import ras3r.reaction_view.helpers.*;
 	import ras3r.utils.*;
 
 	import fl.core.*;
@@ -18,6 +19,26 @@ package ras3r
 
 	public class ReactionView extends Sprite
 	{
+		// >>> STATIC METHODS
+		// USAGE: 	ReactionView.create('layouts/application', { header: 'my name' });
+		//			ReactionView.create('products/show', { title: 'Cheeseburger' });
+		// Instantiates DisplayObject/View described by @template, and 
+		// copies properties from assigns hash to new DisplayObject/View
+		static public function create (template:String = null, assigns:Object = null) :DisplayObject
+		{
+			// default to ReactionView if template empty
+			template = (template ? ('views.' + template.replace(/[\/\\]/g, '.')) : 'ras3r.ReactionView');
+			// lookup class definition from template name
+			var klass:Class = (getDefinitionByName(template) as Class);
+			// new View()
+			var view:* = new klass();
+			// copy properties from assigns hash to DisplayObject/View
+			new Hash(assigns).apply(view);
+			// return DisplayObject/View
+			return (view as DisplayObject);
+		}
+
+
 		// >>> PUBLIC PROPERTIES
 		protected function get controller () :ReactionController
 		{
@@ -32,16 +53,6 @@ package ras3r
 			return c;
 		}
 
-/*		protected function get h () :Number
-		{
-			return scrollRect.height;
-		}
-
-		protected function get w () :Number
-		{
-			return scrollRect.width;
-		}
-*/
 
 		// >>> PUBLIC METHODS
 		public function ReactionView ()
@@ -68,38 +79,6 @@ package ras3r
 		
 		// >>> PROTECTED METHODS
 		// >>> HELPERS
-		// box layout helper:
-		protected function box (options:Object, ...args) :DisplayObjectContainer
-		{
-			options = new Hash({ direction: 'horizontal', padding: 4 }).update(options);
-
-			var direction:String = options.remove('direction');
-			var padding:uint = options.remove('padding');
-
-			var axis_property:String = (direction == 'horizontal' ? 'x' : 'y');
-			var size_property:String = (direction == 'horizontal' ? 'width' : 'height');
-
-			// create container for positional grouping
-			var container:Sprite = new Sprite();
-			addChild(container);
-
-			var previous:*;
-			while (previous = args.shift())
-			{
-				// if box has explicit width, apply to children
-				if (options.width) previous.width = options.width;
-
-				container.addChild(previous);
-
-				if (args.length > 0) 
-				{
-					args[0][axis_property] = previous[axis_property] + previous[size_property] + padding;
-				}
-			}
-
-			return container;
-		}
-
 		// label: String. Text label to display on button.
 		// attr: Hash. Optional. Properties to be applied to button upon creation (w, h, x, y, etc).
 		protected function button (label:String, attr:Object = null, styles:Object = null) :*
@@ -151,16 +130,21 @@ package ras3r
 			return (sprite_for(ComboBox, 'dataProvider', object_name, property, attributes, styles) as ComboBox);
 		}
 
-		// horizontal layout helper:
 		protected function hbox (options:Object, ...args) :DisplayObjectContainer
 		{
-			args.unshift(options);
-			return box.apply(null, args);
+			return (addChild(BoxHelper.hbox(options, args)) as DisplayObjectContainer);
 		}
 
 		protected function image_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :Image
 		{
 			return (sprite_for(Image, 'source', object_name, property, attributes, styles) as Image);
+		}
+
+		protected function label (html:String, attributes:Object = null, styles:Object = null) :Text
+		{
+			attributes = new Hash(attributes).update({ htmlText: html });
+			if (Logger.verbose) attributes.opaqueBackground = 0xddffdd;
+			return (sprite(Text, attributes, styles) as Text);
 		}
 
 		protected function label_for (object_name:String, property:String, html:String, attributes:Object = null, styles:Object = null) :Text
@@ -170,6 +154,7 @@ package ras3r
 				id: 		(object_name + '_' + property + '_label'),
 				htmlText:	html
 			}).update(attributes);
+			if (Logger.verbose) attributes.opaqueBackground = 0xddffdd;
 			return (sprite(Text, attributes, styles) as Text);
 		}
 
@@ -217,6 +202,15 @@ package ras3r
 			elem.addEventListener(event, handler);
 		}
 
+		protected function render (template:String, assigns:Object = null) :DisplayObject
+		{
+			// new View()
+			// set scrollRect if defined
+			// assign properties to view
+			// build()
+			return ReactionView.create(template, assigns);
+		}
+
 		// name: String OR Class. 
 		//		string: The under_score_name of the Sprite to create. Ex: 'text_field'
 		//		class: 	Reference to the class constructor. Ex: LabelButton
@@ -230,13 +224,15 @@ package ras3r
 			var klass:Class = (name is String) ? name_to_class(name) : (name as Class);
 			var sprite:* = new klass();
 
-			// track by id if present
-			if (attr && attr.id)
+			// assign id if defined
+			assign_id_for_sprite(attr, sprite);
+/*			if (attr && attr.id)
 			{
 				this[attr.id] = sprite;
+				sprite.name = attr.id;
 				delete attr.id;
 			}
-
+*/
 			// assign attributes
 			for (var p:String in attr)
 			{
@@ -250,14 +246,18 @@ package ras3r
 				}
 			}
 
-			// assign styles
 			var ui:UIComponent = sprite as UIComponent;
 			if (ui)
 			{
+				// TODO: deprecate seperate styles hash
+				// assign styles
 				for (var s:String in styles)
 				{
 					ui.setStyle(s, styles[s]);
 				}
+
+				// work around sizing bug:
+				// ui.setSize(ui.width, ui.height);
 			}
 
 			// add to display list
@@ -270,19 +270,30 @@ package ras3r
 			attributes = new Hash({ id: (object_name + '_' + object_property) }).update(attributes);
 
 			// assignment via attributes hash
+			this[object_name][object_property] ||= '';
 			attributes[assign_property] = this[object_name][object_property];
 
-			return sprite(name, attributes, styles);
+			// HACK: juggling two usage methods until all helpers are refactored
+			if (name is DisplayObject) assign_id_for_sprite(attributes, name);
+			return ((name is DisplayObject) ? name : sprite(name, attributes, styles));
+		}
+
+		protected function text (html:String, attributes:Object = null) :Text
+		{
+			attributes = new Hash(attributes).update({ multiline: true, wordWrap: true });
+			return (label(html, attributes) as Text);
 		}
 
 		protected function text_for (object_name:String, property:String, attributes:Object = null) :Text
 		{
+			if (Logger.verbose) attributes = new Hash({ opaqueBackground: 0xddffdd }).update(attributes);
 			return (sprite_for(Text, 'htmlText', object_name, property, attributes) as Text);
 		}
 
-		protected function text_input_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :TextInput
+		protected function text_input_for (object_name:String, property:String, options:Object = null) :TextInput
 		{
-			return (sprite_for(TextInput, 'text', object_name, property, attributes, styles) as TextInput);
+			return (addChild(sprite_for(TextInputHelper.create(options), 'text', object_name, property)) as TextInput);
+/*			return (sprite_for(TextInput, 'text', object_name, property, attributes, styles) as TextInput);*/
 		}
 
 		protected function truncate (tf:TextField, suffix:String = '...') :void
@@ -308,12 +319,9 @@ package ras3r
 			return ReactionController.url_request_for(absolute_path, subdomain);
 		}
 
-		// vertical layout helper:
 		protected function vbox (options:Object, ...args) :DisplayObjectContainer
 		{
-			options.direction = 'vertical';
-			args.unshift(options);
-			return box.apply(null, args);
+			return (addChild(BoxHelper.vbox(options, args)) as DisplayObjectContainer);
 		}
 
 		// USAGE: wildfire(1234567, { height: 260, width: 340 });
@@ -324,6 +332,16 @@ package ras3r
 		}
 
 		// >>> PRIVATE METHODS
+		private function assign_id_for_sprite (attr:Object, sprite:DisplayObject) :void
+		{
+			if (attr && attr.id)
+			{
+				this[attr.id] = sprite;
+				sprite.name = attr.id;
+				delete attr.id;
+			}
+		}
+		
 		private function name_to_class (name:String) :Class
 		{
 			var klass:Class;

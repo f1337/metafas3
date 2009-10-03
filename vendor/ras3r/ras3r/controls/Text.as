@@ -22,6 +22,7 @@ package ras3r.controls
 		{
 			super();
 			autoSize = 'left';
+			wordWrap = true;
 		}
 	}
 }
