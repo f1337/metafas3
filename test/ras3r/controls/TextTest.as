@@ -20,8 +20,9 @@ package ras3r.controls
 					so(text.autoSize).should.equal('left');
 				});
 
-				it ('should override 100x100 default size via autoSize', function () :void
+				it ('should override 100x100 default size when wordWrap = false', function () :void
 				{
+					text.wordWrap = false;
 					so(text.height).should.not.equal(100);
 					so(text.width).should.not.equal(100);
 				});
