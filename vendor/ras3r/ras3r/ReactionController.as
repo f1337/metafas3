@@ -60,8 +60,8 @@ package ras3r
 			return _bounds;
 		}
 
-		private var content:*;
-		private var layout:*;
+		protected var content:*;
+		protected var layout:*;
 
 
 		// >>> STATIC PUBLIC METHODS

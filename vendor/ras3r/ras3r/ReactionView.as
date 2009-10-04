@@ -20,23 +20,6 @@ package ras3r
 	public class ReactionView extends Sprite
 	{
 		// >>> STATIC METHODS
-		private static function assigns_from_controller (controller:ReactionController) :Hash
-		{
-			var _assigns:Hash = new Hash;
-
-			// for each public property,
-			// add key and current value to assigns hash
-            var properties:XMLList = describeType(controller).variable;
-			var p:String;
-            for (var n:String in properties)
-			{
-				p = properties.@name[n];
-				_assigns[p] = controller[p];
-			}
-
-			return _assigns;
-		}
-
 		// USAGE: 	ReactionView.create('layouts/application', { header: 'my name' });
 		//			ReactionView.create('products/show', { title: 'Cheeseburger' });
 		// Instantiates DisplayObject/View described by @template, and 
@@ -53,8 +36,8 @@ package ras3r
 			assigns = new Hash(assigns);
 			if (assigns.controller)
 			{
-				assigns.update(assigns_from_controller(assigns.controller));
 				view.controller = assigns.remove('controller');
+				assigns.update(view.assigns_from_controller());
 			}
 			// copy properties from assigns hash to DisplayObject/View
 			assigns.apply(view);
@@ -84,6 +67,24 @@ package ras3r
 
 		// >>> PUBLIC PROPERTIES
 		// >>> PRIVATE PROPERTIES
+		private function assigns_from_controller () :Hash
+		{
+			var _assigns:Hash = new Hash;
+
+			// for each public controller property,
+			// add key and current value to assigns hash
+            var properties:XMLList = describeType(controller).variable;
+			var p:String;
+            for (var n:String in properties)
+			{
+				p = properties.@name[n];
+				_assigns[p] = controller[p];
+			}
+
+			return _assigns;
+		}
+
+
 		// >>> PROTECTED PROPERTIES
 		protected var controller:ReactionController;
 
@@ -394,7 +395,36 @@ package ras3r
 		private function after_added_to_stage (e:Event) :void
 		{
 			removeEventListener('addedToStage', after_added_to_stage);
+			//Logger.info(this + ' addedToStage pre build');
+			addEventListener('render', after_render);
 			build();
+			//Logger.info(this + ' addedToStage post build');
+		}
+
+		private function after_render (e:Event) :void
+		{
+			removeEventListener('render', after_render);
+			//Logger.info(this + ' render');
+
+			// for each public controller method named "on_some_element_event",
+			// add event listener some_element
+			var element:String;
+			var event:String;
+			var parts:Array;
+            var methods:XMLList = describeType(controller).method;
+			var method:String;
+            for (var n:String in methods)
+			{
+				method = methods.@name[n];
+				if (method.indexOf('on_') == 0)
+				{
+					parts = method.split('_');
+					parts.shift(); // drop on_
+					event = parts.pop(); // grab _event
+					element = parts.join('_');
+					if (this.hasOwnProperty(element)) this[element].addEventListener(event, controller[method]);
+				}
+			}
 		}
 	}
 }
