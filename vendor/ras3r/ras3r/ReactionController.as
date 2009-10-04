@@ -16,28 +16,6 @@ package ras3r
 		static public var asset_host:String = '';
 		static public var container:DisplayObjectContainer; // ONLY for addChild
 
-		private var _assigns:Hash;
-		public function get assigns () :Hash
-		{
-			// calculate assigns once, cache to _assigns
-			if (! _assigns)
-			{
-				_assigns = new Hash;
-
-				// for each public property,
-				// add key and current value to assigns hash
-	            var properties:XMLList = describeType(this).variable;
-				var p:String;
-	            for (var n:String in properties)
-				{
-					p = properties.@name[n];
-					_assigns[p] = this[p];
-				}
-			}
-
-			return _assigns;
-		}
-
 
 		// >>> PROTECTED PROPERTIES
 		protected var params:Hash;
@@ -334,8 +312,8 @@ package ras3r
 			if (options.height) bounds.height = options.remove('height');
 			if (options.width) bounds.width = options.remove('width');
 
-			// copy public properties to view via options hash
-			options.update(assigns);
+			// update options with reference to this controller
+			options.controller = this;
 
 			// render layout
 			var layout_template:String = has_layout(options.remove('layout'));

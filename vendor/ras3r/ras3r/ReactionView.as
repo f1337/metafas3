@@ -20,6 +20,23 @@ package ras3r
 	public class ReactionView extends Sprite
 	{
 		// >>> STATIC METHODS
+		private static function assigns_from_controller (controller:ReactionController) :Hash
+		{
+			var _assigns:Hash = new Hash;
+
+			// for each public property,
+			// add key and current value to assigns hash
+            var properties:XMLList = describeType(controller).variable;
+			var p:String;
+            for (var n:String in properties)
+			{
+				p = properties.@name[n];
+				_assigns[p] = controller[p];
+			}
+
+			return _assigns;
+		}
+
 		// USAGE: 	ReactionView.create('layouts/application', { header: 'my name' });
 		//			ReactionView.create('products/show', { title: 'Cheeseburger' });
 		// Instantiates DisplayObject/View described by @template, and 
@@ -32,8 +49,15 @@ package ras3r
 			var klass:Class = (getDefinitionByName(template) as Class);
 			// new View()
 			var view:* = new klass();
+			// assign controller property first
+			assigns = new Hash(assigns);
+			if (assigns.controller)
+			{
+				assigns.update(assigns_from_controller(assigns.controller));
+				view.controller = assigns.remove('controller');
+			}
 			// copy properties from assigns hash to DisplayObject/View
-			new Hash(assigns).apply(view);
+			assigns.apply(view);
 			// create child display
 			view.addEventListener('addedToStage', view.after_added_to_stage);
 			// return DisplayObject/View
@@ -59,26 +83,9 @@ package ras3r
 
 
 		// >>> PUBLIC PROPERTIES
-		protected function get controller () :ReactionController
-		{
-			var c:*;
-			// traverse up parent hierarchy until Controller is located
-			for (c = parent; (! (c is ReactionController)); c = c.parent)
-			{
-				// if parent is null, we are in limbo. break!
-				if (! c) break;
-			}
-			// return Controller or null
-			return c;
-		}
-
-
 		// >>> PRIVATE PROPERTIES
-		private function get assigns_from_controller () :Hash
-		{
-			var c:ReactionController = controller;
-			return (c ? c.assigns : new Hash);
-		}
+		// >>> PROTECTED PROPERTIES
+		protected var controller:ReactionController;
 
 
 		// >>> PUBLIC METHODS
@@ -222,8 +229,8 @@ package ras3r
 
 		protected function render (template:String, assigns:Object = null) :DisplayObject
 		{
-			// inject controller properties into assigns hash
-			if (controller) assigns = new Hash(controller.assigns).update(assigns);
+			// inject controller property into assigns hash
+			if (controller) assigns = new Hash(assigns).update({ controller: controller });
 			// create the view
 			return addChild(ReactionView.create(template, assigns));
 		}
@@ -386,6 +393,7 @@ package ras3r
 		// >>> EVENT HANDLERS
 		private function after_added_to_stage (e:Event) :void
 		{
+			removeEventListener('addedToStage', after_added_to_stage);
 			build();
 		}
 	}
