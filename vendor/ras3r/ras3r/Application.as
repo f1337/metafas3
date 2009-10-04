@@ -96,7 +96,6 @@ package ras3r
 				// we don't own the stage, do nothing
 			}
 
-			ReactionController.canvas = stage;
 			ReactionController.container = this;
 
 			// load environment config

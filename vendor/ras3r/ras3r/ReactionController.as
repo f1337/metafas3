@@ -13,17 +13,55 @@ package ras3r
 	public class ReactionController extends Sprite
 	{
 		static public var asset_host:String = '';
-		static public var canvas:DisplayObjectContainer; // ONLY for getting width + height
 		static public var container:DisplayObjectContainer; // ONLY for addChild
 
 		// >>> PROTECTED PROPERTIES
 		protected var params:Hash;
 
 		// >>> PRIVATE PROPERTIES
+		private var _bounds:Rectangle;
+		private function get bounds () :Rectangle
+		{
+			// determine bounds
+			// return _bounds if already computed
+			if (_bounds) return _bounds;
+
+			if (! _bounds)
+			{
+				_bounds = new Rectangle();
+
+				var container:* = (
+					root.parent.parent ? root.parent.parent : root.parent
+				);
+
+				_bounds.width = (
+					// if Stage
+					(container is Stage) ? (
+						// use explicit querystring width if present
+						(Environment.params.width) ? Environment.params.width : 
+						// else use stageWidth
+						container['stageWidth']) :
+					// not Stage, use width
+					container.width
+				);
+
+				_bounds.height = (
+					// if Stage
+					(container is Stage) ? (
+						// use explicit querystring height if present
+						(Environment.params.height) ? Environment.params.height : 
+						// else use stageHeight
+						container['stageHeight']) :
+					// not Stage, use height
+					container.height
+				);
+			}
+
+			return _bounds;
+		}
+
 		private var content:*;
 		private var layout:*;
-
-		static private var views:Object = new Object();
 
 
 		// >>> STATIC PUBLIC METHODS
@@ -95,23 +133,6 @@ package ras3r
 			create_context_menu();
 		}
 
-/*		public function class_name (template:String) :String
-		{
-			// template: 'products/list'
-			// className: 'views.products.ListProducts'
-			var t:Array = template.split('/');
-			var className:String = 'views.';
-			if (! t[1])
-			{
-				t[1] = t[0].toString();
-				t[0] = controller_name();
-			}
-			className += t[0] + '.';
-			className += Inflector.camelize(t[1]);
-			className += Inflector.camelize((t[1].indexOf('list') == -1 ? Inflector.singularize(t[0]) : t[0]));
-			return className;
-		}
-*/
 		public function controller_name () :String
 		{
 			return Inflector.underscore(Inflector.demodulize(getQualifiedClassName(this).replace('Controller', '')));
@@ -124,7 +145,6 @@ package ras3r
 			if (parent) parent.removeChild(this);
 		}
 
-		//public function get_url (params:Object) :void
 		public function get_url () :void
 		{
 			if (! params.target) params.target = '_blank';
@@ -135,18 +155,32 @@ package ras3r
 		{
 			this.params = params;
 
-			if (before_filter(this[action_name]))
+			var action:Function;
+			// if action method defined
+			if (hasOwnProperty(action_name))
 			{
-				this[action_name]();
+				action = this[action_name]
+			}
+			// else attempt to render view named action_view
+			else
+			{
+				action = function () :void
+				{
+					render(action_name);
+				};
+			}
+
+			if (before_filter(action))
+			{
+				action();
 			}
 		}
 
 
-/*
-
-_blank MUST be default or sites with allowNetworking=internal will cause error to be thrown on navigateToURL()
-
-*/
+		/*
+		*	_blank MUST be default or sites with allowNetworking=internal
+		*	will cause error to be thrown on navigateToURL()
+		*/
 		private function redirect_to_url (url:String, target:String = '_blank', count:uint = 0) :void
 		{
 			var u:URLRequest = new URLRequest(url);
@@ -156,7 +190,7 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 				if (url.indexOf('mailto:') == 0)
 				{
 					// mailto shouldn't need a target
-					navigateToURL(u, target);
+					navigateToURL(u);
 				}
 				else
 				{
@@ -166,7 +200,7 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			}
 			catch (e:Error)
 			{
-				Logger.debug('redirect_to_url target ' + target + ', attempt #' + count + ': ' + e.toString());
+				Logger.info('redirect_to_url target ' + target + ', attempt #' + count + ': ' + e.toString());
 
 				switch (target)
 				{
@@ -248,12 +282,15 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			return true;
 		}
 
-		private static function new_view (controller:ReactionController, template:String, options:Object) :*
+		private function new_view (template:String, options:Hash) :*
 		{
+			var after_hide:String = (options.hide ? options.remove('hide') : 'hide_view');
+			var after_show:String = (options.show ? options.remove('show') : 'show_view');
+
 			var view:DisplayObject = ReactionView.create(template);
 
-			view.addEventListener('hide_view', (options.hide ? controller[options.hide]: controller.hide_view));
-			view.addEventListener('show_view', (options.show ? controller[options.show]: controller.show_view));
+			view.addEventListener('hide_view', this[after_hide]);
+			view.addEventListener('show_view', this[after_show]);
 
 			return view;
 		}
@@ -263,122 +300,59 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 		{
 			// default controller name
 			if (! options.controller) options.controller = controller_name();
-			remove_from_display_list();
 			ReactionController.redirect_to(options);
+			remove_from_display_list();
 		}
 
-		//protected function layout (template_name:String) :*
-		protected function render (options:Object = null) :*
+		// render('robots/show', { layout: false, width: 100, height: 100 })
+		// render('show', { layout: 'monkeys' })
+		// render('list')
+		protected function render (template:String, options:Object = null) :*
 		{
-			// TODO?: * root.parent.parent ? root.parent.parent.width : stage.stageWidth
-
-			// width/height specified in the options hash of the call to render take precidence
-			// width/height specified in the params hash (directly from query string of swf's url) are second
-			// followed by stageWidth and stageHeight
-			try
-			{
-				Logger.info('root: ' + root);
-				Logger.info('root.parent: ' + root.parent);
-				Logger.info('root.parent.parent: ' + root.parent.parent);
-			}
-			catch (exception:*)
-			{
-				Logger.info('render() exception: ' + exception);
-			}
-
-			options.width 	= 	options.width ? options.width :
-								Environment.params.width ? Environment.params.width :
-							 	canvas.hasOwnProperty('stageWidth') ? canvas['stageWidth'] : canvas.width;
-//								stage.stageWidth;
-							
-			options.height 	= 	options.height ? options.height :
-								Environment.params.height ? Environment.params.height :
-		 						canvas.hasOwnProperty('stageHeight') ? canvas['stageHeight'] : canvas.height;
-/*								root.loaderInfo.loader ? root.loaderInfo.loader.height :
-								stage.stageHeight;
-*/
-			var controller:* = render_with_layout(this, options);
-			return controller;
+			if (template.indexOf('/') == -1) template = (controller_name() + '/' + template);
+			return render_with_layout(template, new Hash(options));
 		}
 
-		protected static function render_with_layout (me:ReactionController, options:Object = null) :*
+		protected function render_with_layout (template:String, options:Hash) :*
 		{
-			// options.template: 'products/list'
-			// className: 'views.products.ListProducts'
-/*			var className:String = me.class_name(options.update ? options.update : options.template);*/
-			if (options.template.indexOf('/') == -1) options.template = (me.controller_name() + '/' + options.template);
-
-			// lookup cached view
-			var controller:* = views[options.template];
-
-			// this will store the bounds of the layout if there is one.
-			var content_rect:Rectangle;
-
-			// build new view
-			// store reference to view so we can remove it later
-			if (! controller) views[options.template] = controller = me;
-
-			// destroy cached view
-			if (controller)
-			{
-				if (controller.layout)
-				{
-					controller.removeChild(controller.layout);
-					controller.layout = null;
-				}
-				if (controller.content)
-				{
-					controller.removeChild(controller.content);
-					controller.content = null;
-				}
-			}
+			if (options.height) bounds.height = options.remove('height');
+			if (options.width) bounds.width = options.remove('width');
 
 			// render layout
-			options.layout = controller.has_layout(options.layout);
-			if (options.layout)
+			var layout_template:String = has_layout(options.remove('layout'));
+			if (layout_template)
 			{
-/*				var lclassName:String = 'views.layouts.';
-				lclassName += Inflector.camelize(options.layout);
-				lclassName += 'Layout';
-*/
-/*				controller.layout = new_view(controller, lclassName, options);*/
-				controller.layout = new_view(controller, ('layouts/' + options.layout), options);
-				controller.layout.addEventListener('rendered', controller.after_layout_rendered);
-				controller.addChildAt(controller.layout, 0);
+				layout = new_view(('layouts/' + layout_template), options);
+				layout.addEventListener('creationComplete', after_layout_rendered);
+				addChildAt(layout, 0);
 			}
 
 			// render new view
-			controller.content = new_view(controller, options.template, options);
-			controller.addChild(controller.content);
+			content = new_view(template, options);
+			addChild(content);
 
 			// copy public controller properties to view
-			controller.assign_view_properties();
+			assign_view_properties();
 
-			if (controller.layout)
+			if (layout)
 			{
-				if (Logger.verbose) controller.layout.opaqueBackground = 0xddddff;
-				controller.layout.scrollRect = new Rectangle(0, 0, options.width, options.height);
-				controller.layout.build();
+				if (Logger.verbose) layout.opaqueBackground = 0xddddff;
+				layout.scrollRect = bounds;
+				layout.build();
 			}
 			else
 			{
-				controller.build_content({ height: options.height, width: options.width, x: 0, y: 0 });
+				build_content(bounds);
 			}
 
 			// fix depth issues by bringing controller to front
-			if (controller.parent) controller.parent.setChildIndex(controller, (controller.parent.numChildren - 1));
+			if (parent) parent.setChildIndex(this, (parent.numChildren - 1));
 
 			// show controller/layout/view stark
-			//Logger.info('if something "WONKY" starts happening with views, revert to the old way: ReactionController');
-			// if (options.show) controller[options.show]();
-			controller.content.show();
-
-			// fire 'render' event
-			// doesn't work:
-			//me.dispatchEvent(new Event('render_view'));
+			content.show();
 
 			// return reference to controller
-			return controller;
+			return this;
 		}
 
 
@@ -428,7 +402,6 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 				try
 				{
 					layout = controller_name();
-					// Logger.info('views.layouts.' + Inflector.camelize(layout) + 'Layout');
 					getDefinitionByName('views.layouts.' + Inflector.camelize(layout) + 'Layout');
 					
 				}
@@ -439,7 +412,6 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 					try
 					{
 						layout = 'application';
-						// Logger.info('views.layouts.' + Inflector.camelize(layout) + 'Layout');
 						getDefinitionByName('views.layouts.' + Inflector.camelize(layout) + 'Layout');
 					}
 					// ApplicationLayout doesn't exist,
@@ -457,15 +429,11 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 		// >>> EVENT HANDLERS
 		protected function after_show () :void
 		{
-/*			
-			// override in child
-			DOES *NOT* work!!!!:
-			if (layout) build_content(layout.content_bounds_for_layout());
-*/		}
+		}
 
 		public function after_layout_rendered (e:Event) :void
 		{
-			build_content(layout.content_bounds_for_layout());
+			build_content(layout.bounds);
 		}
 
 		protected function after_hide (options:Object) :void

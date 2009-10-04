@@ -200,7 +200,7 @@ package ras3r
 
 			// filter chain delegate
 //			args.unshift(Delegate.create(c.process, action, options));
-			args.unshift(Delegate.create(ReactionController.redirect_to, options));
+			args.unshift(Delegate.create(controller.redirect_to, options));
 
 			args.unshift(elem);
 			link_to_function.apply(null, args);
