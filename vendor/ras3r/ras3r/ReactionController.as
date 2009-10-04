@@ -12,20 +12,42 @@ package ras3r
 
 	public class ReactionController extends Sprite
 	{
+		// >>> PUBLIC PROPERTIES
 		static public var asset_host:String = '';
 		static public var container:DisplayObjectContainer; // ONLY for addChild
 
+		private var _assigns:Hash;
+		public function get assigns () :Hash
+		{
+			// calculate assigns once, cache to _assigns
+			if (! _assigns)
+			{
+				_assigns = new Hash;
+
+				// for each public property,
+				// add key and current value to assigns hash
+	            var properties:XMLList = describeType(this).variable;
+				var p:String;
+	            for (var n:String in properties)
+				{
+					p = properties.@name[n];
+					_assigns[p] = this[p];
+				}
+			}
+
+			return _assigns;
+		}
+
+
 		// >>> PROTECTED PROPERTIES
 		protected var params:Hash;
+
 
 		// >>> PRIVATE PROPERTIES
 		private var _bounds:Rectangle;
 		private function get bounds () :Rectangle
 		{
-			// determine bounds
-			// return _bounds if already computed
-			if (_bounds) return _bounds;
-
+			// calculate bounds once, cache to _bounds
 			if (! _bounds)
 			{
 				_bounds = new Rectangle();
@@ -109,20 +131,13 @@ package ras3r
 		}
 
 
-		// >>> STATIC PRIVATE METHODS
-		static private function baseUrl () :String
-		{
-			return url_for('');
-		}
-
-
 		// >>> PUBLIC METHODS
 		public function ReactionController ()
 		{
 			super();
 
 			// Open security sandbox
-			var baseUrl:String = baseUrl();
+			var baseUrl:String = url_for('');
 			Security.allowDomain(baseUrl);
 //			Security.allowInsecureDomain(baseUrl);
 
@@ -287,10 +302,12 @@ package ras3r
 			var after_hide:String = (options.hide ? options.remove('hide') : 'hide_view');
 			var after_show:String = (options.show ? options.remove('show') : 'show_view');
 
-			var view:DisplayObject = ReactionView.create(template);
+			var view:ReactionView = ReactionView.create(template, options) as ReactionView;
 
 			view.addEventListener('hide_view', this[after_hide]);
 			view.addEventListener('show_view', this[after_show]);
+
+			addChild(view);
 
 			return view;
 		}
@@ -309,41 +326,35 @@ package ras3r
 		// render('list')
 		protected function render (template:String, options:Object = null) :*
 		{
+			// sanitize input
 			if (template.indexOf('/') == -1) template = (controller_name() + '/' + template);
-			return render_with_layout(template, new Hash(options));
-		}
+			options = new Hash(options);
 
-		protected function render_with_layout (template:String, options:Hash) :*
-		{
+			// update bounds with explicit options
 			if (options.height) bounds.height = options.remove('height');
 			if (options.width) bounds.width = options.remove('width');
+
+			// copy public properties to view via options hash
+			options.update(assigns);
 
 			// render layout
 			var layout_template:String = has_layout(options.remove('layout'));
 			if (layout_template)
 			{
-				layout = new_view(('layouts/' + layout_template), options);
-				layout.addEventListener('creationComplete', after_layout_rendered);
-				addChildAt(layout, 0);
+				var layout_options:Hash = options.merge({ scrollRect: bounds });
+				if (Logger.verbose) layout_options.opaqueBackground = 0xddddff;
+				layout = new_view(('layouts/' + layout_template), layout_options);
 			}
 
-			// render new view
-			content = new_view(template, options);
-			addChild(content);
-
-			// copy public controller properties to view
-			assign_view_properties();
-
-			if (layout)
-			{
-				if (Logger.verbose) layout.opaqueBackground = 0xddddff;
-				layout.scrollRect = bounds;
-				layout.build();
-			}
-			else
-			{
-				build_content(bounds);
-			}
+			// render view/content
+			var view_bounds:Rectangle = (layout ? layout.bounds : bounds);
+			var view_options:Hash = options.merge({
+				x: view_bounds.x,
+				y: view_bounds.y,
+				scrollRect: (new Rectangle(0, 0, view_bounds.width, view_bounds.height))
+			});
+			if (Logger.verbose) view_options.opaqueBackground = 0xffdddd;
+			content = new_view(template, view_options);
 
 			// fix depth issues by bringing controller to front
 			if (parent) parent.setChildIndex(this, (parent.numChildren - 1));
@@ -357,18 +368,6 @@ package ras3r
 
 
 		// >>> PRIVATE METHODS
-		private function assign_view_properties () :void
-		{
-            var properties:XMLList = describeType(this).variable;
-			var p:String;
-            for (var n:String in properties)
-			{
-				p = properties.@name[n];
-				content[p] = this[p];
-				if (layout) layout[p] = this[p];
-			}
-		}
-
 		// replaces default context menu with custom, empty menu
 		// add items to menu with new_context_menu_item()
 		private function create_context_menu () :void
@@ -379,15 +378,6 @@ package ras3r
 			contextMenu.customItems = menuItems;
 		}
 		
-		private function build_content (content_rect:Object) :void
-		{
-			content.x = content_rect.x;
-			content.y = content_rect.y;
-			if (Logger.verbose) content.opaqueBackground = 0xffdddd;
-			content.scrollRect = new Rectangle(0, 0, content_rect.width, content_rect.height);
-			content.build();
-		}
-
 		private function has_layout (layout:String = null) :String
 		{
 			// explicit layout: false option
@@ -429,11 +419,6 @@ package ras3r
 		// >>> EVENT HANDLERS
 		protected function after_show () :void
 		{
-		}
-
-		public function after_layout_rendered (e:Event) :void
-		{
-			build_content(layout.bounds);
 		}
 
 		protected function after_hide (options:Object) :void

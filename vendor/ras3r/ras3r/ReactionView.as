@@ -34,6 +34,8 @@ package ras3r
 			var view:* = new klass();
 			// copy properties from assigns hash to DisplayObject/View
 			new Hash(assigns).apply(view);
+			// create child display
+			view.addEventListener('addedToStage', view.after_added_to_stage);
 			// return DisplayObject/View
 			return (view as DisplayObject);
 		}
@@ -68,6 +70,14 @@ package ras3r
 			}
 			// return Controller or null
 			return c;
+		}
+
+
+		// >>> PRIVATE PROPERTIES
+		private function get assigns_from_controller () :Hash
+		{
+			var c:ReactionController = controller;
+			return (c ? c.assigns : new Hash);
 		}
 
 
@@ -184,22 +194,13 @@ package ras3r
 			// default controller name
 			if (! options.controller) options.controller = controller.controller_name();
 
-			// lookup controller instance
-//			var c:* = ReactionController.controller(options.controller);
-//			delete options.controller;
-
 			var args:Array = [ ];
 
 			// custom event override
 			if (options.on) args.push(options.on);
 			delete options.on;
 
-			// controller action
-//			var action:String = options.action;
-//			delete options.action;
-
 			// filter chain delegate
-//			args.unshift(Delegate.create(c.process, action, options));
 			args.unshift(Delegate.create(controller.redirect_to, options));
 
 			args.unshift(elem);
@@ -221,10 +222,9 @@ package ras3r
 
 		protected function render (template:String, assigns:Object = null) :DisplayObject
 		{
-			// new View()
-			// set scrollRect if defined
-			// assign properties to view
-			// build()
+			// inject controller properties into assigns hash
+			if (controller) assigns = new Hash(controller.assigns).update(assigns);
+			// create the view
 			return addChild(ReactionView.create(template, assigns));
 		}
 
@@ -243,13 +243,7 @@ package ras3r
 
 			// assign id if defined
 			assign_id_for_sprite(attr, sprite);
-/*			if (attr && attr.id)
-			{
-				this[attr.id] = sprite;
-				sprite.name = attr.id;
-				delete attr.id;
-			}
-*/
+
 			// assign attributes
 			for (var p:String in attr)
 			{
@@ -390,5 +384,9 @@ package ras3r
 
 
 		// >>> EVENT HANDLERS
+		private function after_added_to_stage (e:Event) :void
+		{
+			build();
+		}
 	}
 }
