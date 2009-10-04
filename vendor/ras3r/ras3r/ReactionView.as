@@ -86,7 +86,7 @@ package ras3r
 
 
 		// >>> PROTECTED PROPERTIES
-		protected var controller:ReactionController;
+		private var controller:ReactionController;
 
 
 		// >>> PUBLIC METHODS
