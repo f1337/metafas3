@@ -95,7 +95,7 @@ package ras3r
 			create_context_menu();
 		}
 
-		public function class_name (template:String) :String
+/*		public function class_name (template:String) :String
 		{
 			// template: 'products/list'
 			// className: 'views.products.ListProducts'
@@ -109,10 +109,9 @@ package ras3r
 			className += t[0] + '.';
 			className += Inflector.camelize(t[1]);
 			className += Inflector.camelize((t[1].indexOf('list') == -1 ? Inflector.singularize(t[0]) : t[0]));
-/*			className += 'View';*/
 			return className;
 		}
-
+*/
 		public function controller_name () :String
 		{
 			return Inflector.underscore(Inflector.demodulize(getQualifiedClassName(this).replace('Controller', '')));
@@ -249,10 +248,9 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			return true;
 		}
 
-		private static function new_view (controller:ReactionController, className:String, options:Object) :*
+		private static function new_view (controller:ReactionController, template:String, options:Object) :*
 		{
-			var klass:Class = getDefinitionByName(className) as Class;
-			var view:* = new klass();
+			var view:DisplayObject = ReactionView.create(template);
 
 			view.addEventListener('hide_view', (options.hide ? controller[options.hide]: controller.hide_view));
 			view.addEventListener('show_view', (options.show ? controller[options.show]: controller.show_view));
@@ -307,17 +305,18 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 		{
 			// options.template: 'products/list'
 			// className: 'views.products.ListProducts'
-			var className:String = me.class_name(options.update ? options.update : options.template);
+/*			var className:String = me.class_name(options.update ? options.update : options.template);*/
+			if (options.template.indexOf('/') == -1) options.template = (me.controller_name() + '/' + options.template);
 
 			// lookup cached view
-			var controller:* = views[className];
+			var controller:* = views[options.template];
 
 			// this will store the bounds of the layout if there is one.
 			var content_rect:Rectangle;
 
 			// build new view
 			// store reference to view so we can remove it later
-			if (! controller) views[className] = controller = me;
+			if (! controller) views[options.template] = controller = me;
 
 			// destroy cached view
 			if (controller)
@@ -338,17 +337,18 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			options.layout = controller.has_layout(options.layout);
 			if (options.layout)
 			{
-				var lclassName:String = 'views.layouts.';
+/*				var lclassName:String = 'views.layouts.';
 				lclassName += Inflector.camelize(options.layout);
 				lclassName += 'Layout';
-
-				controller.layout = new_view(controller, lclassName, options);
+*/
+/*				controller.layout = new_view(controller, lclassName, options);*/
+				controller.layout = new_view(controller, ('layouts/' + options.layout), options);
 				controller.layout.addEventListener('rendered', controller.after_layout_rendered);
 				controller.addChildAt(controller.layout, 0);
 			}
 
 			// render new view
-			controller.content = new_view(controller, className, options);
+			controller.content = new_view(controller, options.template, options);
 			controller.addChild(controller.content);
 
 			// copy public controller properties to view
@@ -381,29 +381,6 @@ _blank MUST be default or sites with allowNetworking=internal will cause error t
 			return controller;
 		}
 
-/*		protected function update (options:Object = null, attr:Object = null) :void
-		{
-			update_content(this, options, attr);
-		}
-
-		protected static function update_content (me:ReactionController, options:Object = null, attr:Object = null) :void
-		{
-			// options.template: 'products/list'
-			// className: 'views.products.ListProducts'
-			var className:String = me.class_name(options.update ? options.update : options.template);
-
-			// lookup cached view
-			var controller:* = views[className];
-			if (! controller) return;
-
-			// update cached view
-			// copy passed attributes to view (new or old)
-			for (var p:String in attr)
-			{
-				if (controller.content.hasOwnProperty(p)) controller.content[p] = attr[p];
-			}
-		}
-*/
 
 		// >>> PRIVATE METHODS
 		private function assign_view_properties () :void

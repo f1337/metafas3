@@ -10,9 +10,8 @@ package <%= package_name %>
 
 	dynamic public class <%= class_name %> extends ReactionView
 	{
-		public function <%= class_name %> () :void
+		override public function build () :void
 		{
-			super();
 		}
 	}
 }

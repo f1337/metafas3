@@ -4,6 +4,7 @@ package <%= package_name %>
 	import fl.containers.*;
 	import fl.controls.*;
 	import flash.text.*;
+	import ras3r.*;
 	import ras3r.controls.*;
 
 	public class <%= test_case_name  %> extends Spec
@@ -13,6 +14,7 @@ package <%= package_name %>
 			describe ('a new <%= class_name %>', function () :void
 			{
 				const <%= instance_name %>:<%= class_name %> = new <%= class_name %>;
+				<%= instance_name %>.build();
 
 				it ('should be a <%= class_name %>', function () :void
 				{

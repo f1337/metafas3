@@ -10,7 +10,6 @@ package ras3r
 
 		/**
 		*	hash.length => uint
-		*	hash.size => uint
 		*	Returns the number of key-value pairs in the hash.
 		**/
 		public function get length () :uint
@@ -21,11 +20,6 @@ package ras3r
 				i++;
 			}
 			return i;
-		}
-
-		public function get size () :uint
-		{
-			return length;
 		}
 
 		/**

@@ -27,7 +27,7 @@ package ras3r
 		static public function create (template:String = null, assigns:Object = null) :DisplayObject
 		{
 			// default to ReactionView if template empty
-			template = (template ? ('views.' + template.replace(/[\/\\]/g, '.')) : 'ras3r.ReactionView');
+			template = (template ? template_class_name(template) : 'ras3r.ReactionView');
 			// lookup class definition from template name
 			var klass:Class = (getDefinitionByName(template) as Class);
 			// new View()
@@ -36,6 +36,23 @@ package ras3r
 			new Hash(assigns).apply(view);
 			// return DisplayObject/View
 			return (view as DisplayObject);
+		}
+
+		// template_class_name('layouts/application') => 'views.layouts.ApplicationLayout'
+		// template_class_name('rockets/show') => 'views.rockets.ShowRocket'
+		// template_class_name('rockets/list') => 'views.rockets.ListRockets'
+		static private function template_class_name (template:String) :String
+		{
+			var t:Array = template.split('/');
+			var className:String = 'views.';
+			className += t[0] + '.';
+			if (t[1])
+			{
+				className += Inflector.camelize(t[1]);
+				if (t[1].indexOf('list') == -1) t[0] = Inflector.singularize(t[0]);
+			}
+			className += Inflector.camelize(t[0]);
+			return className;
 		}
 
 
@@ -208,7 +225,7 @@ package ras3r
 			// set scrollRect if defined
 			// assign properties to view
 			// build()
-			return ReactionView.create(template, assigns);
+			return addChild(ReactionView.create(template, assigns));
 		}
 
 		// name: String OR Class. 
