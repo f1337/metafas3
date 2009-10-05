@@ -386,7 +386,6 @@ package ras3r
 		// >>> EVENT HANDLERS
 		private function after_create (e:Event) :void
 		{
-			Logger.dump(e.target.data);
 			var location:String = e.target.data.location.toString();
 			if (! (location.length)) return after_create_failed(e);
 			after_find(e);
@@ -401,8 +400,11 @@ package ras3r
 		{
 			try
 			{
+				// if response data is an array
+				// use the first item
+				var data:Object = (e.target.data is Array) ? e.target.data.shift() : e.target.data;
 				// load data, then refire event
-				load(e.target.data, e);
+				load(data, e);
 			}
 			catch (err:Object)
 			{

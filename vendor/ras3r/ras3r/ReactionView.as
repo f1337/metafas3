@@ -9,6 +9,7 @@ package ras3r
 
 	import fl.core.*;
 	import fl.controls.*;
+	import fl.data.*;
 
 	import flash.display.*;
 	import flash.events.*;
@@ -167,6 +168,7 @@ package ras3r
 
 		protected function combo_box_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :ComboBox
 		{
+			this[object_name][property] ||= new DataProvider();
 			return (sprite_for(ComboBox, 'dataProvider', object_name, property, attributes, styles) as ComboBox);
 		}
 
@@ -294,7 +296,6 @@ package ras3r
 			attributes = new Hash({ id: (object_name + '_' + object_property) }).update(attributes);
 
 			// assignment via attributes hash
-			this[object_name][object_property] ||= '';
 			attributes[assign_property] = this[object_name][object_property];
 
 			// HACK: juggling two usage methods until all helpers are refactored

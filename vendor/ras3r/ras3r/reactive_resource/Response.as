@@ -15,8 +15,8 @@ package ras3r.reactive_resource
 
 		public function set body (response:Object) :void
 		{
-			// parse as JSON if it begins with '{'
-			if ((response is String) && (response.indexOf('{') == 0))
+			// parse as JSON if it begins with '{' or '[{'
+			if ((response is String) && (response.match(/^[\[\{]/)))
 			{
 				_body = decode_json(response);
 			}
@@ -41,7 +41,7 @@ package ras3r.reactive_resource
 
 
 		// >>> PROTECTED METHODS
-		protected function decode_json (response:Object) :Object
+		public function decode_json (response:Object) :Object
 		{
 			//get the raw JSON data and cast to String
 			var rawData:String = String(response);
@@ -49,7 +49,7 @@ package ras3r.reactive_resource
 			// decode the data to ActionScript using the JSON API
 			var data:Object = (JSON.decode(rawData) as Object);
 
-			return data.value;
+			return data;
 		}
 
 		protected function decode_rss (result:XML) :Object
