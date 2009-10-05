@@ -19,6 +19,9 @@ package ras3r
 
 	public class ReactionView extends Sprite
 	{
+		// >>> STATIC PROPERTIES
+		public static var debug:Boolean = false;
+
 		// >>> STATIC METHODS
 		// USAGE: 	ReactionView.create('layouts/application', { header: 'my name' });
 		//			ReactionView.create('products/show', { title: 'Cheeseburger' });
@@ -39,6 +42,8 @@ package ras3r
 				view.controller = assigns.remove('controller');
 				assigns.update(view.assigns_from_controller());
 			}
+			// inject debug backgrounds
+			if (debug) assigns.opaqueBackground = ((template.indexOf('views.layouts.') == 0) ? 0xddddff : 0xffdddd);
 			// copy properties from assigns hash to DisplayObject/View
 			assigns.apply(view);
 			// create child display
@@ -178,7 +183,7 @@ package ras3r
 		protected function label (html:String, attributes:Object = null, styles:Object = null) :Text
 		{
 			attributes = new Hash(attributes).update({ htmlText: html });
-			if (Logger.verbose) attributes.opaqueBackground = 0xddffdd;
+			if (debug) attributes.opaqueBackground = 0xddffdd;
 			return (sprite(Text, attributes, styles) as Text);
 		}
 
@@ -189,7 +194,7 @@ package ras3r
 				id: 		(object_name + '_' + property + '_label'),
 				htmlText:	html
 			}).update(attributes);
-			if (Logger.verbose) attributes.opaqueBackground = 0xddffdd;
+			if (debug) attributes.opaqueBackground = 0xddffdd;
 			return (sprite(Text, attributes, styles) as Text);
 		}
 
@@ -305,7 +310,7 @@ package ras3r
 
 		protected function text_for (object_name:String, property:String, attributes:Object = null) :Text
 		{
-			if (Logger.verbose) attributes = new Hash({ opaqueBackground: 0xddffdd }).update(attributes);
+			if (debug) attributes = new Hash({ opaqueBackground: 0xddffdd }).update(attributes);
 			return (sprite_for(Text, 'htmlText', object_name, property, attributes) as Text);
 		}
 

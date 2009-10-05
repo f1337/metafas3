@@ -320,7 +320,6 @@ package ras3r
 			if (layout_template)
 			{
 				var layout_options:Hash = options.merge({ scrollRect: bounds });
-				if (Logger.verbose) layout_options.opaqueBackground = 0xddddff;
 				layout = new_view(('layouts/' + layout_template), layout_options);
 			}
 
@@ -331,7 +330,6 @@ package ras3r
 				y: view_bounds.y,
 				scrollRect: (new Rectangle(0, 0, view_bounds.width, view_bounds.height))
 			});
-			if (Logger.verbose) view_options.opaqueBackground = 0xffdddd;
 			content = new_view(template, view_options);
 
 			// fix depth issues by bringing controller to front

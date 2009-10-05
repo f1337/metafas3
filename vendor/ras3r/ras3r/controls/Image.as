@@ -22,6 +22,9 @@ package ras3r.controls
 		public function Image ()
 		{
 			super();
+
+			maintainAspectRatio = false;
+
 			// catch IO errors (throws runtime exception)
 			addEventListener(IOErrorEvent.IO_ERROR, after_load_error);
 		}
