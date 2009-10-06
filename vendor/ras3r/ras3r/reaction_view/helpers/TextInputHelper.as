@@ -16,10 +16,7 @@ package ras3r.reaction_view.helpers
 			if (options.background) text_input.setStyle('upSkin', options.remove('background'));
 
 			// assign TextInput properties from options hash
-			for (var p:String in options)
-			{
-				text_input[p] = options[p];
-			}
+			options.apply(text_input);
 
 			return text_input;
 		}

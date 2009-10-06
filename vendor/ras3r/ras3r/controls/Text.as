@@ -21,7 +21,10 @@ package ras3r.controls
 		public function Text ()
 		{
 			super();
+
+			// autosize to end-run the 100x100 base size
 			autoSize = 'left';
+			// wordWrap forces textField to expand to full given width
 			wordWrap = true;
 		}
 	}

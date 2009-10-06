@@ -290,13 +290,21 @@ package ras3r
 			return addChild(sprite);
 		}
 
-		protected function sprite_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :DisplayObject
+		protected function options_for (assign_property:String, object_name:String, object_property:String) :Hash
 		{
 			// infer default instance id, but allow for manual override
-			attributes = new Hash({ id: (object_name + '_' + object_property) }).update(attributes);
+			var options:Hash = new Hash({ id: (object_name + '_' + object_property) });
 
 			// assignment via attributes hash
-			attributes[assign_property] = this[object_name][object_property];
+			// TODO: replace with databinding
+			options[assign_property] = this[object_name][object_property];
+
+			return options;
+		}
+
+		protected function sprite_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :DisplayObject
+		{
+			attributes = options_for(assign_property, object_name, object_property);
 
 			// HACK: juggling two usage methods until all helpers are refactored
 			if (name is DisplayObject) assign_id_for_sprite(attributes, name);
@@ -309,10 +317,16 @@ package ras3r
 			return (label(html, attributes) as Text);
 		}
 
-		protected function text_for (object_name:String, property:String, attributes:Object = null) :Text
+		protected function text_for (object_name:String, property:String, options:Object = null) :TextField
 		{
-			if (debug) attributes = new Hash({ opaqueBackground: 0xddffdd }).update(attributes);
-			return (sprite_for(Text, 'htmlText', object_name, property, attributes) as Text);
+			options = options_for('htmlText', object_name, property).update(options);
+			var id:String = options.remove('id');
+			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
+
+			var sprite:DisplayObject = TextFieldHelper.create(options);
+			assign_id_for_sprite({ id: id }, sprite);
+			return (addChild(sprite) as TextField);
+/*			return (sprite_for(Text, 'htmlText', object_name, property, options) as TextField);*/
 		}
 
 		protected function text_input_for (object_name:String, property:String, options:Object = null) :TextInput
