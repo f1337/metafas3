@@ -1,59 +1,167 @@
+EARLY ALPHA CODE. INCOMPLETE EXAMPLE BELOW.
 
-########################################
-This project was generated using Sprouts
-http://projectsprouts.org
 
-Please report any bugs to:
-http://github.com/lukebayes/project-sprouts/issues
+package controllers
+{
+	import ras3r.*;
+	import fl.data.*;
+	import models.domain.*;
 
-Please feel free to ask questions at:
-http://groups.google.com/group/projectsprouts
+	public class ApplicationController extends ReactionController
+	{
+		public var skin:Object = {
+			background:				'images/background.jpg',
+			review_order_button:	'images/review_order_button.png',
+			footer_html:			"ras3r &#169; Michael R. Fleet."
+		};
 
-Read the RDOCs at:
-http://projectsprouts.org/rdoc
+		public var order:Order = new Order({
+			state:			new DataProvider([ 'AZ', 'OH', 'SC' ]),
+		});
 
-########################################
-Using your favorite terminal, cd to this directory have fun!
 
-########################################
-To create a new ActionScript class, TestCase and rebuild all project TestSuites:
+		// >>> PUBLIC METHODS
+		public function load () :void
+		{
+			ReactionController.asset_host = Application.application.url.replace(/[^\/\.]+\.swf.*$/, '');
+			redirect_to({ controller: 'products', action: 'show' });
+		}
+	}
+}
 
-script/generate class -s utils.MathUtil
+//  OrdersController.as
+//  Created 2009-09-28.
 
-########################################
-To create a new Interface begin the name with I + Capital letter (eg: ISomeName)
-or end the name with 'able'
+package controllers
+{
+	import ras3r.*;
+	import fl.events.*;
+	import controllers.*;
 
-Name begins with Capital 'I' followed by another capital letter
-script/generate class utils.ISomeName 
+	public class OrdersController extends ApplicationController
+	{
+		public function review () :void
+		{
+			render('review');
+		}
 
-or
+		// this method is automatically wired to listen
+		// for the "click" event on content.skin_buy_now_button
+		public function on_skin_review_order_button_click (e:Event) :void
+		{
+			var fields:Array = [
+				'first_name',
+				'last_name', 
+				'street',
+				'city',
+				'state',
+				'postal_code',
+				'phone',
+				'email',
+				'card_type',
+				'card_number',
+				'card_month',
+				'card_year'
+			];
+			// update model properities with values from view
+			// TODO: replace with databinding!!!
+			for each (var field:String in fields)
+			{
+				order[field] = content['order_' + field].text;
+			}
 
-Name ends with 'able'
-script/generate class utils.Observable
+			redirect_to({ action: 'review' });			
+		}
 
-or
+		public function on_skin_tell_friend_button_click (e:Event) :void
+		{
+			content.gigya.visible = true;
+		}
+	}
+}
 
-Explicitly identify interface creation
-script/generate interface utils.SomeInterface
+package views.layouts
+{
+	import flash.geom.*;
+	import ras3r.*;
+	import ras3r.controls.*;
 
-########################################
-To create a new TestCase only, enter the following:
+	dynamic public class ApplicationLayout extends ReactionView
+	{
+		// bounds for rendering view content within the layout
+		public var bounds:Rectangle = new Rectangle(24, 24, 372, 369);
 
-script/generate test utils.SomeTest
 
-########################################
-To compile and launch your application:
+		// main layout creation method
+		override public function build () :void
+		{	
+			// background texture
+			image_for('skin', 'background', { height: 425, width: 420 });
 
-rake
+			text_for('skin', 'footer_html', {
+				x: bounds.x,
+				y: (this.skin_background.height - 32),
+				wordWrap: false,
+				format: { 
+					color:		0x143970,
+					font:		'Glypha',
+					size:		10
+				}
+			});
+		}
+	}
+}
 
-########################################
-To compile and launch your test suites:
+package views.orders
+{
+	import ras3r.*;
+	import ras3r.controls.*;
 
-rake test
+	dynamic public class NewOrder extends ReactionView
+	{
+		// main view creation method
+		override public function build () :void
+		{
+			vbox({ padding: 8 },
+				label('Billing and Shipping*', { wordWrap: false }),
 
-########################################
-To see all available rake tasks:
+				vbox({ padding: 2, width: 168 },
+					// billing and shipping
+					label_for('order', 'first_name', 'First Name'),
+					text_input_for('order', 'first_name'),
 
-rake -T
+					label_for('order', 'last_name', 'Last Name'),
+					text_input_for('order', 'last_name'),
 
+					label_for('order', 'street', 'Street Address'),
+					text_input_for('order', 'street'),
+
+					label_for('order', 'city', 'City'),
+					text_input_for('order', 'city'),
+
+					hbox({},
+						vbox({ width: 120 },
+							label_for('order', 'state', 'State'),
+							combo_box_for('order', 'state')
+						),
+						vbox({ width: 48 },
+							label_for('order', 'postal_code', 'ZIP'),
+							text_input_for('order', 'postal_code')
+						)
+					),
+
+					label_for('order', 'phone', 'Phone'),
+					text_input_for('order', 'phone'),
+
+					label_for('order', 'email', 'E-Mail Address'),
+					text_input_for('order', 'email'),
+
+					label_for('order', 'confirm_email', 'Confirm E-Mail Address'),
+					text_input_for('order', 'confirm_email')
+				)
+			);
+
+			image_for('skin', 'review_order_button', { x: 207, y:324, width: 165, height: 45 });
+		}
+	}
+}
