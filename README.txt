@@ -29,9 +29,6 @@ package controllers
 	}
 }
 
-//  OrdersController.as
-//  Created 2009-09-28.
-
 package controllers
 {
 	import ras3r.*;
