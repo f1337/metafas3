@@ -141,53 +141,14 @@ package ras3r
 			return sprite(klass, attr, styles);
 		}
 
-		// label: String. Text label to display on button.
-		// options: Hash. Valid options:
-		//	- action: 	String method name of controller to call when visual element dipatches event.
-		// attr: Hash. Optional. Properties to be applied to button upon creation (w, h, x, y, etc).
-		protected function button_to (label:String, options:Object, attr:Object = null) :*
-		{
-			var button:* = button(label, attr);
-			link_to(button, options);
-			return button;
-		}
-
-		// label: String. Text label to display on button.
-		// handler: Function. Function to call when visual element dipatches event.
-		// attr: Hash. Optional. Properties to be applied to button upon creation (w, h, x, y, etc).
-		// event: String. Optional. Event dispatched by visual element to listen for. Default = 'click'
-		//protected function button_to_function (label:String, ...args) :*
-		protected function button_to_function (label:String, handler:Function, attr:Object = null, event:String = 'click') :*
-		{
-			//			attr:Object = null, event:String = 'click') :void
-//			var attr:Object = args.splice(1, 1).shift();
-			var button:* = button(label, attr);
-			link_to_function(button, handler, event);
-			return button;
-		}
-
 		protected function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null, styles:Object = null) :ComboBox
 		{
 			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
 			attributes = new Hash(attributes).update({ dataProvider: dataProvider });
 
 			return (addChild(sprite_for(ComboBoxHelper.create(attributes), 'selectedItem', object_name, property)) as ComboBox);
-/*			return (sprite_for(ComboBox, 'selectedItem', object_name, property, attributes, styles) as ComboBox);*/
 		}
 
-/*		protected function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null, styles:Object = null) :ComboBox
-		{
-			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
-			attributes = new Hash(attributes).update({ dataProvider: dataProvider });
-			return (sprite_for(ComboBox, 'selectedItem', object_name, property, attributes, styles) as ComboBox);
-		}
-*/
-/*		protected function combo_box_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :ComboBox
-		{
-			this[object_name][property] ||= new DataProvider();
-			return (sprite_for(ComboBox, 'dataProvider', object_name, property, attributes, styles) as ComboBox);
-		}
-*/
 		protected function hbox (options:Object, ...args) :DisplayObjectContainer
 		{
 			return (addChild(BoxHelper.hbox(options, args)) as DisplayObjectContainer);
@@ -216,58 +177,6 @@ package ras3r
 			var sprite:DisplayObject = TextFieldHelper.create(options);
 			assign_id_for_sprite({ id: (object_name + '_' + property + '_label') }, sprite);
 			return (addChild(sprite) as TextField);
-
-			// infer default instance id, but allow for manual override
-/*			attributes = new Hash({ 
-				id: 		,
-				htmlText:	html
-			}).update(attributes);
-			return (sprite(Text, attributes, styles) as Text);
-*//*
-
-
-			options = options_for('htmlText', object_name, property).update(options);
-			var id:String = options.remove('id');
-			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
-
-			var sprite:DisplayObject = TextFieldHelper.create(options);
-			assign_id_for_sprite({ id: id }, sprite);
-			return (addChild(sprite) as TextField);
-*/		}
-
-		// elem: Object. Visual element for whom the handler is being wired
-		// options: Hash. Valid options:
-		//	- action: 	String method name of controller to call when visual element dipatches event.
-		//	- on:		String. Optional. Event dispatched by visual element to listen for. Default = 'click'
-		public function link_to (elem:Object, options:Object) :void
-		{
-			// default controller name
-			if (! options.controller) options.controller = controller.controller_name();
-
-			var args:Array = [ ];
-
-			// custom event override
-			if (options.on) args.push(options.on);
-			delete options.on;
-
-			// filter chain delegate
-			args.unshift(Delegate.create(controller.redirect_to, options));
-
-			args.unshift(elem);
-			link_to_function.apply(null, args);
-		}
-
-		protected function link_to_url (elem:Object, url:String) :void
-		{
-			link_to(elem, { action: 'get_url', url: url });
-		}
-
-		// elem: Object. Visual element for whom the handler is being wired
-		// handler: Function. Function to call when visual element dipatches event.
-		// event: String. Optional. Event dispatched by visual element to listen for. Default = 'click'
-		protected function link_to_function (elem:Object, handler:Function, event:String = 'click') :void
-		{
-			elem.addEventListener(event, handler);
 		}
 
 		protected function options_for (assign_property:String, object_name:String, object_property:String) :Hash
@@ -361,13 +270,11 @@ package ras3r
 			var sprite:DisplayObject = TextFieldHelper.create(options);
 			assign_id_for_sprite({ id: id }, sprite);
 			return (addChild(sprite) as TextField);
-/*			return (sprite_for(Text, 'htmlText', object_name, property, options) as TextField);*/
 		}
 
 		protected function text_input_for (object_name:String, property:String, options:Object = null) :TextInput
 		{
 			return (addChild(sprite_for(TextInputHelper.create(options), 'text', object_name, property)) as TextInput);
-/*			return (sprite_for(TextInput, 'text', object_name, property, attributes, styles) as TextInput);*/
 		}
 
 		protected function truncate (tf:TextField, suffix:String = '...') :void
@@ -481,5 +388,71 @@ package ras3r
 				}
 			}
 		}
+
+
+		/*****************************************************
+		*
+		*	D E P R E C A T E D    M E T H O D S
+		*
+		*****************************************************/
+/*
+		// label: String. Text label to display on button.
+		// options: Hash. Valid options:
+		//	- action: 	String method name of controller to call when visual element dipatches event.
+		// attr: Hash. Optional. Properties to be applied to button upon creation (w, h, x, y, etc).
+		private function button_to (label:String, options:Object, attr:Object = null) :*
+		{
+			var button:* = button(label, attr);
+			link_to(button, options);
+			return button;
+		}
+
+		// label: String. Text label to display on button.
+		// handler: Function. Function to call when visual element dipatches event.
+		// attr: Hash. Optional. Properties to be applied to button upon creation (w, h, x, y, etc).
+		// event: String. Optional. Event dispatched by visual element to listen for. Default = 'click'
+		//protected function button_to_function (label:String, ...args) :*
+		private function button_to_function (label:String, handler:Function, attr:Object = null, event:String = 'click') :*
+		{
+			var button:* = button(label, attr);
+			link_to_function(button, handler, event);
+			return button;
+		}
+
+		// elem: Object. Visual element for whom the handler is being wired
+		// options: Hash. Valid options:
+		//	- action: 	String method name of controller to call when visual element dipatches event.
+		//	- on:		String. Optional. Event dispatched by visual element to listen for. Default = 'click'
+		private function link_to (elem:Object, options:Object) :void
+		{
+			// default controller name
+			if (! options.controller) options.controller = controller.controller_name();
+
+			var args:Array = [ ];
+
+			// custom event override
+			if (options.on) args.push(options.on);
+			delete options.on;
+
+			// filter chain delegate
+			args.unshift(Delegate.create(controller.redirect_to, options));
+
+			args.unshift(elem);
+			link_to_function.apply(null, args);
+		}
+
+		private function link_to_url (elem:Object, url:String) :void
+		{
+			link_to(elem, { action: 'get_url', url: url });
+		}
+
+		// elem: Object. Visual element for whom the handler is being wired
+		// handler: Function. Function to call when visual element dipatches event.
+		// event: String. Optional. Event dispatched by visual element to listen for. Default = 'click'
+		private function link_to_function (elem:Object, handler:Function, event:String = 'click') :void
+		{
+			elem.addEventListener(event, handler);
+		}
+*/
 	}
 }
