@@ -170,10 +170,18 @@ package ras3r
 		{
 			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
 			attributes = new Hash(attributes).update({ dataProvider: dataProvider });
-/*			this[object_name][property] ||= new DataProvider();*/
-			return (sprite_for(ComboBox, 'selectedItem', object_name, property, attributes, styles) as ComboBox);
+
+			return (addChild(sprite_for(ComboBoxHelper.create(attributes), 'selectedItem', object_name, property)) as ComboBox);
+/*			return (sprite_for(ComboBox, 'selectedItem', object_name, property, attributes, styles) as ComboBox);*/
 		}
 
+/*		protected function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null, styles:Object = null) :ComboBox
+		{
+			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
+			attributes = new Hash(attributes).update({ dataProvider: dataProvider });
+			return (sprite_for(ComboBox, 'selectedItem', object_name, property, attributes, styles) as ComboBox);
+		}
+*/
 /*		protected function combo_box_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :ComboBox
 		{
 			this[object_name][property] ||= new DataProvider();

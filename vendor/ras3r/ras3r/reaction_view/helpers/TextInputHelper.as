@@ -16,7 +16,17 @@ package ras3r.reaction_view.helpers
 			// set "upSkin" style from "background" option
 			if (options.background) text_input.setStyle('upSkin', options.remove('background'));
 
-			// apply TextFormat via format hash
+			// apply TextFormat from options.format hash
+			apply_text_format_to(text_input, options);
+
+			// assign TextInput properties from options hash
+			options.apply(text_input);
+
+			return text_input;
+		}
+
+		static public function apply_text_format_to (text_input:TextInput, options:Object) :void
+		{
 			if (options.format)
 			{
 				// use Hash object for hash.apply
@@ -24,15 +34,6 @@ package ras3r.reaction_view.helpers
 				// is a custom font defined?
 				// if so, set default embedFonts = true
 				options.embedFonts = Boolean(format.font && options.embedFonts !== false);
-				/*
-				Advanced anti-aliasing allows font faces to be rendered
-				at very high quality at small sizes. It is best used 
-				with applications that have a lot of small text. 
-				Advanced anti-aliasing is not recommended for very 
-				large fonts (larger than 48 points).
-				*/ 
-/*				options.antiAliasType = (options.embedFonts && format.size <= 48 && options.antiAliasType != 'normal') ? 'advanced' : 'normal';*/
-
 				// get default text format
 				var tf:Object = text_input.getStyle('textFormat');
 				tf ||= new TextFormat();
@@ -46,11 +47,6 @@ package ras3r.reaction_view.helpers
 			{
 				text_input.setStyle('embedFonts', false);
 			}
-
-			// assign TextInput properties from options hash
-			options.apply(text_input);
-
-			return text_input;
 		}
 	}
 }
