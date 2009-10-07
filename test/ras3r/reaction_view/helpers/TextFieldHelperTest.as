@@ -39,7 +39,7 @@ package ras3r.reaction_view.helpers
 
 						it ('forces antiAliasType="normal"', function () :void
 						{
-							var options:Object = { format: { font: 'Test' }, antiAliasType: 'advanced' };
+							var options:Object = { format: { font: 'Test' }, antiAliasType: 'advanced', embedFonts: false };
 							var tf:TextField = TextFieldHelper.create(options);
 							so(tf.antiAliasType).should.equal('normal');
 						});

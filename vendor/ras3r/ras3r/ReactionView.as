@@ -182,23 +182,42 @@ package ras3r
 			return (sprite_for(Image, 'source', object_name, property, attributes, styles) as Image);
 		}
 
-		protected function label (html:String, attributes:Object = null, styles:Object = null) :Text
+		protected function label (html:String, options:Object = null) :TextField
 		{
-			attributes = new Hash(attributes).update({ htmlText: html });
-			if (debug) attributes.opaqueBackground = 0xddffdd;
-			return (sprite(Text, attributes, styles) as Text);
+			options = new Hash(options).update({ htmlText: html });
+			var id:String = options.remove('id');
+			if (debug) options.opaqueBackground = 0xddffdd;
+			var sprite:DisplayObject = TextFieldHelper.create(options);
+			assign_id_for_sprite({ id: id }, sprite);
+			return (addChild(sprite) as TextField);
 		}
 
-		protected function label_for (object_name:String, property:String, html:String, attributes:Object = null, styles:Object = null) :Text
+		protected function label_for (object_name:String, property:String, html:String, options:Object = null, styles:Object = null) :TextField
 		{
+			options = new Hash({ htmlText: html }).update(options);
+			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
+
+			var sprite:DisplayObject = TextFieldHelper.create(options);
+			assign_id_for_sprite({ id: (object_name + '_' + property + '_label') }, sprite);
+			return (addChild(sprite) as TextField);
+
 			// infer default instance id, but allow for manual override
-			attributes = new Hash({ 
-				id: 		(object_name + '_' + property + '_label'),
+/*			attributes = new Hash({ 
+				id: 		,
 				htmlText:	html
 			}).update(attributes);
-			if (debug) attributes.opaqueBackground = 0xddffdd;
 			return (sprite(Text, attributes, styles) as Text);
-		}
+*//*
+
+
+			options = options_for('htmlText', object_name, property).update(options);
+			var id:String = options.remove('id');
+			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
+
+			var sprite:DisplayObject = TextFieldHelper.create(options);
+			assign_id_for_sprite({ id: id }, sprite);
+			return (addChild(sprite) as TextField);
+*/		}
 
 		// elem: Object. Visual element for whom the handler is being wired
 		// options: Hash. Valid options:
@@ -233,6 +252,18 @@ package ras3r
 		protected function link_to_function (elem:Object, handler:Function, event:String = 'click') :void
 		{
 			elem.addEventListener(event, handler);
+		}
+
+		protected function options_for (assign_property:String, object_name:String, object_property:String) :Hash
+		{
+			// infer default instance id, but allow for manual override
+			var options:Hash = new Hash({ id: (object_name + '_' + object_property) });
+
+			// assignment via attributes hash
+			// TODO: replace with databinding
+			options[assign_property] = this[object_name][object_property];
+
+			return options;
 		}
 
 		protected function render (template:String, assigns:Object = null) :DisplayObject
@@ -290,31 +321,19 @@ package ras3r
 			return addChild(sprite);
 		}
 
-		protected function options_for (assign_property:String, object_name:String, object_property:String) :Hash
-		{
-			// infer default instance id, but allow for manual override
-			var options:Hash = new Hash({ id: (object_name + '_' + object_property) });
-
-			// assignment via attributes hash
-			// TODO: replace with databinding
-			options[assign_property] = this[object_name][object_property];
-
-			return options;
-		}
-
 		protected function sprite_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :DisplayObject
 		{
-			attributes = options_for(assign_property, object_name, object_property);
+			attributes = options_for(assign_property, object_name, object_property).update(attributes);
 
 			// HACK: juggling two usage methods until all helpers are refactored
 			if (name is DisplayObject) assign_id_for_sprite(attributes, name);
 			return ((name is DisplayObject) ? name : sprite(name, attributes, styles));
 		}
 
-		protected function text (html:String, attributes:Object = null) :Text
+		protected function text (html:String, attributes:Object = null) :TextField
 		{
 			attributes = new Hash(attributes).update({ multiline: true, wordWrap: true });
-			return (label(html, attributes) as Text);
+			return (label(html, attributes) as TextField);
 		}
 
 		protected function text_for (object_name:String, property:String, options:Object = null) :TextField

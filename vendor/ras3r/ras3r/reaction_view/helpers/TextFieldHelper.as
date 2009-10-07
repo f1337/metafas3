@@ -26,7 +26,7 @@ package ras3r.reaction_view.helpers
 				var format:Hash = new Hash(options.remove('format'));
 				// is a custom font defined?
 				// if so, set default embedFonts = true
-/*				options.embedFonts = (format.font && options.embedFonts !== false);*/
+				options.embedFonts = (format.font && options.embedFonts !== false);
 				/*
 				Advanced anti-aliasing allows font faces to be rendered
 				at very high quality at small sizes. It is best used 
@@ -34,7 +34,7 @@ package ras3r.reaction_view.helpers
 				Advanced anti-aliasing is not recommended for very 
 				large fonts (larger than 48 points).
 				*/ 
-/*				options.antiAliasType = (options.embedFonts && format.size <= 48 && options.antiAliasType != 'normal') ? 'advanced' : 'normal';*/
+				options.antiAliasType = (options.embedFonts && format.size <= 48 && options.antiAliasType != 'normal') ? 'advanced' : 'normal';
 
 				// get default text format
 				var tf:TextFormat = text_field.defaultTextFormat;
