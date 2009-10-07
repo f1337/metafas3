@@ -19,6 +19,53 @@ package ras3r.reaction_view.helpers
 					so(TextInputHelper.default_options).should.be.a.kind_of(Object);
 				});
 
+				it ('applies options.format to its textFormat style', function () :void
+				{
+					var options:Object = { format: { size: 22 } };
+					var ti:TextInput = TextInputHelper.create(options);
+					so(ti.getStyle('textFormat').size).should.equal(options.format.size);
+				});
+
+				describe ('when format.font is defined', function () :void
+				{
+					describe ('with options.embedFonts explicity set to false', function () :void
+					{
+						it ('disables embedFonts style', function () :void
+						{
+							var options:Object = { format: { font: 'Test' }, embedFonts: false };
+							var ti:TextInput = TextInputHelper.create(options);
+							so(ti.getStyle('embedFonts')).should.equal(false);
+						});
+					});
+
+					describe ('with options.embedFonts undefined', function () :void
+					{
+						it ('enables embedFonts style', function () :void
+						{
+							var options:Object = { format: { font: 'Test' } };
+							var ti:TextInput = TextInputHelper.create(options);
+							so(ti.getStyle('embedFonts')).should.equal(true);
+						});
+					});
+				});
+
+				describe ('when format.font UNdefined and', function () :void
+				{
+					it ('disables embedFonts style with no explicit options.embedFonts', function () :void
+					{
+						var options:Object = { format: { size: 12 } };
+						var ti:TextInput = TextInputHelper.create(options);
+						so(ti.getStyle('embedFonts')).should.equal(false);
+					});
+
+					it ('disables embedFonts style with explicit options.embedFonts: true', function () :void
+					{
+						var options:Object = { format: { size: 12 }, embedFonts: true };
+						var ti:TextInput = TextInputHelper.create(options);
+						so(ti.getStyle('embedFonts')).should.equal(false);
+					});
+				});
+
 				describe ('when it merges .create(options) with .default_options', function () :void
 				{
 					TextInputHelper.default_options.update({ 

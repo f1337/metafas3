@@ -39,7 +39,7 @@ package ras3r.reaction_view.helpers
 
 						it ('forces antiAliasType="normal"', function () :void
 						{
-							var options:Object = { format: { font: 'Test' }, antiAliasType: 'advanced', embedFonts: false };
+							var options:Object = { antiAliasType: 'advanced', embedFonts: false };
 							var tf:TextField = TextFieldHelper.create(options);
 							so(tf.antiAliasType).should.equal('normal');
 						});
@@ -77,18 +77,17 @@ package ras3r.reaction_view.helpers
 					});
 				});
 
-				describe ('when format.font UNdefined and', function () :void
+				describe ('when format.font UNdefined', function () :void
 				{
 					it ('disables textField.embedFonts with no explicit options.embedFonts', function () :void
 					{
-						var options:Object = { format: { size: 12 } };
-						var tf:TextField = TextFieldHelper.create(options);
+						var tf:TextField = TextFieldHelper.create();
 						so(tf.embedFonts).should.equal(false);
 					});
 
-					it ('disables textField.embedFonts with no explicit options.embedFonts: true', function () :void
+					it ('disables textField.embedFonts with explicit options.embedFonts: true', function () :void
 					{
-						var options:Object = { format: { size: 12 }, embedFonts: true };
+						var options:Object = { embedFonts: true };
 						var tf:TextField = TextFieldHelper.create(options);
 						so(tf.embedFonts).should.equal(false);
 					});

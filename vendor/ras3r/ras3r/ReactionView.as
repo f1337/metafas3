@@ -166,12 +166,20 @@ package ras3r
 			return button;
 		}
 
-		protected function combo_box_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :ComboBox
+		protected function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null, styles:Object = null) :ComboBox
+		{
+			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
+			attributes = new Hash(attributes).update({ dataProvider: dataProvider });
+/*			this[object_name][property] ||= new DataProvider();*/
+			return (sprite_for(ComboBox, 'selectedItem', object_name, property, attributes, styles) as ComboBox);
+		}
+
+/*		protected function combo_box_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :ComboBox
 		{
 			this[object_name][property] ||= new DataProvider();
 			return (sprite_for(ComboBox, 'dataProvider', object_name, property, attributes, styles) as ComboBox);
 		}
-
+*/
 		protected function hbox (options:Object, ...args) :DisplayObjectContainer
 		{
 			return (addChild(BoxHelper.hbox(options, args)) as DisplayObjectContainer);
