@@ -19,6 +19,9 @@ package ras3r.reaction_view.helpers
 			// apply TextFormat from options.format hash
 			apply_text_format_to(text_input, options);
 
+			// prevent text=null
+			if (options.hasOwnProperty('text')) options.text ||= '';
+
 			// assign TextInput properties from options hash
 			options.apply(text_input);
 

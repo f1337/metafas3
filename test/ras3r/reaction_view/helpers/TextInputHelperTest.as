@@ -19,6 +19,13 @@ package ras3r.reaction_view.helpers
 					so(TextInputHelper.default_options).should.be.a.kind_of(Object);
 				});
 
+				it ('prevents setting text=null', function () :void
+				{
+					var options:Object = { text: null };
+					var ti:TextInput = TextInputHelper.create(options);
+					so(ti.text).should.equal('');
+				});
+
 				it ('applies options.format to its textFormat style', function () :void
 				{
 					var options:Object = { format: { size: 22 } };

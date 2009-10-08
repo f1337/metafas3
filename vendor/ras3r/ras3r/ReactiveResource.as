@@ -402,7 +402,6 @@ package ras3r
 			{
 				// if response data is an array
 				// use the first item
-				Logger.dump(e.target.data);
 				var data:Object = (e.target.data is Array) ? e.target.data.shift() : e.target.data;
 				// load data, then refire event
 				load(data, e);

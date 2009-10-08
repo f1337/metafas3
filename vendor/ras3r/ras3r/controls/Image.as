@@ -14,7 +14,8 @@ package ras3r.controls
 		// >>> PUBLIC PROPERTIES
 		override public function set source (s:Object) :void
 		{
-			if (s is String) s = ReactionController.asset_host + s.toString();
+			Logger.info('Image#source: ' + s);
+			if (s is String) s = ReactionController.asset_host + '/' + s.toString();
 			super.source = s;
 		}
 

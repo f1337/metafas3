@@ -19,6 +19,20 @@ package ras3r.reaction_view.helpers
 					so(TextFieldHelper.default_options).should.be.a.kind_of(Object);
 				});
 
+				it ('prevents setting htmlText=null', function () :void
+				{
+					var options:Object = { htmlText: null };
+					var tf:TextField = TextFieldHelper.create(options);
+					so(tf.htmlText).should.equal('');
+				});
+
+				it ('prevents setting text=null', function () :void
+				{
+					var options:Object = { text: null };
+					var tf:TextField = TextFieldHelper.create(options);
+					so(tf.text).should.equal('');
+				});
+
 				it ('applies options.format to textField.defaultFormat', function () :void
 				{
 					var options:Object = { format: { size: 22 } };

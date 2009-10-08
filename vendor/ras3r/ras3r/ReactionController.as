@@ -86,10 +86,16 @@ package ras3r
 			c.process(action, options);
 		}
 
-		// takes absolute path, returns String url (proto://host.domain.com/absolute_path)
-		static public function url_for (absolute_path:String, subdomain:String = null) :String
+		// takes path, returns String url (proto://asset_host/path)
+		static public function url_for (path:String, subdomain:String = null) :String
 		{
-			var url:String = asset_host + absolute_path;
+			var url:String = '';
+			if (path.match(/^\w+:\/\/./) == null)
+			{
+				url += asset_host;
+				if (path.substr(0, 1) != '/') url += '/';
+			}
+			url += path;
 
 			if (subdomain && subdomain.length > 0)
 			{
@@ -102,10 +108,10 @@ package ras3r
 			return url;
 		}
 
-		// takes absolute path, returns URLRequest for url
-		static public function url_request_for (absolute_path:String, subdomain:String = null) :URLRequest
+		// takes path, returns URLRequest for url
+		static public function url_request_for (path:String, subdomain:String = null) :URLRequest
 		{
-			return (new URLRequest(url_for(absolute_path, subdomain)));
+			return (new URLRequest(url_for(path, subdomain)));
 		}
 
 

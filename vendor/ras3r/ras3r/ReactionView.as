@@ -146,7 +146,7 @@ package ras3r
 			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
 			attributes = new Hash(attributes).update({ dataProvider: dataProvider });
 
-			return (addChild(sprite_for(ComboBoxHelper.create(attributes), 'selectedItem', object_name, property)) as ComboBox);
+			return (addChild(assigns_for(ComboBoxHelper.create(attributes), 'selectedItem', object_name, property)) as ComboBox);
 		}
 
 		protected function hbox (options:Object, ...args) :DisplayObjectContainer
@@ -154,9 +154,16 @@ package ras3r
 			return (addChild(BoxHelper.hbox(options, args)) as DisplayObjectContainer);
 		}
 
-		protected function image_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :Image
+/*		protected function image_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :Image
 		{
 			return (sprite_for(Image, 'source', object_name, property, attributes, styles) as Image);
+		}
+*/
+		protected function image_for (object_name:String, property:String, options:Object = null) :DisplayObject
+		{
+			return helper_for(ImageHelper, options, 'source', object_name, property);
+/*			return (addChild(assigns_for(ImageHelper.create(attributes), 'source', object_name, property)) as DisplayObject);*/
+/*			return (addChild(assigns_for(ImageHelper.create(attributes), 'source', object_name, property)) as DisplayObject);*/
 		}
 
 		protected function label (html:String, options:Object = null) :TextField
@@ -165,7 +172,7 @@ package ras3r
 			var id:String = options.remove('id');
 			if (debug) options.opaqueBackground = 0xddffdd;
 			var sprite:DisplayObject = TextFieldHelper.create(options);
-			assign_id_for_sprite({ id: id }, sprite);
+			assign_id_for_object({ id: id }, sprite);
 			return (addChild(sprite) as TextField);
 		}
 
@@ -175,20 +182,8 @@ package ras3r
 			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
 
 			var sprite:DisplayObject = TextFieldHelper.create(options);
-			assign_id_for_sprite({ id: (object_name + '_' + property + '_label') }, sprite);
+			assign_id_for_object({ id: (object_name + '_' + property + '_label') }, sprite);
 			return (addChild(sprite) as TextField);
-		}
-
-		protected function options_for (assign_property:String, object_name:String, object_property:String) :Hash
-		{
-			// infer default instance id, but allow for manual override
-			var options:Hash = new Hash({ id: (object_name + '_' + object_property) });
-
-			// assignment via attributes hash
-			// TODO: replace with databinding
-			options[assign_property] = this[object_name][object_property];
-
-			return options;
 		}
 
 		protected function render (template:String, assigns:Object = null) :DisplayObject
@@ -213,7 +208,7 @@ package ras3r
 			var sprite:* = new klass();
 
 			// assign id if defined
-			assign_id_for_sprite(attr, sprite);
+			assign_id_for_object(attr, sprite);
 
 			// assign attributes
 			for (var p:String in attr)
@@ -246,15 +241,15 @@ package ras3r
 			return addChild(sprite);
 		}
 
-		protected function sprite_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :DisplayObject
+/*		protected function sprite_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :DisplayObject
 		{
 			attributes = options_for(assign_property, object_name, object_property).update(attributes);
 
 			// HACK: juggling two usage methods until all helpers are refactored
-			if (name is DisplayObject) assign_id_for_sprite(attributes, name);
+			if (name is DisplayObject) assign_id_for_object(attributes, name);
 			return ((name is DisplayObject) ? name : sprite(name, attributes, styles));
 		}
-
+*/
 		protected function text (html:String, attributes:Object = null) :TextField
 		{
 			attributes = new Hash(attributes).update({ multiline: true, wordWrap: true });
@@ -268,13 +263,14 @@ package ras3r
 			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
 
 			var sprite:DisplayObject = TextFieldHelper.create(options);
-			assign_id_for_sprite({ id: id }, sprite);
+			assign_id_for_object({ id: id }, sprite);
 			return (addChild(sprite) as TextField);
 		}
 
 		protected function text_input_for (object_name:String, property:String, options:Object = null) :TextInput
 		{
-			return (addChild(sprite_for(TextInputHelper.create(options), 'text', object_name, property)) as TextInput);
+			return (helper_for(TextInputHelper, options, 'text', object_name, property) as TextInput);
+/*			return (addChild(assigns_for(TextInputHelper.create(options), 'text', object_name, property)) as TextInput);*/
 		}
 
 		protected function truncate (tf:TextField, suffix:String = '...') :void
@@ -313,7 +309,7 @@ package ras3r
 		}
 
 		// >>> PRIVATE METHODS
-		private function assign_id_for_sprite (attr:Object, sprite:DisplayObject) :void
+		private function assign_id_for_object (attr:Object, sprite:Object) :void
 		{
 			if (attr && attr.id)
 			{
@@ -322,7 +318,38 @@ package ras3r
 				delete attr.id;
 			}
 		}
-		
+
+		private function assigns_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :*
+		{
+			attributes = options_for(assign_property, object_name, object_property).update(attributes);
+			// HACK: juggling two usage methods until all helpers are refactored
+			assign_id_for_object(attributes, name);
+			return name;
+		}
+
+		// return helper_for(TextInputHelper, options, 'text', object_name, property)
+		private function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject
+		{
+			options = new Hash({ name: (object_name + '_' + object_property) }).update(options);
+			// TODO: replace with databinding
+			options[assign_property] = this[object_name][object_property];
+			this[options.name] = helper.create(options);
+			return addChild(this[options.name]);
+		}
+
+/*		private function options_for (assign_property:String, object_name:String, object_property:String, options:Object) :Hash*/
+		private function options_for (assign_property:String, object_name:String, object_property:String) :Hash
+		{
+			// infer default instance id, but allow for manual override
+			var options:Hash = new Hash({ id: (object_name + '_' + object_property) });
+
+			// assignment via attributes hash
+			// TODO: replace with databinding
+			options[assign_property] = this[object_name][object_property];
+
+			return options;
+		}
+
 		private function name_to_class (name:String) :Class
 		{
 			var klass:Class;

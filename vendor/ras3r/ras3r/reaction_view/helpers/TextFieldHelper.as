@@ -50,6 +50,12 @@ package ras3r.reaction_view.helpers
 				options.embedFonts = false;
 			}
 
+			// prevent htmlText=null
+			if (options.hasOwnProperty('htmlText')) options.htmlText ||= '';
+
+			// prevent text=null
+			if (options.hasOwnProperty('text')) options.text ||= '';
+
 			// assign TextField properties from options hash
 			options.apply(text_field);
 
