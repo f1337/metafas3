@@ -1,2 +1,6 @@
 * Add Yahoo ASTRA components .swc: http://www.yahooapis.com/flash/
 * Use ASTRA layout containers for BoxHelper
+* ReactionView needs refactored into an ObjectProxy descendent. Views should not need extend ReactionView. Instead, ReactionView should "wrap" the View class and process events.
+* Once ReactionView extends ObjectProxy, it should implement "method_missing" for Helpers: text_input_for => databinds using TextInputHelper, combo_box_for => databinds using ComboBoxHelper, etc.
+* App developers should be provided a means to use only the UI elements required. Ex: helper(ComboBoxHelper) as a static declaration in a class?
+* Should Helpers also extend ObjectProxy? Wrap the object and intervene only when necessary? Hmm.
