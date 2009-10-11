@@ -18,6 +18,8 @@ package ras3r
 	import flash.text.*;
 	import flash.utils.*;
 
+	import mx.events.PropertyChangeEvent;
+
 	public class ReactionView extends Sprite
 	{
 		// >>> STATIC PROPERTIES
@@ -28,12 +30,12 @@ package ras3r
 		//			ReactionView.create('products/show', { title: 'Cheeseburger' });
 		// Instantiates DisplayObject/View described by @template, and 
 		// copies properties from assigns hash to new DisplayObject/View
-		static public function create (template:String = null, assigns:Object = null) :DisplayObject
+		static public function create (template:* = null, assigns:Object = null) :DisplayObject
 		{
-			// default to ReactionView if template empty
-			template = (template ? template_class_name(template) : 'ras3r.ReactionView');
+			// default to BaseReactionView if template empty
+			template = (template ? template_class_name(template) : BaseReactionView);
 			// lookup class definition from template name
-			var klass:Class = (getDefinitionByName(template) as Class);
+			var klass:Class = (template is Class ? template : (getDefinitionByName(template) as Class));
 			// new View()
 			var view:* = new klass();
 			// assign controller property first
@@ -122,7 +124,7 @@ package ras3r
 		// >>> HELPERS
 		// label: String. Text label to display on button.
 		// attr: Hash. Optional. Properties to be applied to button upon creation (w, h, x, y, etc).
-		protected function button (label:String, attr:Object = null, styles:Object = null) :*
+/*		protected function button (label:String, attr:Object = null, styles:Object = null) :*
 		{
 			var klass:Class = LabelButton;
 			if (attr)
@@ -140,13 +142,14 @@ package ras3r
 			attr.useHandCursor = true;
 			return sprite(klass, attr, styles);
 		}
-
-		protected function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null, styles:Object = null) :ComboBox
+*/
+		protected function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null) :ComboBox
 		{
 			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
 			attributes = new Hash(attributes).update({ dataProvider: dataProvider });
 
-			return (addChild(assigns_for(ComboBoxHelper.create(attributes), 'selectedItem', object_name, property)) as ComboBox);
+			return (helper_for(ComboBoxHelper, attributes, 'selectedItem', object_name, property) as ComboBox);
+//			return (addChild(assigns_for(ComboBoxHelper.create(attributes), 'selectedItem', object_name, property)) as ComboBox);
 		}
 
 		protected function hbox (options:Object, ...args) :DisplayObjectContainer
@@ -154,16 +157,9 @@ package ras3r
 			return (addChild(BoxHelper.hbox(options, args)) as DisplayObjectContainer);
 		}
 
-/*		protected function image_for (object_name:String, property:String, attributes:Object = null, styles:Object = null) :Image
-		{
-			return (sprite_for(Image, 'source', object_name, property, attributes, styles) as Image);
-		}
-*/
 		protected function image_for (object_name:String, property:String, options:Object = null) :DisplayObject
 		{
 			return helper_for(ImageHelper, options, 'source', object_name, property);
-/*			return (addChild(assigns_for(ImageHelper.create(attributes), 'source', object_name, property)) as DisplayObject);*/
-/*			return (addChild(assigns_for(ImageHelper.create(attributes), 'source', object_name, property)) as DisplayObject);*/
 		}
 
 		protected function label (html:String, options:Object = null) :TextField
@@ -201,7 +197,7 @@ package ras3r
 		// USAGE:
 		// sprite('text_field', { x: 5, y: 22, width: 200, height: 20, autoSize: 'center' });
 		// sprite(TextField, { x: 5, y: 22, width: 200, height: 20, autoSize: 'center' });
-		protected function sprite (name:*, attr:Object = null, styles:Object = null) :*
+/*		protected function sprite (name:*, attr:Object = null, styles:Object = null) :*
 		{
 			// get class from under_score_name
 			var klass:Class = (name is String) ? name_to_class(name) : (name as Class);
@@ -240,15 +236,6 @@ package ras3r
 			// add to display list
 			return addChild(sprite);
 		}
-
-/*		protected function sprite_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :DisplayObject
-		{
-			attributes = options_for(assign_property, object_name, object_property).update(attributes);
-
-			// HACK: juggling two usage methods until all helpers are refactored
-			if (name is DisplayObject) assign_id_for_object(attributes, name);
-			return ((name is DisplayObject) ? name : sprite(name, attributes, styles));
-		}
 */
 		protected function text (html:String, attributes:Object = null) :TextField
 		{
@@ -258,6 +245,9 @@ package ras3r
 
 		protected function text_for (object_name:String, property:String, options:Object = null) :TextField
 		{
+			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
+			return (helper_for(TextFieldHelper, options, 'htmlText', object_name, property) as TextField);
+/*
 			options = options_for('htmlText', object_name, property).update(options);
 			var id:String = options.remove('id');
 			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
@@ -265,12 +255,11 @@ package ras3r
 			var sprite:DisplayObject = TextFieldHelper.create(options);
 			assign_id_for_object({ id: id }, sprite);
 			return (addChild(sprite) as TextField);
-		}
+*/		}
 
-		protected function text_input_for (object_name:String, property:String, options:Object = null) :TextInput
+		public function text_input_for (object_name:String, property:String, options:Object = null) :TextInput
 		{
 			return (helper_for(TextInputHelper, options, 'text', object_name, property) as TextInput);
-/*			return (addChild(assigns_for(TextInputHelper.create(options), 'text', object_name, property)) as TextInput);*/
 		}
 
 		protected function truncate (tf:TextField, suffix:String = '...') :void
@@ -319,12 +308,51 @@ package ras3r
 			}
 		}
 
-		private function assigns_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :*
+/*		private function assigns_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :*
 		{
 			attributes = options_for(assign_property, object_name, object_property).update(attributes);
 			// HACK: juggling two usage methods until all helpers are refactored
 			assign_id_for_object(attributes, name);
 			return name;
+		}
+*/
+		private function bind_property (display_object:*, object_name:String, object_property:String) :void
+		{
+			if (controller && controller.hasOwnProperty('on_' + display_object.name + '_change'))
+			{
+				// after_render will setup display object change handler
+				// all we need to do here is setup model property change handler
+				this[object_name].addEventListener((object_property + '_change'), controller[('on_' + display_object.name + '_change')]);
+			}
+			else if (this[object_name] is IEventDispatcher)
+			{
+				var view:ReactionView = this;
+				var responder:Function = function (e:Event) :void
+				{
+					if (e.target is TextInput)
+					{
+						Logger.info('binding responder: ' + object_name + '.' + object_property + ' = ' + e.target.text);
+						view[object_name][object_property] = e.target.text;
+					}
+					else if (e.target is ComboBox)
+					{
+						Logger.info('binding responder: ' + object_name + '.' + object_property + ' = ' + e.target.selectedItem);
+						view[object_name][object_property] = e.target.selectedItem;
+					}
+					else if (display_object is TextInput)
+					{
+						Logger.info('binding responder: ' + display_object + '.text = ' + view[object_name][object_property]);
+						display_object.text = view[object_name][object_property];
+					}
+					else if (display_object is ComboBox)
+					{
+						Logger.info('binding responder: ' + display_object + '.selectedItem = ' + view[object_name][object_property]);
+						display_object.selectedItem = view[object_name][object_property];
+					}
+				};
+				display_object.addEventListener('change', responder);
+				this[object_name].addEventListener((object_property + '_change'), responder);
+			}
 		}
 
 		// return helper_for(TextInputHelper, options, 'text', object_name, property)
@@ -334,11 +362,12 @@ package ras3r
 			// TODO: replace with databinding
 			options[assign_property] = this[object_name][object_property];
 			this[options.name] = helper.create(options);
+			bind_property(this[options.name], object_name, object_property);
 			return addChild(this[options.name]);
 		}
 
 /*		private function options_for (assign_property:String, object_name:String, object_property:String, options:Object) :Hash*/
-		private function options_for (assign_property:String, object_name:String, object_property:String) :Hash
+/*		private function options_for (assign_property:String, object_name:String, object_property:String) :Hash
 		{
 			// infer default instance id, but allow for manual override
 			var options:Hash = new Hash({ id: (object_name + '_' + object_property) });
@@ -349,7 +378,7 @@ package ras3r
 
 			return options;
 		}
-
+*/
 		private function name_to_class (name:String) :Class
 		{
 			var klass:Class;
@@ -415,71 +444,14 @@ package ras3r
 				}
 			}
 		}
-
-
-		/*****************************************************
-		*
-		*	D E P R E C A T E D    M E T H O D S
-		*
-		*****************************************************/
-/*
-		// label: String. Text label to display on button.
-		// options: Hash. Valid options:
-		//	- action: 	String method name of controller to call when visual element dipatches event.
-		// attr: Hash. Optional. Properties to be applied to button upon creation (w, h, x, y, etc).
-		private function button_to (label:String, options:Object, attr:Object = null) :*
-		{
-			var button:* = button(label, attr);
-			link_to(button, options);
-			return button;
-		}
-
-		// label: String. Text label to display on button.
-		// handler: Function. Function to call when visual element dipatches event.
-		// attr: Hash. Optional. Properties to be applied to button upon creation (w, h, x, y, etc).
-		// event: String. Optional. Event dispatched by visual element to listen for. Default = 'click'
-		//protected function button_to_function (label:String, ...args) :*
-		private function button_to_function (label:String, handler:Function, attr:Object = null, event:String = 'click') :*
-		{
-			var button:* = button(label, attr);
-			link_to_function(button, handler, event);
-			return button;
-		}
-
-		// elem: Object. Visual element for whom the handler is being wired
-		// options: Hash. Valid options:
-		//	- action: 	String method name of controller to call when visual element dipatches event.
-		//	- on:		String. Optional. Event dispatched by visual element to listen for. Default = 'click'
-		private function link_to (elem:Object, options:Object) :void
-		{
-			// default controller name
-			if (! options.controller) options.controller = controller.controller_name();
-
-			var args:Array = [ ];
-
-			// custom event override
-			if (options.on) args.push(options.on);
-			delete options.on;
-
-			// filter chain delegate
-			args.unshift(Delegate.create(controller.redirect_to, options));
-
-			args.unshift(elem);
-			link_to_function.apply(null, args);
-		}
-
-		private function link_to_url (elem:Object, url:String) :void
-		{
-			link_to(elem, { action: 'get_url', url: url });
-		}
-
-		// elem: Object. Visual element for whom the handler is being wired
-		// handler: Function. Function to call when visual element dipatches event.
-		// event: String. Optional. Event dispatched by visual element to listen for. Default = 'click'
-		private function link_to_function (elem:Object, handler:Function, event:String = 'click') :void
-		{
-			elem.addEventListener(event, handler);
-		}
-*/
 	}
+}
+
+
+
+/**
+*	Private ReactionView subclass for failsafe ONLY!
+**/
+dynamic class BaseReactionView extends ras3r.ReactionView
+{
 }
