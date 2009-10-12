@@ -190,53 +190,6 @@ package ras3r
 			return addChild(ReactionView.create(template, assigns));
 		}
 
-		// name: String OR Class. 
-		//		string: The under_score_name of the Sprite to create. Ex: 'text_field'
-		//		class: 	Reference to the class constructor. Ex: LabelButton
-		// attr: Hash. Optional. Properties to be applied to sprite upon creation (w, h, x, y, etc).
-		// USAGE:
-		// sprite('text_field', { x: 5, y: 22, width: 200, height: 20, autoSize: 'center' });
-		// sprite(TextField, { x: 5, y: 22, width: 200, height: 20, autoSize: 'center' });
-/*		protected function sprite (name:*, attr:Object = null, styles:Object = null) :*
-		{
-			// get class from under_score_name
-			var klass:Class = (name is String) ? name_to_class(name) : (name as Class);
-			var sprite:* = new klass();
-
-			// assign id if defined
-			assign_id_for_object(attr, sprite);
-
-			// assign attributes
-			for (var p:String in attr)
-			{
-				try
-				{
-					sprite[p] = attr[p];
-				}
-				catch (exception:*)
-				{
-					Logger.info('ReactionView#sprite attribute assignment exception: ' + exception);
-				}
-			}
-
-			var ui:UIComponent = sprite as UIComponent;
-			if (ui)
-			{
-				// TODO: deprecate seperate styles hash
-				// assign styles
-				for (var s:String in styles)
-				{
-					ui.setStyle(s, styles[s]);
-				}
-
-				// work around sizing bug:
-				// ui.setSize(ui.width, ui.height);
-			}
-
-			// add to display list
-			return addChild(sprite);
-		}
-*/
 		protected function text (html:String, attributes:Object = null) :TextField
 		{
 			attributes = new Hash(attributes).update({ multiline: true, wordWrap: true });
@@ -247,15 +200,7 @@ package ras3r
 		{
 			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
 			return (helper_for(TextFieldHelper, options, 'htmlText', object_name, property) as TextField);
-/*
-			options = options_for('htmlText', object_name, property).update(options);
-			var id:String = options.remove('id');
-			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
-
-			var sprite:DisplayObject = TextFieldHelper.create(options);
-			assign_id_for_object({ id: id }, sprite);
-			return (addChild(sprite) as TextField);
-*/		}
+		}
 
 		public function text_input_for (object_name:String, property:String, options:Object = null) :TextInput
 		{
@@ -308,14 +253,6 @@ package ras3r
 			}
 		}
 
-/*		private function assigns_for (name:*, assign_property:String, object_name:String, object_property:String, attributes:Object = null, styles:Object = null) :*
-		{
-			attributes = options_for(assign_property, object_name, object_property).update(attributes);
-			// HACK: juggling two usage methods until all helpers are refactored
-			assign_id_for_object(attributes, name);
-			return name;
-		}
-*/
 		private function bind_property (display_object:*, object_name:String, object_property:String) :void
 		{
 			if (controller && controller.hasOwnProperty('on_' + display_object.name + '_change'))
@@ -366,20 +303,7 @@ package ras3r
 			return addChild(this[options.name]);
 		}
 
-/*		private function options_for (assign_property:String, object_name:String, object_property:String, options:Object) :Hash*/
-/*		private function options_for (assign_property:String, object_name:String, object_property:String) :Hash
-		{
-			// infer default instance id, but allow for manual override
-			var options:Hash = new Hash({ id: (object_name + '_' + object_property) });
-
-			// assignment via attributes hash
-			// TODO: replace with databinding
-			options[assign_property] = this[object_name][object_property];
-
-			return options;
-		}
-*/
-		private function name_to_class (name:String) :Class
+/*		private function name_to_class (name:String) :Class
 		{
 			var klass:Class;
 			var className:String = Inflector.camelize(name);
@@ -392,22 +316,13 @@ package ras3r
 			{
 				// ok, that didn't work
 				klass = getDefinitionByName('flash.text.' + className) as Class
-/*
-				try
-				{
-				}
-				catch (e:Error)
-				{
-					// ok, that didn't work
-				}
-*/
 			}
 			finally
 			{
 				return klass;
 			}
 		}
-
+*/
 
 		// >>> EVENT HANDLERS
 		private function after_added_to_stage (e:Event) :void
