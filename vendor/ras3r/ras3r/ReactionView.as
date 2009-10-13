@@ -145,11 +145,11 @@ package ras3r
 */
 		protected function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null) :ComboBox
 		{
+			// cast choices to DataProvider
 			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
+			// update atrributes with choices 
 			attributes = new Hash(attributes).update({ dataProvider: dataProvider });
-
 			return (helper_for(ComboBoxHelper, attributes, 'selectedItem', object_name, property) as ComboBox);
-//			return (addChild(assigns_for(ComboBoxHelper.create(attributes), 'selectedItem', object_name, property)) as ComboBox);
 		}
 
 		protected function hbox (options:Object, ...args) :DisplayObjectContainer
@@ -276,7 +276,7 @@ package ras3r
 						Logger.info('binding responder: ' + object_name + '.' + object_property + ' = ' + e.target.selectedItem);
 						view[object_name][object_property] = e.target.selectedItem;
 					}
-					else if (display_object is TextInput)
+					else if (display_object is TextInputHelper)
 					{
 						Logger.info('binding responder: ' + display_object + '.text = ' + view[object_name][object_property]);
 						display_object.text = view[object_name][object_property];
@@ -287,7 +287,7 @@ package ras3r
 						display_object.selectedItem = view[object_name][object_property];
 					}
 				};
-				display_object.addEventListener('change', responder);
+				((display_object is TextInputHelper) ? display_object.display_object : display_object).addEventListener('change', responder);
 				this[object_name].addEventListener((object_property + '_change'), responder);
 			}
 		}
@@ -300,44 +300,33 @@ package ras3r
 			options[assign_property] = this[object_name][object_property];
 			this[options.name] = helper.create(options);
 			bind_property(this[options.name], object_name, object_property);
-			return addChild(this[options.name]);
+			return addChild((this[options.name] is TextInputHelper) ? this[options.name].display_object : this[options.name]);
 		}
 
-/*		private function name_to_class (name:String) :Class
-		{
-			var klass:Class;
-			var className:String = Inflector.camelize(name);
-
-			try
-			{
-				klass = getDefinitionByName('fl.components.' + className) as Class
-			}
-			catch (e:Error)
-			{
-				// ok, that didn't work
-				klass = getDefinitionByName('flash.text.' + className) as Class
-			}
-			finally
-			{
-				return klass;
-			}
-		}
-*/
 
 		// >>> EVENT HANDLERS
 		private function after_added_to_stage (e:Event) :void
 		{
-			removeEventListener('addedToStage', after_added_to_stage);
-			//Logger.info(this + ' addedToStage pre build');
-			addEventListener('render', after_render);
-			build();
-			//Logger.info(this + ' addedToStage post build');
+			try
+			{
+				removeEventListener('addedToStage', after_added_to_stage);
+				addEventListener('render', after_render);
+				Logger.info(this + ' addedToStage pre build');
+				build();
+				Logger.info(this + ' addedToStage post build');
+			}
+			catch (exception:*)
+			{
+				Logger.info('RV#build debug: ' + exception);
+				removeEventListener('addedToStage', after_added_to_stage);
+				removeEventListener('render', after_render);
+			}
 		}
 
 		private function after_render (e:Event) :void
 		{
 			removeEventListener('render', after_render);
-			//Logger.info(this + ' render');
+			Logger.info(this + ' render');
 
 			// for each public controller method named "on_some_element_event",
 			// add event listener some_element

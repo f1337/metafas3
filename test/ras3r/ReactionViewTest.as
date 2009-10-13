@@ -5,6 +5,7 @@ package ras3r
 	import flash.events.*;
 	import fl.controls.*;
 	import ras3r.*;
+	import ras3r.reaction_view.helpers.*;
 	import ras3r.utils.*;
 
 	public class ReactionViewTest extends Spec
@@ -44,7 +45,7 @@ package ras3r
 
 						it ('creates a TextInput with id "order_last_name"', function () :void
 						{
-							so(view['order_last_name']).should.be.a.kind_of(TextInput);
+							so(view['order_last_name']).should.be.a.kind_of(TextInputHelper);
 						});
 
 						it ('assigns the textinput a name of "order_last_name"', function () :void
@@ -67,7 +68,7 @@ package ras3r
 						it ('updates order.last_name when textinput.text changes', function () :void
 						{
 							view['order_last_name'].text = 'Roberts';
-							view['order_last_name'].dispatchEvent(new Event('change'));
+							view['order_last_name'].display_object.dispatchEvent(new Event('change'));
 							so(view['order']['last_name']).should.equal(view['order_last_name'].text);
 						});
 					});

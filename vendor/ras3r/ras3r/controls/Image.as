@@ -55,10 +55,12 @@ package ras3r.controls
 			}
 			catch (e:Object)
 			{
-				Logger.debug('Image cannot manipulate loaded bitmap: ' + e);
+				Logger.info('Image cannot manipulate loaded bitmap: ' + e);
 			}
-
-			super.handleInit(event);
+			finally
+			{
+				super.handleInit(event);
+			}
 		}
 
 

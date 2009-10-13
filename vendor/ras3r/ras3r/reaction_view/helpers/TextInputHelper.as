@@ -3,18 +3,19 @@ package ras3r.reaction_view.helpers
 	import fl.controls.*;
 	import flash.text.*;
 	import ras3r.*;
+	import ras3r.utils.*;
 
-	public class TextInputHelper
+	dynamic public class TextInputHelper extends ObjectProxy
 	{
 		static public var default_options:Hash = new Hash;
 
-		static public function create (options:Object = null) :TextInput
+		static public function create (options:Object = null) :TextInputHelper
 		{
 			options = default_options.merge(options);
-			var text_input:TextInput = new TextInput();
+			var text_input:TextInputHelper = new TextInputHelper();
 
 			// set "upSkin" style from "background" option
-			if (options.background) text_input.setStyle('upSkin', options.remove('background'));
+/*			if (options.background) text_input.setStyle('upSkin', options.remove('background'));*/
 
 			// apply TextFormat from options.format hash
 			apply_text_format_to(text_input, options);
@@ -28,7 +29,7 @@ package ras3r.reaction_view.helpers
 			return text_input;
 		}
 
-		static public function apply_text_format_to (text_input:TextInput, options:Object) :void
+		static public function apply_text_format_to (text_input:*, options:Object) :void
 		{
 			if (options.format)
 			{
@@ -50,6 +51,20 @@ package ras3r.reaction_view.helpers
 			{
 				text_input.setStyle('embedFonts', false);
 			}
+		}
+
+		// >>> PUBLIC PROPERTIES
+		// set "upSkin" style from "background" option
+		public function set background (skin:Class) :void
+		{
+			display_object.setStyle('upSkin', skin);
+		}
+
+		public var display_object:TextInput = new TextInput();
+
+		public function TextInputHelper ()
+		{
+			super(display_object);
 		}
 	}
 }
