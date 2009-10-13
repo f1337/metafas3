@@ -5,28 +5,13 @@ package ras3r.reaction_view.helpers
 	import ras3r.*;
 	import ras3r.utils.*;
 
-	dynamic public class TextInputHelper extends ObjectProxy
+	dynamic public class TextInputHelper extends Helper
 	{
 		static public var default_options:Hash = new Hash;
 
 		static public function create (options:Object = null) :TextInputHelper
 		{
-			options = default_options.merge(options);
-			var text_input:TextInputHelper = new TextInputHelper();
-
-			// set "upSkin" style from "background" option
-/*			if (options.background) text_input.setStyle('upSkin', options.remove('background'));*/
-
-			// apply TextFormat from options.format hash
-			apply_text_format_to(text_input, options);
-
-			// prevent text=null
-			if (options.hasOwnProperty('text')) options.text ||= '';
-
-			// assign TextInput properties from options hash
-			options.apply(text_input);
-
-			return text_input;
+			return (Helper.create(TextInputHelper, options) as TextInputHelper);
 		}
 
 		static public function apply_text_format_to (text_input:*, options:Object) :void
@@ -62,6 +47,20 @@ package ras3r.reaction_view.helpers
 
 		public var display_object:TextInput = new TextInput();
 
+		// prevent text=null
+		public function get text () :String
+		{
+			return display_object.text;
+		}
+
+		public function set text (t:String) :void
+		{
+			t ||= '';
+			display_object.text = t;
+		}
+
+
+		// >>> PUBLIC METHODS
 		public function TextInputHelper ()
 		{
 			super(display_object);
