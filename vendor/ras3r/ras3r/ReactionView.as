@@ -190,6 +190,15 @@ package ras3r
 			return addChild(ReactionView.create(template, assigns));
 		}
 
+		public function radio_buttons_for (object_name:String, property:String, choices:*, options:Object = null) :DisplayObject
+		{
+			// cast choices to DataProvider
+			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
+			// update options with choices 
+			options = new Hash(options).update({ dataProvider: dataProvider });
+			return (helper_for(RadioButtonGroupHelper, options, 'selectedData', object_name, property) as DisplayObject);
+		}
+
 		protected function text (html:String, attributes:Object = null) :TextField
 		{
 			attributes = new Hash(attributes).update({ multiline: true, wordWrap: true });
@@ -287,7 +296,7 @@ package ras3r
 						display_object.selectedItem = view[object_name][object_property];
 					}
 				};
-				((display_object is TextInputHelper) ? display_object.display_object : display_object).addEventListener('change', responder);
+				((display_object is Helper) ? display_object.display_object : display_object).addEventListener('change', responder);
 				this[object_name].addEventListener((object_property + '_change'), responder);
 			}
 		}
@@ -295,12 +304,13 @@ package ras3r
 		// return helper_for(TextInputHelper, options, 'text', object_name, property)
 		private function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject
 		{
-			options = new Hash({ name: (object_name + '_' + object_property) }).update(options);
+			var name:String = (object_name + '_' + object_property);
+			options = new Hash({ name: name }).update(options);
 			// TODO: replace with databinding
 			options[assign_property] = this[object_name][object_property];
-			this[options.name] = helper.create(options);
-			bind_property(this[options.name], object_name, object_property);
-			return addChild((this[options.name] is TextInputHelper) ? this[options.name].display_object : this[options.name]);
+			this[name] = helper.create(options);
+			bind_property(this[name], object_name, object_property);
+			return addChild((this[name] is Helper) ? this[name].display_object : this[name]);
 		}
 
 
