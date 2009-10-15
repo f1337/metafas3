@@ -3,7 +3,6 @@ package ras3r.reaction_view.helpers
 	import fl.controls.*;
 	import flash.text.*;
 	import ras3r.*;
-	import ras3r.utils.*;
 
 	dynamic public class TextInputHelper extends Helper
 	{

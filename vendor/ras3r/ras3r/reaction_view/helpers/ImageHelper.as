@@ -8,7 +8,7 @@ package ras3r.reaction_view.helpers
 	import ras3r.controls.*;
 	import ras3r.utils.*;
 
-	public class ImageHelper extends Loader
+	public class ImageHelper extends Helper
 	{
 		static public var default_options:Hash = new Hash;
 
@@ -59,7 +59,7 @@ package ras3r.reaction_view.helpers
 		/**
 		*	applies LoaderContext to allow bitmap smoothing
 		**/
-		override public function load (request:URLRequest, context:LoaderContext = null) :void
+		public function load (request:URLRequest, context:LoaderContext = null) :void
 		{
 			if (! context) context = new LoaderContext(true);
 			super.load(request, context);

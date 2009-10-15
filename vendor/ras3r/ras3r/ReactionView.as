@@ -264,6 +264,7 @@ package ras3r
 
 		private function bind_property (display_object:*, object_name:String, object_property:String) :void
 		{
+			var listener:* = ((display_object is Helper) ? display_object.display_object : display_object);
 			if (controller && controller.hasOwnProperty('on_' + display_object.name + '_change'))
 			{
 				// after_render will setup display object change handler
@@ -277,26 +278,26 @@ package ras3r
 				{
 					if (e.target is TextInput)
 					{
-						Logger.info('binding responder: ' + object_name + '.' + object_property + ' = ' + e.target.text);
+/*						Logger.info('binding responder: ' + object_name + '.' + object_property + ' = ' + e.target.text);*/
 						view[object_name][object_property] = e.target.text;
 					}
 					else if (e.target is ComboBox)
 					{
-						Logger.info('binding responder: ' + object_name + '.' + object_property + ' = ' + e.target.selectedItem);
+/*						Logger.info('binding responder: ' + object_name + '.' + object_property + ' = ' + e.target.selectedItem);*/
 						view[object_name][object_property] = e.target.selectedItem;
 					}
 					else if (display_object is TextInputHelper)
 					{
-						Logger.info('binding responder: ' + display_object + '.text = ' + view[object_name][object_property]);
+/*						Logger.info('binding responder: ' + display_object + '.text = ' + view[object_name][object_property]);*/
 						display_object.text = view[object_name][object_property];
 					}
-					else if (display_object is ComboBox)
+					else if (display_object is ComboBoxHelper)
 					{
-						Logger.info('binding responder: ' + display_object + '.selectedItem = ' + view[object_name][object_property]);
+/*						Logger.info('binding responder: ' + display_object + '.selectedItem = ' + view[object_name][object_property]);*/
 						display_object.selectedItem = view[object_name][object_property];
 					}
 				};
-				((display_object is Helper) ? display_object.display_object : display_object).addEventListener('change', responder);
+				listener.addEventListener('change', responder);
 				this[object_name].addEventListener((object_property + '_change'), responder);
 			}
 		}
@@ -321,13 +322,13 @@ package ras3r
 			{
 				removeEventListener('addedToStage', after_added_to_stage);
 				addEventListener('render', after_render);
-				Logger.info(this + ' addedToStage pre build');
+/*				Logger.info(this + ' addedToStage pre build');*/
 				build();
-				Logger.info(this + ' addedToStage post build');
+/*				Logger.info(this + ' addedToStage post build');*/
 			}
 			catch (exception:*)
 			{
-				Logger.info('RV#build debug: ' + exception);
+/*				Logger.info('RV#build debug: ' + exception);*/
 				removeEventListener('addedToStage', after_added_to_stage);
 				removeEventListener('render', after_render);
 			}
@@ -336,7 +337,7 @@ package ras3r
 		private function after_render (e:Event) :void
 		{
 			removeEventListener('render', after_render);
-			Logger.info(this + ' render');
+/*			Logger.info(this + ' render');*/
 
 			// for each public controller method named "on_some_element_event",
 			// add event listener some_element
@@ -354,7 +355,7 @@ package ras3r
 					parts.shift(); // drop on_
 					event = parts.pop(); // grab _event
 					element = parts.join('_');
-					if (this.hasOwnProperty(element)) this[element].addEventListener(event, controller[method]);
+					if (this.hasOwnProperty(element)) ((this[element] is Helper) ? this[element].display_object : this[element]).addEventListener(event, controller[method]);
 				}
 			}
 		}
