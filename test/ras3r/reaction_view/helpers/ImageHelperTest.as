@@ -1,9 +1,9 @@
 package ras3r.reaction_view.helpers
 {
 	import as3spec.*;
+	import fl.containers.*;
 	import flash.display.*;
 	import ras3r.*;
-	import ras3r.controls.*;
 
 	public class ImageHelperTest extends Spec
 	{
@@ -20,7 +20,7 @@ package ras3r.reaction_view.helpers
 
 */				it ('provides .create() which returns a new Image', function () :void
 				{
-					so(ImageHelper.create()).should.be.a.kind_of(Image);
+					so(ImageHelper.create()).should.be.a.kind_of(UILoader);
 				});
 
 				it ('provides .default_options', function () :void

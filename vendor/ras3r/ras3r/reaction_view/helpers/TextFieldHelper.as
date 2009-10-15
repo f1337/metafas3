@@ -2,7 +2,6 @@ package ras3r.reaction_view.helpers
 {
 	import flash.text.*;
 	import ras3r.*;
-	import ras3r.controls.*;
 
 	public class TextFieldHelper
 	{

@@ -3,7 +3,6 @@ package ras3r
 	import com.gigya.*;
 
 	import ras3r.*;
-	import ras3r.controls.*;
 	import ras3r.reaction_view.helpers.*;
 	import ras3r.utils.*;
 

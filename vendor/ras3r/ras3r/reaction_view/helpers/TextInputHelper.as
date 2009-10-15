@@ -2,7 +2,10 @@ package ras3r.reaction_view.helpers
 {
 	import fl.controls.*;
 	import flash.text.*;
+	import flash.utils.*;
 	import ras3r.*;
+
+	use namespace flash_proxy;
 
 	dynamic public class TextInputHelper extends Helper
 	{
@@ -47,12 +50,12 @@ package ras3r.reaction_view.helpers
 		public function set text (t:String) :void
 		{
 			t ||= '';
-			display_object.text = t;
+			setProperty('text', t);
 		}
 
 		public function get text () :String
 		{
-			return display_object.text;
+			return getProperty('text');
 		}
 
 
