@@ -2,6 +2,7 @@ package ras3r.reaction_view.helpers
 {
 	import as3spec.*;
 	import fl.controls.*;
+	import ras3r.*;
 
 	public class ComboBoxHelperTest extends Spec
 	{
@@ -11,7 +12,7 @@ package ras3r.reaction_view.helpers
 			{
 				it ('provides .create() which returns a new ComboBox', function () :void
 				{
-					so(ComboBoxHelper.create()).should.be.a.kind_of(ComboBox);
+					so(ComboBoxHelper.create()).should.be.a.kind_of(ComboBoxHelper);
 				});
 
 				it ('provides .default_options', function () :void
@@ -22,14 +23,17 @@ package ras3r.reaction_view.helpers
 				it ('applies options.format to its textField style', function () :void
 				{
 					var options:Object = { format: { size: 22 } };
-					var cb:ComboBox = ComboBoxHelper.create(options);
+					var cb:ComboBoxHelper = ComboBoxHelper.create(options);
+					Logger.info(cb.textField);
+					Logger.info(cb.textField.getStyle('textFormat'));
+					Logger.info(cb.textField.getStyle('textFormat').size);
 					so(cb.textField.getStyle('textFormat').size).should.equal(options.format.size);
 				});
 
 				it ('applies options.format to its dropdown style', function () :void
 				{
 					var options:Object = { format: { size: 22 } };
-					var cb:ComboBox = ComboBoxHelper.create(options);
+					var cb:ComboBoxHelper = ComboBoxHelper.create(options);
 					so(cb.dropdown.getRendererStyle('textFormat').size).should.equal(options.format.size);
 				});
 
@@ -40,7 +44,7 @@ package ras3r.reaction_view.helpers
 					});
 
 					var options:Object = { editable: false };
-					var cb:ComboBox = ComboBoxHelper.create(options);
+					var cb:ComboBoxHelper = ComboBoxHelper.create(options);
 
 					it ('should not overwrite default options', function () :void
 					{
