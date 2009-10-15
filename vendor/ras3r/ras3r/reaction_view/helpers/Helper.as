@@ -7,7 +7,14 @@ package ras3r.reaction_view.helpers
 
 	dynamic public class Helper extends ObjectProxy
 	{
-		static public function create (klass:Class, options:Object = null) :Helper
+		// >>> STATIC METHODS
+		/**
+		*	Helper.create:
+		*		returns a new instance of Helper klass,
+		*		with options hash merged into default_options hash
+		*		and applied as property assignments to the new instance
+		**/
+		static protected function create (klass:Class, options:Object = null) :Helper
 		{
 			options = klass.default_options.merge(options);
 			var helper:Helper = new klass();
@@ -22,16 +29,23 @@ package ras3r.reaction_view.helpers
 			return helper;
 		}
 
-		public function Helper (display_object:Object = null)
-		{
-			super(display_object);
-		}
 
+		// >>> PUBLIC PROPERTIES
+		/**
+		*	helper.embedFonts = true
+		*		applies value to "embedFonts" style on display_object
+		*		write-only
+		**/
 		public function set embedFonts (flag:Boolean) :void
 		{
 			this.setStyle('embedFonts', flag);
 		}
 
+		/**
+		*	helper.format = textFormat
+		*		applies textFormat to "textFormat" style on display_object
+		*		write-only
+		**/
 		public function set format (fmt:Object) :void
 		{
 			// use Hash object for hash.apply
@@ -43,6 +57,16 @@ package ras3r.reaction_view.helpers
 			fmt.apply(tf);
 			// apply new textFormat
 			this.setStyle('textFormat', tf);
+		}
+
+
+		// >>> PUBLIC METHODS
+		/**
+		*	Constructor. Proxies a display_object.
+		**/
+		public function Helper (display_object:Object = null)
+		{
+			super(display_object);
 		}
 	}
 }

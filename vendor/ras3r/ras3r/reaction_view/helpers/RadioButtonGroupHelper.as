@@ -26,10 +26,7 @@ package ras3r.reaction_view.helpers
 				var children:Array = [];
 				for (var i:uint = 0; i < dp.length; i++)
 				{
-/*					helper.display_object.addChild((Helper.create(RadioButtonHelper, options.merge({ 
-						label:  dp.getItemAt(i).label
-					})) as RadioButtonHelper).display_object);
-*/					children.push((Helper.create(RadioButtonHelper, radio_options.update({ 
+					children.push((Helper.create(RadioButtonHelper, radio_options.update({ 
 						label:  dp.getItemAt(i).label
 					})) as RadioButtonHelper).display_object);
 				}
