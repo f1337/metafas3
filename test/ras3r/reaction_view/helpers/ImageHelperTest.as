@@ -11,14 +11,14 @@ package ras3r.reaction_view.helpers
 		{
 			describe ('a new ImageHelper', function () :void
 			{
-/*				const imageHelper:ImageHelper = new ImageHelper;
+				const imageHelper:ImageHelper = new ImageHelper;
 
 				it ('should be a ImageHelper', function () :void
 				{
 					so(imageHelper).should.be.a.kind_of(ImageHelper);
 				});
 
-*/				it ('provides .create() which returns a new Image', function () :void
+				it ('provides .create() which returns a new Image', function () :void
 				{
 					so(ImageHelper.create()).should.be.a.kind_of(UILoader);
 				});
@@ -27,14 +27,14 @@ package ras3r.reaction_view.helpers
 				{
 					so(ImageHelper.default_options).should.be.a.kind_of(Object);
 				});
-/*
+
 				it ('gets and sets source', function () :void
 				{
 					var source:String = 'http://www.example.com';
 					imageHelper.source = source;
-					so(imageHelper.source.url).should.equal(source);
+					so(imageHelper.source).should.equal(source);
 				});
-
+/*
 				it ('handles init events', function () :void
 				{
 					var loader:ImageHelper = ImageHelper.create();

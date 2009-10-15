@@ -18,9 +18,7 @@ package ras3r.reaction_view.helpers
 		*		a Hash of properties to be used as default assigns
 		*		to new instances of ImageHelper
 		**/
-		static public var default_options:Hash = new Hash({
-			maintainAspectRatio: false
-		});
+		static public var default_options:Hash = new Hash;
 
 
 		/**
@@ -145,6 +143,13 @@ import fl.containers.*;
 
 class MyImage extends fl.containers.UILoader
 {
+	public function MyImage ()
+	{
+		super();
+
+		maintainAspectRatio = false;
+	}
+
 	override public function load (request:URLRequest = null, context:LoaderContext = null) :void
 	{
 		if (request && (! context))
