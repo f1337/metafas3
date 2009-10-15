@@ -27,10 +27,10 @@ package ras3r.reaction_view.helpers
 		*		with options hash merged into default_options hash
 		*		and applied as property assignments to the new instance
 		**/
-		static public function create (options:Object = null) :UILoader
+		static public function create (options:Object = null) :ImageHelper
 		{
 			options = default_options.merge(options);
-			var loader:UILoader = (new ImageHelper().display_object);
+			var loader:ImageHelper = new ImageHelper();
 
 /*			// catch IO errors (throws runtime exception)
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, after_io_error);

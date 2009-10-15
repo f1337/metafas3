@@ -20,7 +20,7 @@ package ras3r.reaction_view.helpers
 
 				it ('provides .create() which returns a new Image', function () :void
 				{
-					so(ImageHelper.create()).should.be.a.kind_of(UILoader);
+					so(ImageHelper.create()).should.be.a.kind_of(ImageHelper);
 				});
 
 				it ('provides .default_options', function () :void
