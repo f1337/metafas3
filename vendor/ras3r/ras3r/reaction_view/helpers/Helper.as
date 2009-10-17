@@ -23,7 +23,7 @@ package ras3r.reaction_view.helpers
 			// if so, set default embedFonts = true
 			options.embedFonts = Boolean(options.format && options.format.font && options.embedFonts !== false);
 
-			// assign TextInput properties from options hash
+			// assign properties from options hash
 			options.apply(helper);
 
 			return helper;

@@ -153,7 +153,16 @@ package ras3r
 
 		protected function hbox (options:Object, ...args) :DisplayObjectContainer
 		{
-			return (addChild(BoxHelper.hbox(options, args)) as DisplayObjectContainer);
+			var box:DisplayObjectContainer = (addChild(BoxHelper.hbox(options, args)) as DisplayObjectContainer);
+			if (options.id) this[options.id] = box;
+			return box;
+		}
+
+		protected function image_button_for (object_name:String, property:String, options:Object = null) :DisplayObject
+		{
+			// inject buttonMode: true into options
+			options = new Hash(options).update({ buttonMode: true });
+			return helper_for(ImageHelper, options, 'source', object_name, property);
 		}
 
 		protected function image_for (object_name:String, property:String, options:Object = null) :DisplayObject
@@ -240,7 +249,9 @@ package ras3r
 
 		protected function vbox (options:Object, ...args) :DisplayObjectContainer
 		{
-			return (addChild(BoxHelper.vbox(options, args)) as DisplayObjectContainer);
+			var box:DisplayObjectContainer = (addChild(BoxHelper.vbox(options, args)) as DisplayObjectContainer);
+			if (options.id) this[options.id] = box;
+			return box;
 		}
 
 		// USAGE: wildfire(1234567, { height: 260, width: 340 });

@@ -24,10 +24,10 @@ package ras3r
 			for (var p:String in o)
 			{
 				log(pad + ' ' + p + ': ' + o[p], 'dump');
-				if ((typeof o[p]) == 'object')
+/*				if ((typeof o[p]) == 'object')
 				{
-					dump(o[p], (depth + 1));
-				}
+*/					dump(o[p], (depth + 1));
+/*				}*/
 			}
 		}
 

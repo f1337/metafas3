@@ -13,31 +13,39 @@ package ras3r.reaction_view.helpers
 
 		static public function create (options:Object = null) :RadioButtonGroupHelper
 		{
-			// create group
-			options = new Hash(options);
-			var helper:RadioButtonGroupHelper = new RadioButtonGroupHelper(options.remove('name'))
-			var radio_options:Hash = new Hash({ group: helper.group });
-			helper.selectedData = options.remove('selectedData');
+			return (new RadioButtonGroupHelper(options));
+		}
 
+
+		// >>> PRIVATE PROPERTIES
+		private var children:Array;
+		private var options:Hash = new Hash;
+
+
+		// >>> PUBLIC PROPERTIES
+		public function set dataProvider (dp:DataProvider) :void
+		{
 			// create radio buttons
-			var dp:DataProvider = options.remove('dataProvider');
-			if (dp)
+			if (dp && dp.length)
 			{
-				var children:Array = [];
+				// remove any existing radio buttons from stage:
+				if (display_object.numChildren) display_object.removeChildAt(0);
+
+				var radio_options:Hash = new Hash({ group: group });
+
+				children = new Array();
+
 				for (var i:uint = 0; i < dp.length; i++)
 				{
 					children.push((Helper.create(RadioButtonHelper, radio_options.update({ 
 						label:  dp.getItemAt(i).label
-					})) as RadioButtonHelper).display_object);
+					})) as RadioButtonHelper));
 				}
-				helper.display_object.addChild(BoxHelper.vbox(options, children));
+				display_object.addChild(BoxHelper.vbox(options, children));
 			}
 
-			return helper;
 		}
 
-
-		// >>> PUBLIC PROPERTIES
 		public var display_object:Sprite = new Sprite();
 		public var group:RadioButtonGroup;
 
@@ -53,15 +61,19 @@ package ras3r.reaction_view.helpers
 
 
 		// >>> PUBLIC METHODS
-		public function RadioButtonGroupHelper (name:String)
+		public function RadioButtonGroupHelper (opt:Object = null)
 		{
 			super(display_object);
-			group = new RadioButtonGroup(name);
+			options.update(opt);
+			group = new RadioButtonGroup(options.remove('name'));
+			selectedData = options.remove('selectedData');
+			dataProvider = options.remove('dataProvider');
 		}
 
-		public function getRadioButtonAt (i:uint) :RadioButton
+		public function getRadioButtonAt (i:uint) :RadioButtonHelper
 		{
-			return group.getRadioButtonAt(i);
+			return (children[i] as RadioButtonHelper);
+/*			return group.getRadioButtonAt(i);*/
 		}
 	}
 }

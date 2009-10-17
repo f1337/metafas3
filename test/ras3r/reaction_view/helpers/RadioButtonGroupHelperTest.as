@@ -27,9 +27,9 @@ package ras3r.reaction_view.helpers
 				{
 					const order:ObjectProxy = (new ObjectProxy());
 					order.shipping_methods = new DataProvider([
-						{ label: 'Standard Delivery', 			data: 'S' },
-						{ label: 'Next Business Day Express', 	data: 'G' },
-						{ label: '2nd Business Day Express', 	data: 'F' }
+						{ data: 'S', label: 'Standard Delivery' },
+						{ data: 'G', label: 'Next Business Day Express' },
+						{ data: 'F', label: '2nd Business Day Express' }
 					]);
 					const view:* = ReactionView.create('', { order: order });
 					view.radio_buttons_for("order", "shipping_method", order.shipping_methods);
@@ -44,7 +44,7 @@ package ras3r.reaction_view.helpers
 					{
 						for (var i:uint = 0; i < order.shipping_methods.length; i++)
 						{
-							so(view['order_shipping_method'].getRadioButtonAt(i)).should.be.a.kind_of(RadioButton);
+							so(view['order_shipping_method'].getRadioButtonAt(i)).should.be.a.kind_of(RadioButtonHelper);
 							so(view['order_shipping_method'].getRadioButtonAt(i).label).should.match(/Standard|Express/);
 						}
 					});

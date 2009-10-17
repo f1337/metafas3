@@ -61,8 +61,8 @@ package ras3r.reaction_view.helpers
 			children = _children;
 			for each (var child:* in children)
 			{
-				child.addEventListener('render', after_render);
-				container.addChild(child);
+				((child is Helper) ? child.display_object : child).addEventListener('render', after_render);
+				container.addChild((child is Helper) ? child.display_object : child);
 			}
 		}
 
@@ -81,7 +81,10 @@ package ras3r.reaction_view.helpers
 				child[axis] = pos;
 
 				// if box has explicit width, apply to children
-				if (width) child.width = width;
+				if (width) 
+				{
+					child.width = width;
+				}
 
 				// update position
 				pos += child[size] + padding;

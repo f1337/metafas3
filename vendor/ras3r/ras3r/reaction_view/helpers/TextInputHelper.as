@@ -45,6 +45,14 @@ package ras3r.reaction_view.helpers
 		public var display_object:TextInput = new TextInput();
 
 		/**
+		*	textInputHelper.padding: applied to "textPadding" style of TextInput
+		**/
+		public function set padding (padding:Number) :void
+		{
+			display_object.setStyle('textPadding', padding);
+		}
+
+		/**
 		*	prevent textInputHelper.text from being set to null
 		**/
 		public function set text (t:String) :void

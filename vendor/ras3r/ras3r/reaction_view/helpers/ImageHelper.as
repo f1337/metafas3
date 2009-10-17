@@ -119,7 +119,7 @@ package ras3r.reaction_view.helpers
 			try
 			{
 				var iBitmap:Bitmap = e.target.content as Bitmap;
-				iBitmap.smoothing = true;
+				if (iBitmap) iBitmap.smoothing = true;
 			}
 			catch (e:Object)
 			{
