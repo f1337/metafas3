@@ -142,6 +142,12 @@ package ras3r
 			return sprite(klass, attr, styles);
 		}
 */
+
+/*		public function check_box_for (object_name:String, property:String, options:Object = null) :CheckBox
+		{
+			return (helper_for(CheckBoxHelper, options, 'value', object_name, property) as CheckBox);
+		}
+*/
 		protected function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null) :ComboBox
 		{
 			// cast choices to DataProvider
@@ -272,14 +278,13 @@ package ras3r
 			}
 		}
 
-		private function bind_property (display_object:*, object_name:String, object_property:String) :void
+		private function bind_property (helper:Helper, object_name:String, object_property:String) :void
 		{
-			var listener:* = ((display_object is Helper) ? display_object.display_object : display_object);
-			if (controller && controller.hasOwnProperty('on_' + display_object.name + '_change'))
+			if (controller && controller.hasOwnProperty('on_' + helper.name + '_change'))
 			{
 				// after_render will setup display object change handler
 				// all we need to do here is setup model property change handler
-				this[object_name].addEventListener((object_property + '_change'), controller[('on_' + display_object.name + '_change')]);
+				this[object_name].addEventListener((object_property + '_change'), controller[('on_' + helper.name + '_change')]);
 			}
 			else if (this[object_name] is IEventDispatcher)
 			{
@@ -296,18 +301,18 @@ package ras3r
 /*						Logger.info('binding responder: ' + object_name + '.' + object_property + ' = ' + e.target.selectedItem);*/
 						view[object_name][object_property] = e.target.selectedItem;
 					}
-					else if (display_object is TextInputHelper)
+					else if (helper is TextInputHelper)
 					{
-/*						Logger.info('binding responder: ' + display_object + '.text = ' + view[object_name][object_property]);*/
-						display_object.text = view[object_name][object_property];
+/*						Logger.info('binding responder: ' + helper + '.text = ' + view[object_name][object_property]);*/
+						helper.text = view[object_name][object_property];
 					}
-					else if (display_object is ComboBoxHelper)
+					else if (helper is ComboBoxHelper)
 					{
-/*						Logger.info('binding responder: ' + display_object + '.selectedItem = ' + view[object_name][object_property]);*/
-						display_object.selectedItem = view[object_name][object_property];
+/*						Logger.info('binding responder: ' + helper + '.selectedItem = ' + view[object_name][object_property]);*/
+						helper.selectedItem = view[object_name][object_property];
 					}
 				};
-				listener.addEventListener('change', responder);
+				helper.display_object.addEventListener('change', responder);
 				this[object_name].addEventListener((object_property + '_change'), responder);
 			}
 		}
@@ -321,7 +326,8 @@ package ras3r
 			options[assign_property] = this[object_name][object_property];
 			this[name] = helper.create(options);
 			bind_property(this[name], object_name, object_property);
-			return addChild((this[name] is Helper) ? this[name].display_object : this[name]);
+			return addChild(this[name].display_object);
+/*			return addChild((this[name] is Helper) ? this[name].display_object : this[name]);*/
 		}
 
 
