@@ -11,6 +11,7 @@ package
 	import com.gigya.WildfireTest;
 	import ras3r.HashTest;
 	import ras3r.reaction_view.helpers.BoxHelperTest;
+	import ras3r.reaction_view.helpers.CheckBoxHelperTest;
 	import ras3r.reaction_view.helpers.ComboBoxHelperTest;
 	import ras3r.reaction_view.helpers.HelperTest;
 	import ras3r.reaction_view.helpers.ImageHelperTest;
@@ -30,6 +31,7 @@ package
 			add(com.gigya.WildfireTest);
 			add(ras3r.HashTest);
 			add(ras3r.reaction_view.helpers.BoxHelperTest);
+			add(ras3r.reaction_view.helpers.CheckBoxHelperTest);
 			add(ras3r.reaction_view.helpers.ComboBoxHelperTest);
 			add(ras3r.reaction_view.helpers.HelperTest);
 			add(ras3r.reaction_view.helpers.ImageHelperTest);
