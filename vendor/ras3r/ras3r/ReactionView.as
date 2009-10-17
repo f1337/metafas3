@@ -175,7 +175,7 @@ package ras3r
 			options = new Hash(options).update({ htmlText: html });
 			var id:String = options.remove('id');
 			if (debug) options.opaqueBackground = 0xddffdd;
-			var sprite:DisplayObject = TextFieldHelper.create(options);
+			var sprite:DisplayObject = TextFieldHelper.create(options).display_object;
 			assign_id_for_object({ id: id }, sprite);
 			return (addChild(sprite) as TextField);
 		}
@@ -185,7 +185,7 @@ package ras3r
 			options = new Hash({ htmlText: html }).update(options);
 			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
 
-			var sprite:DisplayObject = TextFieldHelper.create(options);
+			var sprite:DisplayObject = TextFieldHelper.create(options).display_object;
 			assign_id_for_object({ id: (object_name + '_' + property + '_label') }, sprite);
 			return (addChild(sprite) as TextField);
 		}

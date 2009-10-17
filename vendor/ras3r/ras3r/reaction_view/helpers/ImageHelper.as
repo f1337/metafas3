@@ -29,19 +29,7 @@ package ras3r.reaction_view.helpers
 		**/
 		static public function create (options:Object = null) :ImageHelper
 		{
-			options = default_options.merge(options);
-			var loader:ImageHelper = new ImageHelper();
-
-/*			// catch IO errors (throws runtime exception)
-			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, after_io_error);
-
-			// catch init event for content processing
-			loader.contentLoaderInfo.addEventListener('init', after_init);
-*/
-			// assign properties from options hash
-			options.apply(loader);
-
-			return loader;
+			return (Helper.create(ImageHelper, options) as ImageHelper);
 		}
 
 

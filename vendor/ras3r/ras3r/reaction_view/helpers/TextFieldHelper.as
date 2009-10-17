@@ -1,31 +1,28 @@
 package ras3r.reaction_view.helpers
 {
 	import flash.text.*;
+	import flash.utils.*;
 	import ras3r.*;
 
-	public class TextFieldHelper
+	use namespace flash_proxy;
+
+	dynamic public class TextFieldHelper extends Helper
 	{
-		static public var default_options:Hash = new Hash;
-		default_options.update({
+		static public var default_options:Hash = new Hash({
 			// autosize to end-run the 100x100 base size
 			autoSize:	'left',
 			// wordWrap forces textField to expand to full given width
 			wordWrap:	true
 		});
 
-		static public function create (options:Object = null) :TextField
+		static public function create (options:Object = null) :TextFieldHelper
 		{
-			options = default_options.merge(options);
-			var text_field:TextField = new TextField();
-
-			// apply TextFormat via format hash
-			if (options.format)
+			var closure:Function = function (hoptions:Object) :void
 			{
-				// use Hash object for hash.apply
-				var format:Hash = new Hash(options.remove('format'));
 				// is a custom font defined?
 				// if so, set default embedFonts = true
-				options.embedFonts = Boolean(format.font && options.embedFonts !== false);
+				hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
+
 				/*
 				Advanced anti-aliasing allows font faces to be rendered
 				at very high quality at small sizes. It is best used 
@@ -33,32 +30,75 @@ package ras3r.reaction_view.helpers
 				Advanced anti-aliasing is not recommended for very 
 				large fonts (larger than 48 points).
 				*/ 
-				options.antiAliasType = (options.embedFonts && format.size <= 48 && options.antiAliasType != 'normal') ? 'advanced' : 'normal';
-
-				// get default text format
-				var tf:TextFormat = text_field.defaultTextFormat;
-				// update text format
-				format.apply(tf);
-				// apply new text format
-				text_field.defaultTextFormat = tf;
-				text_field.setTextFormat(tf);
-			}
-			else
-			{
-				options.antiAliasType = 'normal';
-				options.embedFonts = false;
+				hoptions.antiAliasType = (hoptions.embedFonts && hoptions.format.size <= 48 && hoptions.antiAliasType != 'normal') ? 'advanced' : 'normal';
 			}
 
-			// prevent htmlText=null
-			if (options.hasOwnProperty('htmlText')) options.htmlText ||= '';
+			return (Helper.create(TextFieldHelper, options, closure) as TextFieldHelper);
+		}
 
-			// prevent text=null
-			if (options.hasOwnProperty('text')) options.text ||= '';
 
-			// assign TextField properties from options hash
-			options.apply(text_field);
+		// >>> PUBLIC PROPERTIES
+		/**
+		*	textFieldHelper.display_object
+		*	Every Helper is expected to provide a display_object.
+		*	This one is a TextField
+		**/
+		public var display_object:TextField = new TextField();
 
-			return text_field;
+		/**
+		*	textFieldHelper.format = textFormat
+		*		applies textFormat to "textFormat" style on display_object
+		*		write-only
+		**/
+		public function set format (fmt:Object) :void
+		{
+			// use Hash object for hash.apply
+			fmt = new Hash(fmt);
+			// get default text format
+			var tf:TextFormat = this.defaultTextFormat;
+			// update text format
+			fmt.apply(tf);
+			// apply new text format
+			this.defaultTextFormat = tf;
+			this.setTextFormat(tf);
+		}
+
+		/**
+		*	prevent textFieldHelper.htmlText from being set to null
+		**/
+		public function set htmlText (t:String) :void
+		{
+			t ||= '';
+			setProperty('htmlText', t);
+		}
+
+		public function get htmlText () :String
+		{
+			return getProperty('htmlText');
+		}
+
+		/**
+		*	prevent textFieldHelper.text from being set to null
+		**/
+		public function set text (t:String) :void
+		{
+			t ||= '';
+			setProperty('text', t);
+		}
+
+		public function get text () :String
+		{
+			return getProperty('text');
+		}
+
+
+		// >>> PUBLIC METHODS
+		/**
+		*	Constructor. Proxies a display_object.
+		**/
+		public function TextFieldHelper ()
+		{
+			super(display_object);
 		}
 	}
 }

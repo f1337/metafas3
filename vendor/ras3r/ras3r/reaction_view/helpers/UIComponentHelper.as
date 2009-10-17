@@ -14,8 +14,6 @@ package ras3r.reaction_view.helpers
 		**/
 		static protected function create (klass:Class, options:Object = null) :UIComponentHelper
 		{
-/*			options = klass.default_options.merge(options);*/
-
 			var closure:Function = function (hoptions:Object) :void
 			{
 				// is a custom font defined?

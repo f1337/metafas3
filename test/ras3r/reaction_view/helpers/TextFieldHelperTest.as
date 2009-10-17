@@ -11,7 +11,7 @@ package ras3r.reaction_view.helpers
 			{
 				it ('provides .create() which returns a new TextField', function () :void
 				{
-					so(TextFieldHelper.create()).should.be.a.kind_of(TextField);
+					so(TextFieldHelper.create()).should.be.a.kind_of(TextFieldHelper);
 				});
 
 				it ('provides .default_options', function () :void
@@ -22,21 +22,21 @@ package ras3r.reaction_view.helpers
 				it ('prevents setting htmlText=null', function () :void
 				{
 					var options:Object = { htmlText: null };
-					var tf:TextField = TextFieldHelper.create(options);
+					var tf:TextFieldHelper = TextFieldHelper.create(options);
 					so(tf.htmlText).should.equal('');
 				});
 
 				it ('prevents setting text=null', function () :void
 				{
 					var options:Object = { text: null };
-					var tf:TextField = TextFieldHelper.create(options);
+					var tf:TextFieldHelper = TextFieldHelper.create(options);
 					so(tf.text).should.equal('');
 				});
 
 				it ('applies options.format to textField.defaultFormat', function () :void
 				{
 					var options:Object = { format: { size: 22 } };
-					var tf:TextField = TextFieldHelper.create(options);
+					var tf:TextFieldHelper = TextFieldHelper.create(options);
 					so(tf.defaultTextFormat.size).should.equal(options.format.size);
 				});
 
@@ -47,14 +47,14 @@ package ras3r.reaction_view.helpers
 						it ('disables textField.embedFonts', function () :void
 						{
 							var options:Object = { format: { font: 'Test' }, embedFonts: false };
-							var tf:TextField = TextFieldHelper.create(options);
+							var tf:TextFieldHelper = TextFieldHelper.create(options);
 							so(tf.embedFonts).should.equal(false);
 						});
 
 						it ('forces antiAliasType="normal"', function () :void
 						{
 							var options:Object = { antiAliasType: 'advanced', embedFonts: false };
-							var tf:TextField = TextFieldHelper.create(options);
+							var tf:TextFieldHelper = TextFieldHelper.create(options);
 							so(tf.antiAliasType).should.equal('normal');
 						});
 					});
@@ -64,28 +64,28 @@ package ras3r.reaction_view.helpers
 						it ('enables textField.embedFonts', function () :void
 						{
 							var options:Object = { format: { font: 'Test' } };
-							var tf:TextField = TextFieldHelper.create(options);
+							var tf:TextFieldHelper = TextFieldHelper.create(options);
 							so(tf.embedFonts).should.equal(true);
 						});
 
 						it ('defaults to antiAliasType="advanced" with format.size <= 48', function () :void
 						{
 							var options:Object = { format: { font: 'Test', size: 23 } };
-							var tf:TextField = TextFieldHelper.create(options);
+							var tf:TextFieldHelper = TextFieldHelper.create(options);
 							so(tf.antiAliasType).should.equal('advanced');
 						});
 
 						it ('allows explicit antiAliasType="normal" with format.size <= 48', function () :void
 						{
 							var options:Object = { format: { font: 'Test', size: 23 }, antiAliasType: 'normal' };
-							var tf:TextField = TextFieldHelper.create(options);
+							var tf:TextFieldHelper = TextFieldHelper.create(options);
 							so(tf.antiAliasType).should.equal('normal');
 						});
 
 						it ('forces antiAliasType="normal" with format.size > 48', function () :void
 						{
 							var options:Object = { format: { font: 'Test', size: 49 }, antiAliasType: 'advanced' };
-							var tf:TextField = TextFieldHelper.create(options);
+							var tf:TextFieldHelper = TextFieldHelper.create(options);
 							so(tf.antiAliasType).should.equal('normal');
 						});
 					});
@@ -95,14 +95,14 @@ package ras3r.reaction_view.helpers
 				{
 					it ('disables textField.embedFonts with no explicit options.embedFonts', function () :void
 					{
-						var tf:TextField = TextFieldHelper.create();
+						var tf:TextFieldHelper = TextFieldHelper.create();
 						so(tf.embedFonts).should.equal(false);
 					});
 
 					it ('disables textField.embedFonts with explicit options.embedFonts: true', function () :void
 					{
 						var options:Object = { embedFonts: true };
-						var tf:TextField = TextFieldHelper.create(options);
+						var tf:TextFieldHelper = TextFieldHelper.create(options);
 						so(tf.embedFonts).should.equal(false);
 					});
 				});
@@ -114,7 +114,7 @@ package ras3r.reaction_view.helpers
 					});
 
 					var options:Object = { embedFonts: false };
-					var tf:TextField = TextFieldHelper.create(options);
+					var tf:TextFieldHelper = TextFieldHelper.create(options);
 
 					it ('should not overwrite default options', function () :void
 					{
