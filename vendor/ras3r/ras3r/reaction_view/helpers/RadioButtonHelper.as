@@ -8,8 +8,19 @@ package ras3r.reaction_view.helpers
 
 	dynamic public class RadioButtonHelper extends UIComponentHelper
 	{
+		/**
+		*	RadioButtonHelper.default_options
+		*		a Hash of properties to be used as default assigns
+		*		to new instances of RadioButtonHelper
+		**/
 		static public var default_options:Hash = new Hash;
 
+		/**
+		*	RadioButtonHelper.create:
+		*		returns a new instance of RadioButtonHelper,
+		*		with options hash merged into default_options hash
+		*		and applied as property assignments to the new instance
+		**/
 		static public function create (options:Object = null) :RadioButtonHelper
 		{
 			return (UIComponentHelper.create(RadioButtonHelper, options) as RadioButtonHelper);
@@ -18,6 +29,7 @@ package ras3r.reaction_view.helpers
 
 		// >>> PUBLIC PROPERTIES
 		/**
+		*	public display_object interface
 		*	container for radio_button and text_field
 		**/
 		public var display_object:Sprite = new Sprite();
@@ -71,6 +83,18 @@ package ras3r.reaction_view.helpers
 			text_field.width = (w - text_field.x);
 		}
 
+		/**
+		*	proxy for radio_button.value
+		**/
+		public function get value () :Object
+		{
+			return radio_button.value;
+		}
+
+		public function set value (val:Object) :void
+		{
+			radio_button.value = val;
+		}
 
 
 		// >>> PUBLIC METHODS

@@ -14,10 +14,6 @@ package ras3r.reaction_view.helpers
 				{
 					so(instance).should.be.a.kind_of(UIComponentHelper);
 				});
-
-				it ('should contain real code', function () :void
-				{
-				});
 			});
 		}
 	}

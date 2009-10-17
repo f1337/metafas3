@@ -46,6 +46,7 @@ package ras3r.reaction_view.helpers
 						{
 							so(view['order_shipping_method'].getRadioButtonAt(i)).should.be.a.kind_of(RadioButtonHelper);
 							so(view['order_shipping_method'].getRadioButtonAt(i).label).should.match(/Standard|Express/);
+							so(view['order_shipping_method'].getRadioButtonAt(i).value).should.match(/[SGF]{1}/);
 						}
 					});
 				});

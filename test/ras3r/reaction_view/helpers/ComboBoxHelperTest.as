@@ -24,9 +24,6 @@ package ras3r.reaction_view.helpers
 				{
 					var options:Object = { format: { size: 22 } };
 					var cb:ComboBoxHelper = ComboBoxHelper.create(options);
-					Logger.info(cb.textField);
-					Logger.info(cb.textField.getStyle('textFormat'));
-					Logger.info(cb.textField.getStyle('textFormat').size);
 					so(cb.textField.getStyle('textFormat').size).should.equal(options.format.size);
 				});
 

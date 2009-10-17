@@ -143,11 +143,11 @@ package ras3r
 		}
 */
 
-/*		public function check_box_for (object_name:String, property:String, options:Object = null) :CheckBox
+		public function check_box_for (object_name:String, property:String, options:Object = null) :CheckBox
 		{
-			return (helper_for(CheckBoxHelper, options, 'value', object_name, property) as CheckBox);
+			return (helper_for(CheckBoxHelper, options, 'selected', object_name, property) as CheckBox);
 		}
-*/
+
 		protected function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null) :ComboBox
 		{
 			// cast choices to DataProvider
@@ -323,7 +323,7 @@ package ras3r
 			var name:String = (object_name + '_' + object_property);
 			options = new Hash({ name: name }).update(options);
 			// TODO: replace with databinding
-			options[assign_property] = this[object_name][object_property];
+			if (this[object_name][object_property] !== null) options[assign_property] = this[object_name][object_property];
 			this[name] = helper.create(options);
 			bind_property(this[name], object_name, object_property);
 			return addChild(this[name].display_object);

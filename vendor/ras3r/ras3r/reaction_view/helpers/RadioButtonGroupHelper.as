@@ -38,6 +38,7 @@ package ras3r.reaction_view.helpers
 				for (var i:uint = 0; i < dp.length; i++)
 				{
 					children.push((Helper.create(RadioButtonHelper, radio_options.update({ 
+						value:  dp.getItemAt(i).data,
 						label:  dp.getItemAt(i).label
 					})) as RadioButtonHelper));
 				}

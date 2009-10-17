@@ -14,10 +14,6 @@ package ras3r.reaction_view.helpers
 				{
 					so(helper).should.be.a.kind_of(Helper);
 				});
-
-				it ('should contain real code', function () :void
-				{
-				});
 			});
 		}
 	}
