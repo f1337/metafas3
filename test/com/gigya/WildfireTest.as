@@ -14,10 +14,6 @@ package com.gigya
 				{
 					so(wildfire).should.be.a.kind_of(Wildfire);
 				});
-
-				it ('should contain real code', function () :void
-				{
-				});
 			});
 		}
 	}
