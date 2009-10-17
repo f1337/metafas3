@@ -7,7 +7,7 @@ package ras3r.reaction_view.helpers
 
 	use namespace flash_proxy;
 
-	dynamic public class TextInputHelper extends Helper
+	dynamic public class TextInputHelper extends UIComponentHelper
 	{
 		/**
 		*	TextInputHelper.default_options:
@@ -24,7 +24,7 @@ package ras3r.reaction_view.helpers
 		**/
 		static public function create (options:Object = null) :TextInputHelper
 		{
-			return (Helper.create(TextInputHelper, options) as TextInputHelper);
+			return (UIComponentHelper.create(TextInputHelper, options) as TextInputHelper);
 		}
 
 
@@ -34,7 +34,7 @@ package ras3r.reaction_view.helpers
 		**/
 		public function set background (skin:Class) :void
 		{
-			display_object.setStyle('upSkin', skin);
+			this.setStyle('upSkin', skin);
 		}
 
 		/**
@@ -49,7 +49,7 @@ package ras3r.reaction_view.helpers
 		**/
 		public function set padding (padding:Number) :void
 		{
-			display_object.setStyle('textPadding', padding);
+			this.setStyle('textPadding', padding);
 		}
 
 		/**

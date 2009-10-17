@@ -6,13 +6,13 @@ package ras3r.reaction_view.helpers
 	import ras3r.*;
 	import ras3r.utils.*;
 
-	dynamic public class RadioButtonHelper extends Helper
+	dynamic public class RadioButtonHelper extends UIComponentHelper
 	{
 		static public var default_options:Hash = new Hash;
 
 		static public function create (options:Object = null) :RadioButtonHelper
 		{
-			return (Helper.create(RadioButtonHelper, options) as RadioButtonHelper);
+			return (UIComponentHelper.create(RadioButtonHelper, options) as RadioButtonHelper);
 		}
 
 

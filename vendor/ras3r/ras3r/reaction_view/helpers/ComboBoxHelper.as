@@ -4,7 +4,7 @@ package ras3r.reaction_view.helpers
 	import flash.text.*;
 	import ras3r.*;
 
-	dynamic public class ComboBoxHelper extends Helper
+	dynamic public class ComboBoxHelper extends UIComponentHelper
 	{
 		/**
 		*	ComboBoxHelper.default_options:
@@ -21,7 +21,7 @@ package ras3r.reaction_view.helpers
 		**/
 		static public function create (options:Object = null) :ComboBoxHelper
 		{
-			return (Helper.create(ComboBoxHelper, options) as ComboBoxHelper);
+			return (UIComponentHelper.create(ComboBoxHelper, options) as ComboBoxHelper);
 		}
 
 
