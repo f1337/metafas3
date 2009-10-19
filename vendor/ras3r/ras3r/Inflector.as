@@ -31,8 +31,13 @@ package ras3r
 			}
 		}
 
-		// capitalize first letter of first word
-		// lowercase all other letters
+		/**
+		*	capitalize()
+		*	Converts the first character to uppercase and the remainder to lowercase.
+		*
+		*	Example:
+		*		Inflector.capitalize('washington') #=> "Washington"
+		**/
 		public static function capitalize (word:String) :String
 		{
 			if (word.length > 0)
@@ -50,6 +55,15 @@ package ras3r
 			return qualifiedClassName.replace(/^.*::/, '');
 		}
 
+		/**
+		*	Inflector.humanize(lower_case_and_underscored_word)
+		*	Capitalizes the first word and turns underscores into spaces and strips a trailing "_id", if any.
+		*	Like titleize, this is meant for creating pretty output.
+		*
+		*	Examples:
+		* 		Inflector.humanize("employee_salary") # => "Employee salary"
+ 		*		Inflector.humanize("author_id")       # => "Author"
+ 		**/
 		public static function humanize (word:String) :String
 		{
 			return capitalize(word.replace(/_id$/, '').replace(/_/g, ' '));
@@ -79,6 +93,16 @@ package ras3r
 			return word.replace(/(.+)ries$/i, '$1ry').replace(/(.+)s$/i, '$1');
 		}
 
+		/**
+		*	titleize(word)
+		*	Capitalizes all the words and replaces some characters in the string to create a nicer looking title.
+		*	titleize is meant for creating pretty output.
+		*	titleize is also aliased as as titlecase.
+		*
+		*	Examples:
+		*		Inflector.titleize("man from the boondocks") # => "Man From The Boondocks"
+		*		Inflector.titleize("x-men: the last stand")  # => "X Men: The Last Stand"
+		**/
 		public static function titleize (word:String) :String
 		{
 			var f:Function = function (...args) :String
@@ -87,6 +111,7 @@ package ras3r
 			}
 			return humanize(underscore(word)).replace(/\b([a-z])/g, f);
 		}
+		public static var titlecase:Function = titleize;
 
 		public static function underscore (CamelCaseWord:String) :String
 		{
