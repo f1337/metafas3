@@ -6,7 +6,6 @@ package ras3r
 	import fl.controls.*;
 	import ras3r.*;
 	import ras3r.reaction_view.helpers.*;
-	import ras3r.utils.*;
 
 	public class ReactionViewTest extends Spec
 	{
@@ -23,7 +22,7 @@ package ras3r
 
 				describe ('with ReactionView.create(template, assigns)', function () :void
 				{
-					const assigns:Object = { x: 12, y: 15, order: (new ObjectProxy({ last_name: 'Smith' })) };
+					const assigns:Object = { x: 12, y: 15, order: (new ReactiveResource({ last_name: 'Smith' })) };
 					const view:* = ReactionView.create('', assigns);
 
 					it ('returns a DisplayObject', function () :void
@@ -61,7 +60,6 @@ package ras3r
 						it ('updates textinput.text when order.last_name changes', function () :void
 						{
 							view['order']['last_name'] = 'Jones';
-							view['order'].dispatchEvent(new Event('last_name_change'));
 							so(view['order_last_name'].text).should.equal(view['order']['last_name']);
 						});
 

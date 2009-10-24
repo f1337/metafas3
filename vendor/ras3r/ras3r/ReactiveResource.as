@@ -12,6 +12,8 @@ package ras3r
 	import flash.net.*;
 	import flash.system.*;
 	import flash.utils.*;
+	import mx.events.PropertyChangeEvent;
+	import mx.utils.ObjectProxy;
 
 	//import code.google.as3httpclient.*;
 
@@ -241,6 +243,9 @@ package ras3r
 			{
 				load(attrs);
 			}
+
+			// listen for own "propertyChange" events and re-delegate
+			addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, after_property_change);
 		}
 
 		public function load (attrs:Object, e:Event = null) :void
@@ -442,6 +447,18 @@ package ras3r
 				Logger.debug('after_find_all! ' + err + ' :: Unable to parse result: ');
 				Logger.dump(e.target.data);
 			}
+		}
+
+		protected function after_property_change (e:PropertyChangeEvent) :void
+		{
+			Logger.info('after_property_change: ' + [ e.kind, e.property, e.oldValue, e.newValue, e.source.name ].join(', '));
+	        var event:PropertyChangeEvent = new PropertyChangeEvent(e.property + '_change');
+	        event.kind = e.kind;
+	        event.property = e.property;
+	        event.oldValue = e.oldValue;
+	        event.newValue = e.newValue;
+	        event.source = this;
+			dispatchEvent(event);
 		}
 
 		private function after_update (e:Event) :void

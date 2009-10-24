@@ -1,6 +1,6 @@
 package ras3r.reaction_view.helpers
 {
-	import ras3r.utils.*;
+	import mx.utils.ObjectProxy;
 
 	dynamic public class Helper extends ObjectProxy
 	{

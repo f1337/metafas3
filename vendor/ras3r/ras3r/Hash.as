@@ -1,7 +1,8 @@
 package ras3r
 {
-	import ras3r.utils.*;
 	import flash.utils.flash_proxy;
+	import mx.utils.ObjectProxy;
+
 	use namespace flash_proxy;
 
 	dynamic public class Hash extends ObjectProxy

@@ -25,7 +25,7 @@ package ras3r.reaction_view.helpers
 
 				describe ('using radio_buttons_for() with a DataProvider set', function () :void
 				{
-					const order:ObjectProxy = (new ObjectProxy());
+					const order:Object = {};
 					order.shipping_methods = new DataProvider([
 						{ data: 'S', label: 'Standard Delivery' },
 						{ data: 'G', label: 'Next Business Day Express' },
