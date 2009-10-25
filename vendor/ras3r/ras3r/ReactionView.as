@@ -121,34 +121,24 @@ package ras3r
 		
 		// >>> PROTECTED METHODS
 		// >>> HELPERS
-		// label: String. Text label to display on button.
-		// attr: Hash. Optional. Properties to be applied to button upon creation (w, h, x, y, etc).
-/*		protected function button (label:String, attr:Object = null, styles:Object = null) :*
-		{
-			var klass:Class = LabelButton;
-			if (attr)
-			{
-				if (attr.klass as Class) klass = attr.klass;
-				delete attr.klass;
-			}
-			else
-			{
-				attr = {};
-			}
-			if (! attr.width) attr.width = 100;
-			if (! attr.height) attr.height = 20;
-			attr.label = label;
-			attr.useHandCursor = true;
-			return sprite(klass, attr, styles);
-		}
-*/
-
+		/**
+		*	TODO HELPERS:
+		*		* check_box
+		*		* fields_for
+		*		* file_field
+		*		* form_for?
+		*		* label
+		*		* password_field
+		*		* radio_button
+		*		* text_area
+		*		* text_field
+		**/
 		public function check_box_for (object_name:String, property:String, options:Object = null) :CheckBox
 		{
 			return (helper_for(CheckBoxHelper, options, 'selected', object_name, property) as CheckBox);
 		}
 
-		protected function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null) :ComboBox
+		public function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null) :ComboBox
 		{
 			// cast choices to DataProvider
 			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
@@ -278,46 +268,7 @@ package ras3r
 			}
 		}
 
-		private function bind_property (helper:Helper, object_name:String, object_property:String) :void
-		{
-			if (controller && controller.hasOwnProperty('on_' + helper.name + '_change'))
-			{
-				// after_render will setup display object change handler
-				// all we need to do here is setup model property change handler
-				this[object_name].addEventListener((object_property + '_change'), controller[('on_' + helper.name + '_change')]);
-			}
-			else if (this[object_name] is IEventDispatcher)
-			{
-				var view:ReactionView = this;
-				var responder:Function = function (e:Event) :void
-				{
-					if (e.target is TextInput)
-					{
-/*						Logger.info('binding responder: ' + object_name + '.' + object_property + ' = ' + e.target.text);*/
-						view[object_name][object_property] = e.target.text;
-					}
-					else if (e.target is ComboBox)
-					{
-/*						Logger.info('binding responder: ' + object_name + '.' + object_property + ' = ' + e.target.selectedItem);*/
-						view[object_name][object_property] = e.target.selectedItem;
-					}
-					else if (helper is TextInputHelper)
-					{
-/*						Logger.info('binding responder: ' + helper + '.text = ' + view[object_name][object_property]);*/
-						helper.text = view[object_name][object_property];
-					}
-					else if (helper is ComboBoxHelper)
-					{
-/*						Logger.info('binding responder: ' + helper + '.selectedItem = ' + view[object_name][object_property]);*/
-						helper.selectedItem = view[object_name][object_property];
-					}
-				};
-				helper.display_object.addEventListener('change', responder);
-				this[object_name].addEventListener((object_property + '_change'), responder);
-			}
-		}
 
-		// return helper_for(TextInputHelper, options, 'text', object_name, property)
 		private function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject
 		{
 			var name:String = (object_name + '_' + object_property);
@@ -325,9 +276,11 @@ package ras3r
 			// TODO: replace with databinding
 			if (this[object_name][object_property] !== null) options[assign_property] = this[object_name][object_property];
 			this[name] = helper.create(options);
-			bind_property(this[name], object_name, object_property);
+			if (this[name].hasOwnProperty('bind_to'))
+			{
+				this[name].bind_to(this[object_name], object_property);
+			}
 			return addChild(this[name].display_object);
-/*			return addChild((this[name] is Helper) ? this[name].display_object : this[name]);*/
 		}
 
 

@@ -190,7 +190,7 @@ package ras3r
 		}
 
 		// For use ONLY in ReactiveResource subclasses for static init:
-		// ReactiveResource.extend(prototype.constructor)
+		// extend(prototype.constructor)
 		static public function extend (c:Class, prefix:String = '/') :void
 		{
 			// set prefix
@@ -451,7 +451,7 @@ package ras3r
 
 		protected function after_property_change (e:PropertyChangeEvent) :void
 		{
-			Logger.info('after_property_change: ' + [ e.kind, e.property, e.oldValue, e.newValue, e.source.name ].join(', '));
+/*			Logger.info('after_property_change: ' + [ e.kind, e.property, e.oldValue, e.newValue, e.source.name ].join(', '));*/
 	        var event:PropertyChangeEvent = new PropertyChangeEvent(e.property + '_change');
 	        event.kind = e.kind;
 	        event.property = e.property;

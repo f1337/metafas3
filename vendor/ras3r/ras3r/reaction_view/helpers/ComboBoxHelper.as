@@ -44,6 +44,27 @@ package ras3r.reaction_view.helpers
 		}
 
 		/**
+		*	Set up data binding
+		**/
+		public function bind_to (object:*, selection:String, collection:String = null) :void
+		{
+			// infer collection name from selection
+			collection ||= Inflector.pluralize(selection);
+			// helper responds to changes to object[selection]
+			object.addEventListener(selection + '_change', after_selection_change);
+			// object[selection] responds to changes to display_object.selectedItem
+			display_object.addEventListener('change', function (e:Object) :void
+			{
+				// prevent superfluous event firing
+				if (object[selection] && e.target.selectedItem && object[selection].data == e.target.selectedItem.data) return;
+				// update data object
+				object[selection] = e.target.selectedItem;
+			});
+			// helper responds to changes to object[collection]
+			object.addEventListener(collection + '_change', after_collection_change);
+		}
+
+		/**
 		*	comboBoxHelper.getStyle('textFormat');
 		*	returns 'textFormat', 'embedFonts' styles from ComboBox label textField
 		*	all other styles are returned from ComboBox itself
@@ -71,6 +92,31 @@ package ras3r.reaction_view.helpers
 			{
 				display_object.setStyle(key, value);
 			}
+		}
+
+
+		// >>> EVENT HANDLERS
+		/**
+		*	update combobox dataProvider
+		*	force redraw
+		**/
+		private function after_collection_change (e:Object) :void
+		{
+			this.dataProvider = e.newValue;
+			display_object.drawNow();
+		}
+
+		/**
+		*	update combobox selectedItem
+		*	force redraw
+		**/
+		private function after_selection_change (e:Object) :void
+		{
+			// prevent superfluous event firing
+			if (e.newValue && this.selectedItem && e.newValue.data == this.selectedItem.data) return;
+			// update display object
+			this.selectedItem = e.newValue;
+			display_object.drawNow();
 		}
 	}
 }

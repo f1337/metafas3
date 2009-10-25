@@ -68,7 +68,6 @@ package ras3r
 		// >>> STATIC PUBLIC METHODS
 		static public function append_before_filter (c:Class, name:String) :void
 		{
-/*			Logger.info('append_before_filter: ' + c + '#' + name);*/
 			before_filters[c] ||= new Array;
 			before_filters[c].push(name);
 		}

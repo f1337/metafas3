@@ -85,8 +85,14 @@ package ras3r.reaction_view.helpers
 			display_object.addEventListener('init', after_init);
 		}
 
-
-
+		/**
+		*	Set up data binding
+		**/
+		public function bind_to (object:*, property:String) :void
+		{
+			// helper responds to changes to object[property]
+			object.addEventListener(property + '_change', after_property_change);
+		}
 
 		/**
 		*	applies LoaderContext to allow bitmap smoothing
@@ -99,6 +105,17 @@ package ras3r.reaction_view.helpers
 */
 
 		// >>> EVENT HANDLERS
+		/**
+		*	update image source
+		**/
+		private function after_property_change (e:Object) :void
+		{
+			// prevent superfluous event firing
+			if (e.newValue == this.source) return;
+			// update display object
+			this.source = e.newValue;
+		}
+
 		/**
 		* 	after_init: attempt to smooth loaded bitmap
 		**/

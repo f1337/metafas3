@@ -97,8 +97,6 @@ package ras3r.reaction_view.helpers
 		// >>> EVENT HANDLERS
 		private function after_render (e:Event) :void
 		{
-			// stop listening
-			e.target.removeEventListener('render', after_render);
 			// redraw
 			layout();
 		}

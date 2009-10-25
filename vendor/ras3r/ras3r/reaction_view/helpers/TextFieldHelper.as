@@ -100,5 +100,27 @@ package ras3r.reaction_view.helpers
 		{
 			super(display_object);
 		}
+
+		/**
+		*	Set up data binding
+		**/
+		public function bind_to (object:*, property:String) :void
+		{
+			// helper responds to changes to object[property]
+			object.addEventListener(property + '_change', after_property_change);
+		}
+
+
+		// >>> EVENT HANDLERS
+		/**
+		*	update image source
+		**/
+		private function after_property_change (e:Object) :void
+		{
+			// prevent superfluous event firing
+			if (e.newValue == this.text) return;
+			// update display object
+			this.text = e.newValue;
+		}
 	}
 }
