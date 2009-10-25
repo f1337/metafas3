@@ -12,12 +12,16 @@ package ras3r
 
 	public class ReactionController extends Sprite
 	{
-		// >>> PUBLIC PROPERTIES
+		// >>> STATIC PROPERTIES
 		static public var asset_host:String = '';
 		static public var container:DisplayObjectContainer; // ONLY for addChild
 
+		static private var before_filters:Dictionary = new Dictionary;
+
 
 		// >>> PROTECTED PROPERTIES
+		protected var content:*;
+		protected var layout:*;
 		protected var params:Hash;
 
 
@@ -60,11 +64,15 @@ package ras3r
 			return _bounds;
 		}
 
-		protected var content:*;
-		protected var layout:*;
-
 
 		// >>> STATIC PUBLIC METHODS
+		static public function append_before_filter (c:Class, name:String) :void
+		{
+/*			Logger.info('append_before_filter: ' + c + '#' + name);*/
+			before_filters[c] ||= new Array;
+			before_filters[c].push(name);
+		}
+
 		static public function controller (name:String) :*
 		{
 			var className:String = 'controllers.' + Inflector.camelize(name) + 'Controller';
@@ -72,6 +80,18 @@ package ras3r
 			var c:ReactionController = new klass();
 			container.addChild(c);
 			return c;
+		}
+
+		// For use ONLY in ReactionController subclasses for static init:
+		// extend(prototype.constructor)
+		static public function extend (c:Class) :void
+		{
+			// define before_filter method
+			c['before_filter'] = function (...args) :*
+			{
+				args.unshift(c);
+				return ReactionController.append_before_filter.apply(null, args);
+			};
 		}
 
 		//static public function redirect_to (o:Object) :void
@@ -137,13 +157,6 @@ package ras3r
 			return Inflector.underscore(Inflector.demodulize(getQualifiedClassName(this).replace('Controller', '')));
 		}
 
-		// EXPERIMENTAL!!!
-		// remove this controller and its children from the display list
-		public function remove_from_display_list () :void
-		{
-			if (parent) parent.removeChild(this);
-		}
-
 		public function get_url () :void
 		{
 			if (! params.target) params.target = '_blank';
@@ -169,10 +182,17 @@ package ras3r
 				};
 			}
 
-			if (before_filter(action))
+			if (apply_before_filters(action))
 			{
 				action();
 			}
+		}
+
+		// EXPERIMENTAL!!!
+		// remove this controller and its children from the display list
+		public function remove_from_display_list () :void
+		{
+			if (parent) parent.removeChild(this);
 		}
 
 
@@ -276,11 +296,6 @@ package ras3r
 
 
 		// >>> PROTECTED METHODS
-		protected function before_filter (f:Function) :Boolean
-		{
-			return true;
-		}
-
 		private function new_view (template:String, options:Hash) :*
 		{
 			var after_hide:String = (options.hide ? options.remove('hide') : 'hide_view');
@@ -352,6 +367,22 @@ package ras3r
 		// >>> PRIVATE METHODS
 		// replaces default context menu with custom, empty menu
 		// add items to menu with new_context_menu_item()
+		private function apply_before_filters (f:Function) :Boolean
+		{
+			var ok:Boolean = true;
+			for (var c:* in before_filters)
+			{
+				if (! (this is c)) continue;
+				for (var i:uint = 0; i < before_filters[c].length; i++)
+				{
+					ok = this[before_filters[c][i]](f);
+					if (! ok) break;
+				}
+				if (! ok) break;
+			}
+			return ok;
+		}
+
 		private function create_context_menu () :void
 		{
 			contextMenu = new ContextMenu();
