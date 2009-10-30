@@ -5,7 +5,6 @@ package <%= package_name %>
 	import fl.controls.*;
 	import flash.text.*;
 	import ras3r.*;
-	import ras3r.controls.*;
 
 	public class <%= test_case_name  %> extends Spec
 	{
@@ -13,7 +12,8 @@ package <%= package_name %>
 		{
 			describe ('a new <%= class_name %>', function () :void
 			{
-				const <%= instance_name %>:<%= class_name %> = new <%= class_name %>;
+				const assigns:Object = {};
+				const <%= instance_name %>:<%= class_name %> = (ReactionView.create('<%= class_name.sub(/([A-Z][a-z]+)([A-Z][a-z]+)/, '\2/\1').downcase %>', assigns) as <%= class_name %>);
 				<%= instance_name %>.build();
 
 				it ('should be a <%= class_name %>', function () :void

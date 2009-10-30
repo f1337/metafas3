@@ -1,5 +1,7 @@
 package ras3r
 {
+	import com.greensock.TweenLite;
+
 	import ras3r.utils.*;
 
 	import flash.display.*;
@@ -72,7 +74,10 @@ package ras3r
 			before_filters[c].push(name);
 		}
 
-		static public function controller (name:String) :*
+		/**
+		*	Creates a Controller, adds it to container (swf root), returns ref
+		**/
+		static protected function controller (name:String) :*
 		{
 			var className:String = 'controllers.' + Inflector.camelize(name) + 'Controller';
 			var klass:Class = getDefinitionByName(className) as Class;
@@ -187,13 +192,6 @@ package ras3r
 			}
 		}
 
-		// EXPERIMENTAL!!!
-		// remove this controller and its children from the display list
-		public function remove_from_display_list () :void
-		{
-			if (parent) parent.removeChild(this);
-		}
-
 
 		/*
 		*	_blank MUST be default or sites with allowNetworking=internal
@@ -245,53 +243,51 @@ package ras3r
 		// >>> VISUAL EFFECTS
 		public function appear (event:Event) :void
 		{
-			var options:Object = { 
-//				ease: "easeOutQuint",
-				onComplete: after_show
-			};
-			TweenManager.appear(this, options);
+			event.target.alpha = 0;
+			TweenLite.to(event.target, 1, { alpha: 1 });
 		}
 
 		public function fade (event:Event) :void
 		{
-			var options:Object = { 
-//				ease: "easeOutQuint",
-				onComplete: after_hide,
-				onCompleteParams: [ event.target.parent ]
-			};
-			TweenManager.fade(event.target.parent, options);
+			event.target.alpha = 1;
+			TweenLite.to(event.target, 1, { alpha: 0, onComplete: hide_view  });
 		}
 
+/*
 		public function grow (event:Event) :void
 		{
-			this.visible = true;
-			var options:Object = { 
-//				ease: "easeOutQuint",
-				onComplete: after_show
-			};
-			TweenManager.grow(this, options);
 		}
-
+*/
 		public function hide_view (...args) :void
 		{
 			visible = false;
+
+			// EXPERIMENTAL!!!
+			// remove this controller and its children from the display list
+			// in *theory*, should schedule this mess for garbage collection?
+			if (parent) parent.removeChild(this);
 		}
 
 		public function show_view (...args) :void
 		{
 			visible = true;
 		}
-
+/*
 		public function shrink (event:Event) :void
 		{
-			var options:Object = { 
-//				ease: "easeOutQuint",
-				onComplete: after_hide,
-				onCompleteParams: [ { x: x , y: y , width: width, height: height, visible: false } ]
-			};
-			TweenManager.shrink(this, options);
+		}
+*/
+		public function slide_in (event:Event) :void
+		{
+			var options:Object = { y: y };
+			y = (0 - bounds.height);
+			TweenLite.to(this, 1, options);
 		}
 
+		public function slide_out (event:Event) :void
+		{
+			TweenLite.to(this, 1, { y: bounds.height, onComplete: hide_view });
+		}
 
 
 		// >>> PROTECTED METHODS
@@ -316,7 +312,6 @@ package ras3r
 			// default controller name
 			if (! options.controller) options.controller = controller_name();
 			ReactionController.redirect_to(options);
-			remove_from_display_list();
 		}
 
 		// render('robots/show', { layout: false, width: 100, height: 100 })
@@ -393,7 +388,7 @@ package ras3r
 		private function has_layout (layout:String = null) :String
 		{
 			// explicit layout: false option
-			if (layout === false)
+			if (layout === false || layout == 'false')
 			{
 				return null;
 			}
@@ -429,7 +424,7 @@ package ras3r
 		}
 
 		// >>> EVENT HANDLERS
-		protected function after_show () :void
+/*		protected function after_show () :void
 		{
 		}
 
@@ -441,5 +436,5 @@ package ras3r
 				this[p] = options[p];
 			}
 		}
-	}
+*/	}
 }

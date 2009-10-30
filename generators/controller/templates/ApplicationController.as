@@ -18,9 +18,14 @@ package <%= package_name %>
 	import flash.system.*;
 	import flash.utils.*;
 
-	import controllers.*;
+	import controllers.*;<% model_classes.each do |model| %>
+	import <%= model %>;<% end %>
+
 
 	public class ApplicationController extends ReactionController
 	{
+		// >>> FILTERS
+		extend(prototype.constructor);
+		public static var before_filter:Function;
 	}
 }

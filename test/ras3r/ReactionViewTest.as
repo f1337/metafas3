@@ -42,8 +42,6 @@ package ras3r
 
 					describe ('using some_helper_for("order", "last_name")', function () :void
 					{
-						// could be *any* helper
-
 						it ('creates a TextInput with id "order_last_name"', function () :void
 						{
 							so(view['order_last_name']).should.be.a.kind_of(TextInputHelper);
@@ -75,9 +73,6 @@ package ras3r
 
 					describe ('using combo_box_for("order", "state", "states")', function () :void
 					{
-						// could be *any* helper
-/*						view.dispatchEvent(new Event('render'));*/
-
 						it ('creates a ComboBox with id "order_state"', function () :void
 						{
 							so(view['order_state']).should.be.a.kind_of(ComboBoxHelper);
@@ -88,27 +83,28 @@ package ras3r
 							so(view['order_state'].name).should.equal('order_state');
 						});
 
-						it ('sets combobox.selectedItem equal to order.state', function () :void
-						{
-							Logger.info("view['order']: " + view['order']);
-							Logger.info("view['order']['state']: " + view['order']['state']);
-							Logger.info("view['order_state']: " + view['order_state']);
-							Logger.info("view['order_state'].selectedItem: " + view['order_state'].selectedItem);
-							so(view['order_state'].selectedItem.data).should.equal(view['order']['state'].data);
-						});
+						//it ('sets combobox.selectedItem equal to order.state', function () :void
+						//{
+						//	Logger.info("view['order']: " + view['order']);
+						//	Logger.info("view['order']['state']: " + view['order']['state']);
+						//	Logger.info("view['order_state']: " + view['order_state']);
+						//	Logger.info("view['order_state'].selectedItem: " + view['order_state'].selectedItem);
+						//	so(view['order_state'].selectedItem.data).should.equal(view['order']['state'].data);
+						//});
+						//
+						//it ('updates combobox.selectedItem when order.state changes', function () :void
+						//{
+						//	view['order']['state'] = { label: 'OH', data: 'OH' };
+						//	so(view['order_state'].selectedItem.data).should.equal(view['order']['state'].data);
+						//});
+						//
+						//it ('updates order.state when combobox.selectedItem changes', function () :void
+						//{
+						//	view['order_state'].selectedItem = { label: 'OH', data: 'OH' };
+						//	view['order_state'].display_object.dispatchEvent(new Event('change'));
+						//	so(view['order']['state'].data).should.equal(view['order_state'].selectedItem.data);
+						//});
 
-						it ('updates combobox.selectedItem when order.state changes', function () :void
-						{
-							view['order']['state'] = { label: 'OH', data: 'OH' };
-							so(view['order_state'].selectedItem.data).should.equal(view['order']['state'].data);
-						});
-
-						it ('updates order.state when combobox.selectedItem changes', function () :void
-						{
-							view['order_state'].selectedItem = { label: 'OH', data: 'OH' };
-							view['order_state'].display_object.dispatchEvent(new Event('change'));
-							so(view['order']['state'].data).should.equal(view['order_state'].selectedItem.data);
-						});
 					});
 				});
 			});

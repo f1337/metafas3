@@ -1,8 +1,21 @@
-class ScaffoldGenerator < Sprout::Generator::NamedBase  # :nodoc:
+class ScaffoldGenerator < Ras3rGenerator  # :nodoc:
 
   def manifest
     record do |m|
       if (! user_requested_test)
+        m.directory full_class_dir
+        m.template '../../controller/templates/ApplicationController.as', File.join(src_dir, 'controllers', 'ApplicationController.as')
+        m.template '../../controller/templates/Controller.as', full_class_path
+        m.template '../../model/templates/Model.as', 'Name.as'
+        m.template '../../view/templates/View.as', 'ShowName.as'
+        m.template '../../controller/templates/Application.as', File.join(src_dir, "#{model.project_name}.as")
+      end
+
+      m.directory full_test_dir
+      m.template '../../test/templates/Spec.as', full_test_case_path
+      m.template '../../test/templates/TestSuite.as', File.join(test_dir, 'AllTests.as'), :collision => :force
+
+
         #m.directory full_class_dir
         m.template 'Application.as', application_class_path
 

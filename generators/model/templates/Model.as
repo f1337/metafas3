@@ -4,7 +4,7 @@
 //  Created <%= Date.today.to_s(:db) %>.
 //
 
-package models.domain
+package models
 {
 	import ras3r.*;
 	import flash.utils.*;
@@ -22,7 +22,7 @@ package models.domain
 		static public var site:String;
 
 		// mixin static methods, properties during static init
-		ReactiveResource.extend(prototype.constructor);
+		extend(prototype.constructor);
 		static public var find:Function; // = ReactiveResource.find;
 
 		// >>> PUBLIC PROPERTIES

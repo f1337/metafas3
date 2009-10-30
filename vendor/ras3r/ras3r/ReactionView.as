@@ -133,6 +133,12 @@ package ras3r
 		*		* text_area
 		*		* text_field
 		**/
+		public function button_for (object_name:String, property:String, options:Object = null) :Helper
+		{
+			var o:DisplayObject = (helper_for(ButtonHelper, options, 'label', object_name, property) as DisplayObject);
+			return this[object_name + '_' + property];
+		}
+
 		public function check_box_for (object_name:String, property:String, options:Object = null) :CheckBox
 		{
 			return (helper_for(CheckBoxHelper, options, 'selected', object_name, property) as CheckBox);
@@ -250,6 +256,12 @@ package ras3r
 			return box;
 		}
 
+		public function vrule (options:Object) :DisplayObject
+		{
+/*			options = new Hash(options).update({ direction: 'vertical' });*/
+			return (addChild(RuleHelper.create(options).display_object) as DisplayObject);
+		}
+
 		// USAGE: wildfire(1234567, { height: 260, width: 340 });
 		protected function wildfire (partner_id:int, options:Object = null) :DisplayObject
 		{
@@ -274,6 +286,7 @@ package ras3r
 			var name:String = (object_name + '_' + object_property);
 			options = new Hash({ name: name }).update(options);
 			// TODO: replace with databinding
+			//Logger.info(assign_property + ' = ' + object_name + '.' + object_property + ' = ' + this[object_name][object_property]);
 			if (this[object_name][object_property] !== null) options[assign_property] = this[object_name][object_property];
 			this[name] = helper.create(options);
 			if (this[name].hasOwnProperty('bind_to'))
@@ -287,33 +300,39 @@ package ras3r
 		// >>> EVENT HANDLERS
 		private function after_added_to_stage (e:Event) :void
 		{
-			try
+/*			try
 			{
-				removeEventListener('addedToStage', after_added_to_stage);
+*/				removeEventListener('addedToStage', after_added_to_stage);
 				addEventListener('render', after_render);
 /*				Logger.info(this + ' addedToStage pre build');*/
 				build();
 /*				Logger.info(this + ' addedToStage post build');*/
-			}
+/*			}
 			catch (exception:*)
 			{
-/*				Logger.info('RV#build debug: ' + exception);*/
+*//*				Logger.info('RV#build debug: ' + exception);
 				removeEventListener('addedToStage', after_added_to_stage);
 				removeEventListener('render', after_render);
 			}
-		}
+*/		}
 
 		private function after_render (e:Event) :void
 		{
 			removeEventListener('render', after_render);
-/*			Logger.info(this + ' render');*/
+			// mixin on_instance_event methods
+			mixin_members(describeType(controller).method.(@name.indexOf('on_') == 0));
+			// mixin on_instance_event properties
+			mixin_members(describeType(controller).variable.(@name.indexOf('on_') == 0));
+		}
 
+		private function mixin_members (methods:XMLList) :void
+		{
 			// for each public controller method named "on_some_element_event",
 			// add event listener some_element
 			var element:String;
 			var event:String;
 			var parts:Array;
-            var methods:XMLList = describeType(controller).method;
+
 			var method:String;
             for (var n:String in methods)
 			{

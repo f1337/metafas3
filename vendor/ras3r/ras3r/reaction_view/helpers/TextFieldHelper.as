@@ -11,6 +11,10 @@ package ras3r.reaction_view.helpers
 		static public var default_options:Hash = new Hash({
 			// autosize to end-run the 100x100 base size
 			autoSize:	'left',
+			// collapse white space
+/*			condenseWhite: true,*/
+			// prevent selection
+/*			selectable: false,*/
 			// wordWrap forces textField to expand to full given width
 			wordWrap:	true
 		});
@@ -99,6 +103,10 @@ package ras3r.reaction_view.helpers
 		public function TextFieldHelper ()
 		{
 			super(display_object);
+
+			// per ActionScript 3 Language Reference (TextField#condenseWhite):
+			// "Set the condenseWhite property before setting the htmlText property."
+/*			if (default_options.condenseWhite) this.condenseWhite = default_options.condenseWhite;*/
 		}
 
 		/**
@@ -113,14 +121,14 @@ package ras3r.reaction_view.helpers
 
 		// >>> EVENT HANDLERS
 		/**
-		*	update image source
+		*	update text
 		**/
 		private function after_property_change (e:Object) :void
 		{
 			// prevent superfluous event firing
-			if (e.newValue == this.text) return;
+			if (e.newValue == this.htmlText) return;
 			// update display object
-			this.text = e.newValue;
+			this.htmlText = e.newValue;
 		}
 	}
 }
