@@ -23,7 +23,7 @@ package ras3r
 
 		// >>> PROTECTED PROPERTIES
 		protected var content:*;
-		protected var layout:*;
+		protected var _layout:*;
 		protected var params:Hash;
 
 
@@ -241,65 +241,67 @@ package ras3r
 
 
 		// >>> VISUAL EFFECTS
-		public function appear (event:Event) :void
+		private function appear (target:Object, options:Hash) :void
 		{
-			event.target.alpha = 0;
-			TweenLite.to(event.target, 1, { alpha: 1 });
+			options.update({ alpha: 1 });
+			target.alpha = 0;
+			TweenLite.to(target, options.remove('duration'), options);
 		}
 
-		public function fade (event:Event) :void
+		private function fade (target:Object, options:Hash) :void
 		{
-			event.target.alpha = 1;
-			TweenLite.to(event.target, 1, { alpha: 0, onComplete: hide_view  });
+			options.update({ alpha: 0 });
+			target.alpha = 1;
+			TweenLite.to(target, options.remove('duration'), options);
 		}
 
-/*
-		public function grow (event:Event) :void
+		public function hide (target:Object, effect:String, options:Object = null) :void
 		{
+			options = new Hash({ duration: 1 }).update(options).update({ onComplete: after_hide, onCompleteParams: [ target ] });
+			this[effect](target, options);
 		}
-*/
-		public function hide_view (...args) :void
+
+		private function after_hide (target:Object) :void
 		{
-			visible = false;
+			target.visible = false;
 
 			// EXPERIMENTAL!!!
 			// remove this controller and its children from the display list
 			// in *theory*, should schedule this mess for garbage collection?
-			if (parent) parent.removeChild(this);
+			Logger.info('after_hide: ' + target);
+			Logger.info('after_hide2: ' + target.parent);
+			if (target.parent) target.parent.removeChild(target);
 		}
 
-		public function show_view (...args) :void
+/*		public function show_view (...args) :void
 		{
 			visible = true;
 		}
-/*
-		public function shrink (event:Event) :void
-		{
-		}
 */
-		public function slide_in (event:Event) :void
+		private function slide_in (target:Object, options:Hash) :void
 		{
-			var options:Object = { y: y };
-			y = (0 - bounds.height);
-			TweenLite.to(this, 1, options);
+			options.update({ y: target.y });
+			target.y = (0 - bounds.height);
+			TweenLite.to(target, options.remove('duration'), options);
 		}
 
-		public function slide_out (event:Event) :void
+		private function slide_out (target:Object, options:Hash) :void
 		{
-			TweenLite.to(this, 1, { y: bounds.height, onComplete: hide_view });
+			options.update({ y: bounds.height });
+			TweenLite.to(target, options.remove('duration'), options);
 		}
 
 
 		// >>> PROTECTED METHODS
 		private function new_view (template:String, options:Hash) :*
 		{
-			var after_hide:String = (options.hide ? options.remove('hide') : 'hide_view');
-			var after_show:String = (options.show ? options.remove('show') : 'show_view');
+/*			var after_hide:String = (options.hide ? options.remove('hide') : 'hide_view');*/
+/*			var after_show:String = (options.show ? options.remove('show') : 'show_view');*/
 
 			var view:ReactionView = ReactionView.create(template, options) as ReactionView;
 
-			view.addEventListener('hide_view', this[after_hide]);
-			view.addEventListener('show_view', this[after_show]);
+/*			view.addEventListener('hide_view', this[after_hide]);*/
+/*			view.addEventListener('show_view', this[after_show]);*/
 
 			addChild(view);
 
@@ -312,6 +314,31 @@ package ras3r
 			// default controller name
 			if (! options.controller) options.controller = controller_name();
 			ReactionController.redirect_to(options);
+		}
+
+		// layout('application')
+		protected function layout (template:String = '', options:Object = null) :*
+		{
+			// sanitize input
+			options = new Hash(options);
+
+			// update bounds with explicit options
+			if (options.height) bounds.height = options.remove('height');
+			if (options.width) bounds.width = options.remove('width');
+
+			// update options with reference to this controller
+			options.controller = this;
+
+			// render layout
+			var layout_template:String = has_layout(template);
+			var layout:*;
+			if (layout_template)
+			{
+				var layout_options:Hash = options.merge({ scrollRect: bounds });
+				layout = new_view(('layouts/' + layout_template), layout_options);
+			}
+
+			return layout;
 		}
 
 		// render('robots/show', { layout: false, width: 100, height: 100 })
@@ -331,15 +358,16 @@ package ras3r
 			options.controller = this;
 
 			// render layout
-			var layout_template:String = has_layout(options.remove('layout'));
+/*			_layout = layout(options.remove('layout'), options);*/
+/*			var layout_template:String = has_layout(options.remove('layout'));
 			if (layout_template)
 			{
 				var layout_options:Hash = options.merge({ scrollRect: bounds });
 				layout = new_view(('layouts/' + layout_template), layout_options);
 			}
-
+*/
 			// render view/content
-			var view_bounds:Rectangle = (layout ? layout.bounds : bounds);
+			var view_bounds:Rectangle = (_layout ? _layout.bounds : bounds);
 			var view_options:Hash = options.merge({
 				x: view_bounds.x,
 				y: view_bounds.y,
@@ -351,11 +379,35 @@ package ras3r
 			if (parent) parent.setChildIndex(this, (parent.numChildren - 1));
 
 			// show controller/layout/view stark
-			content.show();
+			visible = true;
+			dispatchEvent(new Event('show_view'));
+/*			content.show();*/
 
 			// return reference to controller
 			return this;
 		}
+
+		// _show({ controller: 'home', action: 'show' }, 'appear', { duration: 1 });
+/*		options = new Hash({ duration: 1 }).update(options).update({ onComplete: after_hide, onCompleteParams: [ target ] });
+		this[effect](target, options);
+*/		public function _show (render_options:Object, effect:String, tween_options:Object = null) :ReactionController
+		{
+			render_options = new Hash({ controller: controller_name() }).update(render_options);
+			tween_options = new Hash({ duration: 1 }).update(tween_options);
+
+			// create new controller instance by name
+			var c:* = controller(render_options.remove('controller'));
+			// invoke controller action via process method
+			var action:String = render_options.remove('action');
+			var f:Function = this[effect];
+			c.addEventListener('show_view', function (e:Object) :void
+			{
+				f(c, tween_options);
+			});
+			c.process(action, render_options);
+			return c;
+		}
+
 
 
 		// >>> PRIVATE METHODS
@@ -422,19 +474,5 @@ package ras3r
 
 			return layout;
 		}
-
-		// >>> EVENT HANDLERS
-/*		protected function after_show () :void
-		{
-		}
-
-		protected function after_hide (options:Object) :void
-		{
-			// override in child
-			for (var p:String in options)
-			{
-				this[p] = options[p];
-			}
-		}
-*/	}
+	}
 }

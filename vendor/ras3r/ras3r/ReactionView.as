@@ -258,7 +258,6 @@ package ras3r
 
 		public function vrule (options:Object) :DisplayObject
 		{
-/*			options = new Hash(options).update({ direction: 'vertical' });*/
 			return (addChild(RuleHelper.create(options).display_object) as DisplayObject);
 		}
 

@@ -47,7 +47,10 @@ package ras3r.reaction_view.helpers
 			{
 				clear();
 	            beginFill(c, 1);
-	            drawRect(0, 0, 100, 100);
+				// b/c we assign properties from a hash "with indifferent access"
+				// we need to draw a fill that is full width and height
+				// using "100" for either undefined dimension
+	            drawRect(0, 0, (this.width || 100), (this.height || 100));
 	            endFill();
 			}
 		}
