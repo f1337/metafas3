@@ -33,45 +33,42 @@ package ras3r.reaction_view.helpers
 
 		// >>> PUBLIC PROPERTIES
 		/**
-		*	Button to proxy
+		*	buttonHelper.disabledFormat = textFormat
+		*	applies textFormat to "disabledTextFormat" style on button
+		*	write-only
 		**/
-		public var button:Button = new Button();
+		public function set disabledFormat (fmt:Object) :void
+		{
+			// use Hash object for hash.apply
+			fmt = new Hash(fmt);
+			// get default text format
+			var tf:Object = this.getStyle('disabledTextFormat');
+			tf ||= new TextFormat();
+			// update text format
+			fmt.apply(tf);
+			// apply new textFormat
+			this.setStyle('disabledTextFormat', tf);
+		}
 
 		/**
 		*	buttonHelper.display_object
 		*	Every Helper is expected to provide a display_object.
-		*	This one is a Sprite container for button and text_field
+		*	This one is a Button
 		**/
-		public var display_object:Sprite = new Sprite();
+		public var display_object:Button = new MyButton();
 
 		/**
-		*	proxy for button.height
+		*	buttonHelper.icon = Class
+		*	applies Class to "icon" style on button
+		*	write-only
 		**/
-		public function get height () :Number
+		public function set icon (icon:Object) :void
 		{
-			return button.height;
-		}
-
-		public function set height (h:Number) :void
-		{
-			button.height = h;
+			this.setStyle('icon', icon);
 		}
 
 		/**
-		*	proxy for text_field.label
-		**/
-		public function get label () :String
-		{
-			return text_field.text;
-		}
-
-		public function set label (val:String) :void
-		{
-			text_field.text = val;
-		}
-
-		/**
-		*	buttonHelper.up: applied to "upSkin" style of Button
+		*	buttonHelper.skin: applies skins to Button
 		**/
 		public function set skin (skin:Object) :void
 		{
@@ -82,51 +79,6 @@ package ras3r.reaction_view.helpers
             }
 		}
 
-		/**
-		*	TextField for aligning and formatting text, finite layout control
-		**/
-		public var text_field:TextField = new TextField();
-
-		/**
-		*	proxy for button.width
-		**/
-		public function get width () :Number
-		{
-			return button.width;
-		}
-
-		public function set width (w:Number) :void
-		{
-			button.width = w;
-			text_field.width = w;
-		}
-
-		/**
-		*	proxy for display_object.x
-		**/
-		public function get x () :Number
-		{
-			return display_object.y;
-		}
-
-		public function set x (_x:Number) :void
-		{
-			display_object.x = _x;
-		}
-
-		/**
-		*	proxy for display_object.y
-		**/
-		public function get y () :Number
-		{
-			return display_object.y;
-		}
-
-		public function set y (_y:Number) :void
-		{
-			display_object.y = _y;
-		}
-
 
 		// >>> PUBLIC METHODS
 		/**
@@ -134,56 +86,8 @@ package ras3r.reaction_view.helpers
 		**/
 		public function ButtonHelper ()
 		{
-			super(button);
-
-			button.label = '';
-			display_object.addChild(button);
-
-			text_field.autoSize = 'left';
-			// prevent textfield from interfering with mouse events:
-			text_field.mouseEnabled = false;
-			text_field.mouseWheelEnabled = false;
-			text_field.selectable = false;
-			text_field.wordWrap = true;
-			text_field.addEventListener('render', after_text_field_render);
-			display_object.addChild(text_field);
+			super(display_object);
 		}
-
-		/**
-		*	buttonHelper.getStyle('textFormat');
-		*	returns 'textFormat', 'embedFonts' styles from ButtonHelper text_field
-		*	all other styles are returned from Button itself
-		**/
-		public function getStyle (key:String) :Object
-		{
-			return (key == 'textFormat' ? text_field.defaultTextFormat : button.getStyle(key));
-		}
-
-		/**
-		*	buttonHelper.setStyle('textFormat', textFormat);
-		*	applies 'textFormat' and 'embedFonts' styles to both
-		*	the ButtonHelper's text_field and its button
-		*	all other styles are applied only to the Button itself
-		**/
-		public function setStyle (key:String, value:*) :void
-		{
-			switch (key)
-			{
-				case 'embedFonts':
-					text_field.embedFonts = value;
-					break;
-/*				case 'icon':
-					text_field.embedFonts = value;
-					break;
-*/				case 'textFormat':
-					text_field.defaultTextFormat = value;
-					text_field.setTextFormat(value);
-					break;
-			}
-			button.setStyle(key, value);
-		}
-
-
 
 		/**
 		*	Set up data binding
@@ -206,13 +110,19 @@ package ras3r.reaction_view.helpers
 			// update display object
 			this.label = e.newValue;
 		}
+	}
+}
 
-		/**
-		*	position custom text_field when text_field's size changes
-		**/
-		private function after_text_field_render (e:Object) :void
-		{
-			text_field.y = Math.min((height - text_field.textHeight) / 2);
-		}
+class MyButton extends fl.controls.Button
+{
+	override protected function drawLayout () :void
+	{
+		super.drawLayout();
+		// 8 >> 4 TEXT
+		// 12 >> 12 TEXT
+		// 8 TEXT
+		if (icon) icon.x = 8;
+		textField.x = ((icon ? icon.x : 0) + 8);
+		textField.y = Math.max((height - textField.textHeight) / 2) + 1;
 	}
 }

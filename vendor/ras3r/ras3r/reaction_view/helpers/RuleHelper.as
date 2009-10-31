@@ -38,22 +38,10 @@ package ras3r.reaction_view.helpers
 		public var display_object:Shape = new Shape();
 
 		/**
-		*	draws 100x100 fill using specified color
-		*	width/height properties will be applied later
+		*	stroke color
 		**/
-		public function set stroke (c:uint) :void
-		{
-			with (display_object.graphics)
-			{
-				clear();
-	            beginFill(c, 1);
-				// b/c we assign properties from a hash "with indifferent access"
-				// we need to draw a fill that is full width and height
-				// using "100" for either undefined dimension
-	            drawRect(0, 0, (this.width || 100), (this.height || 100));
-	            endFill();
-			}
-		}
+		public var stroke:uint = 0xffffff;
+
 
 		// >>> PUBLIC METHODS
 		/**
@@ -62,6 +50,27 @@ package ras3r.reaction_view.helpers
 		public function RuleHelper ()
 		{
 			super(display_object);
+			// redraw on width/height change
+			addEventListener('propertyChange', draw);
+		}
+
+
+		// >>> PRIVATE METHODS
+		/**
+		*	draws fill
+		**/
+		private function draw (...args) :void
+		{
+			with (this.graphics)
+			{
+				clear();
+	            beginFill(stroke, 1);
+				// b/c we assign properties from a hash "with indifferent access"
+				// we need to draw a fill that is full width and height
+				// using "100" for either undefined dimension
+	            drawRect(0, 0, (this.width || 100), (this.height || 100));
+	            endFill();
+			}
 		}
 	}
 }
