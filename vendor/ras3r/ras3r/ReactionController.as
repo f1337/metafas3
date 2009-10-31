@@ -29,7 +29,7 @@ package ras3r
 
 		// >>> PRIVATE PROPERTIES
 		private var _bounds:Rectangle;
-		private function get bounds () :Rectangle
+		public function get bounds () :Rectangle
 		{
 			// calculate bounds once, cache to _bounds
 			if (! _bounds)
@@ -64,6 +64,11 @@ package ras3r
 			}
 
 			return _bounds;
+		}
+
+		public function set bounds (r:Rectangle) :void
+		{
+			_bounds = r;
 		}
 
 
@@ -268,8 +273,6 @@ package ras3r
 			// EXPERIMENTAL!!!
 			// remove this controller and its children from the display list
 			// in *theory*, should schedule this mess for garbage collection?
-			Logger.info('after_hide: ' + target);
-			Logger.info('after_hide2: ' + target.parent);
 			if (target.parent) target.parent.removeChild(target);
 		}
 
@@ -331,14 +334,14 @@ package ras3r
 
 			// render layout
 			var layout_template:String = has_layout(template);
-			var layout:*;
-			if (layout_template)
+/*			var _layout:*;
+*/			if (layout_template)
 			{
 				var layout_options:Hash = options.merge({ scrollRect: bounds });
-				layout = new_view(('layouts/' + layout_template), layout_options);
+				_layout = new_view(('layouts/' + layout_template), layout_options);
 			}
 
-			return layout;
+			return _layout;
 		}
 
 		// render('robots/show', { layout: false, width: 100, height: 100 })
@@ -390,22 +393,22 @@ package ras3r
 		// _show({ controller: 'home', action: 'show' }, 'appear', { duration: 1 });
 /*		options = new Hash({ duration: 1 }).update(options).update({ onComplete: after_hide, onCompleteParams: [ target ] });
 		this[effect](target, options);
-*/		public function _show (render_options:Object, effect:String, tween_options:Object = null) :ReactionController
+*/		public function _show (render_options:Object, effect:String, tween_options:Object = null) :void
 		{
 			render_options = new Hash({ controller: controller_name() }).update(render_options);
 			tween_options = new Hash({ duration: 1 }).update(tween_options);
 
 			// create new controller instance by name
-			var c:* = controller(render_options.remove('controller'));
+			content = controller(render_options.remove('controller'));
 			// invoke controller action via process method
 			var action:String = render_options.remove('action');
 			var f:Function = this[effect];
-			c.addEventListener('show_view', function (e:Object) :void
+			content.addEventListener('show_view', function (e:Object) :void
 			{
-				f(c, tween_options);
+				f(content, tween_options);
 			});
-			c.process(action, render_options);
-			return c;
+			content.bounds = (_layout ? _layout.bounds : bounds);
+			content.process(action, render_options);
 		}
 
 
