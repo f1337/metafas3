@@ -123,6 +123,6 @@ class MyButton extends fl.controls.Button
 		// 8 TEXT
 		if (icon) icon.x = 8;
 		textField.x = ((icon ? icon.x : 0) + 8);
-		textField.y = Math.max((height - textField.textHeight) / 2) + 1;
+		textField.y = Math.ceil((height - textField.textHeight) / 2) + 1;
 	}
 }
