@@ -1,5 +1,6 @@
 package ras3r.reaction_view.helpers
 {
+	import flash.display.*;
 	import flash.text.*;
 	import flash.utils.*;
 	import ras3r.*;
@@ -11,18 +12,26 @@ package ras3r.reaction_view.helpers
 		static public var default_options:Hash = new Hash({
 			// autosize to end-run the 100x100 base size
 			autoSize:	'left',
-			// collapse white space
-/*			condenseWhite: true,*/
+			/**
+			* 	NOTE: condenseWhite interferes with
+			*		some HTML rendering and multiline text
+			*		probably best to EXCLUDE from default_options
+			**/
+			// condenseWhite: true,
 			// prevent selection
-/*			selectable: false,*/
+			selectable: false,
 			// wordWrap forces textField to expand to full given width
 			wordWrap:	true
 		});
 
 		static public function create (options:Object = null) :TextFieldHelper
 		{
-			var closure:Function = function (hoptions:Object) :void
+			var closure:Function = function (helper:Helper, hoptions:Object) :void
 			{
+				// per ActionScript 3 Language Reference (TextField#condenseWhite):
+				// "Set the condenseWhite property before setting the htmlText property."
+				if (hoptions.condenseWhite) helper.condenseWhite = hoptions.remove('condenseWhite');
+
 				// is a custom font defined?
 				// if so, set default embedFonts = true
 				hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
@@ -35,7 +44,7 @@ package ras3r.reaction_view.helpers
 				large fonts (larger than 48 points).
 				*/ 
 				hoptions.antiAliasType = (hoptions.embedFonts && hoptions.format.size <= 48 && hoptions.antiAliasType != 'normal') ? 'advanced' : 'normal';
-			}
+			};
 
 			return (Helper.create(TextFieldHelper, options, closure) as TextFieldHelper);
 		}
@@ -47,7 +56,7 @@ package ras3r.reaction_view.helpers
 		*	Every Helper is expected to provide a display_object.
 		*	This one is a TextField
 		**/
-		public var display_object:TextField = new TextField();
+		public var display_object:* = new TextField;
 
 		/**
 		*	textFieldHelper.format = textFormat
@@ -100,13 +109,10 @@ package ras3r.reaction_view.helpers
 		/**
 		*	Constructor. Proxies a display_object.
 		**/
-		public function TextFieldHelper ()
+		public function TextFieldHelper (proxied_object:Object = null)
 		{
-			super(display_object);
-
-			// per ActionScript 3 Language Reference (TextField#condenseWhite):
-			// "Set the condenseWhite property before setting the htmlText property."
-/*			if (default_options.condenseWhite) this.condenseWhite = default_options.condenseWhite;*/
+			proxied_object ||= display_object;
+			super(proxied_object);
 		}
 
 		/**

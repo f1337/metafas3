@@ -250,20 +250,26 @@ package ras3r
 		{
 			options.update({ alpha: 1 });
 			target.alpha = 0;
-			TweenLite.to(target, options.remove('duration'), options);
+			tween(target, options);
 		}
 
 		private function fade (target:Object, options:Hash) :void
 		{
 			options.update({ alpha: 0 });
 			target.alpha = 1;
-			TweenLite.to(target, options.remove('duration'), options);
+			tween(target, options);
 		}
 
 		public function hide (target:Object, effect:String, options:Object = null) :void
 		{
-			options = new Hash({ duration: 1 }).update(options).update({ onComplete: after_hide, onCompleteParams: [ target ] });
+			options = new Hash(options).update({ onComplete: after_hide, onCompleteParams: [ target ] });
 			this[effect](target, options);
+		}
+
+		public function tween (target:Object, options:Object = null) :void
+		{
+			options = new Hash({ duration: 1 }).update(options);
+			TweenLite.to(target, options.remove('duration'), options);
 		}
 
 		private function after_hide (target:Object) :void
@@ -285,13 +291,13 @@ package ras3r
 		{
 			options.update({ y: target.y });
 			target.y = (0 - bounds.height);
-			TweenLite.to(target, options.remove('duration'), options);
+			tween(target, options);
 		}
 
 		private function slide_out (target:Object, options:Hash) :void
 		{
 			options.update({ y: bounds.height });
-			TweenLite.to(target, options.remove('duration'), options);
+			tween(target, options);
 		}
 
 

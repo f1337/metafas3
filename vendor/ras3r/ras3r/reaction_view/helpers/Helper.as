@@ -17,7 +17,7 @@ package ras3r.reaction_view.helpers
 			var helper:Helper = new klass();
 
 			// execute parent helper closure if defined
-			if (closure is Function) closure(options);
+			if (closure is Function) closure(helper, options);
 
 			// assign properties from options hash
 			options.apply(helper);
@@ -30,9 +30,9 @@ package ras3r.reaction_view.helpers
 		/**
 		*	Constructor. Proxies a display_object.
 		**/
-		public function Helper (display_object:Object = null)
+		public function Helper (proxied_object:Object = null)
 		{
-			super(display_object);
+			super(proxied_object);
 		}
 	}
 }

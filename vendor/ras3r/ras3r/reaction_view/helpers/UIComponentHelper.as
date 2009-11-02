@@ -14,7 +14,7 @@ package ras3r.reaction_view.helpers
 		**/
 		static protected function create (klass:Class, options:Object = null) :UIComponentHelper
 		{
-			var closure:Function = function (hoptions:Object) :void
+			var closure:Function = function (helper:Helper, hoptions:Object) :void
 			{
 				// is a custom font defined?
 				// if so, set default embedFonts = true

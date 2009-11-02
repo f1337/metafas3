@@ -226,6 +226,12 @@ package ras3r
 			return (helper_for(TextInputHelper, options, 'text', object_name, property) as TextInput);
 		}
 
+		public function tool_tip_for (object_name:String, property:String, options:Object = null) :Helper
+		{
+			var o:DisplayObject = (helper_for(TooltipHelper, options, 'htmlText', object_name, property) as DisplayObject);
+			return this[object_name + '_' + property];
+		}
+
 		protected function truncate (tf:TextField, suffix:String = '...') :void
 		{
 			var fw:Number = tf.width;
