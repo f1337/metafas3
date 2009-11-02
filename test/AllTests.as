@@ -21,6 +21,7 @@ package
 	import ras3r.reaction_view.helpers.RuleHelperTest;
 	import ras3r.reaction_view.helpers.TextFieldHelperTest;
 	import ras3r.reaction_view.helpers.TextInputHelperTest;
+	import ras3r.reaction_view.helpers.TooltipHelperTest;
 	import ras3r.reaction_view.helpers.UIComponentHelperTest;
 	import ras3r.ReactionControllerTest;
 	import ras3r.ReactionViewTest;
@@ -43,6 +44,7 @@ package
 			add(ras3r.reaction_view.helpers.RuleHelperTest);
 			add(ras3r.reaction_view.helpers.TextFieldHelperTest);
 			add(ras3r.reaction_view.helpers.TextInputHelperTest);
+			add(ras3r.reaction_view.helpers.TooltipHelperTest);
 			add(ras3r.reaction_view.helpers.UIComponentHelperTest);
 			add(ras3r.ReactionControllerTest);
 			add(ras3r.ReactionViewTest);
