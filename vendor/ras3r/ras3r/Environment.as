@@ -22,13 +22,6 @@ package ras3r
 			{
 				env = 'staging';
 			}
-			// development: now DEFAULT if url =~ http
-			else if (url.search(/^https?:\/\/[^\/]+/) > -1)
-			// old way: localhost, 192.168.*, etc
-			// else if (url.search(/^http:\/\/(localhost|192\.168\.\d+\.\d+)[^\/]*\//) > -1)
-			{
-				env = 'development';
-			}
 			else if (Capabilities.playerType == 'StandAlone')
 			{
 				// test: test.swf
@@ -41,6 +34,13 @@ package ras3r
 				{
 					env = 'standalone';
 				}
+			}
+			// development: now DEFAULT if url =~ http
+			else
+			// old way: localhost, 192.168.*, etc
+			// else if (url.search(/^http:\/\/(localhost|192\.168\.\d+\.\d+)[^\/]*\//) > -1)
+			{
+				env = 'development';
 			}
 
 			// default:

@@ -51,6 +51,18 @@ package ras3r.reaction_view.helpers
 
 
 		// >>> PUBLIC PROPERTIES
+		private var _autoSize:String = 'none';
+		public function get autoSize () :String
+		{
+			return _autoSize;
+		}
+
+		public function set autoSize (s:String) :void
+		{
+			_autoSize = s;
+			setProperty('autoSize', s);
+		}
+
 		/**
 		*	textFieldHelper.display_object
 		*	Every Helper is expected to provide a display_object.
@@ -74,6 +86,7 @@ package ras3r.reaction_view.helpers
 			// apply new text format
 			this.defaultTextFormat = tf;
 			this.setTextFormat(tf);
+			reset_text_size();
 		}
 
 		/**
@@ -81,8 +94,7 @@ package ras3r.reaction_view.helpers
 		**/
 		public function set htmlText (t:String) :void
 		{
-			t ||= '';
-			setProperty('htmlText', t);
+			set_text_property('htmlText', t);
 		}
 
 		public function get htmlText () :String
@@ -95,8 +107,7 @@ package ras3r.reaction_view.helpers
 		**/
 		public function set text (t:String) :void
 		{
-			t ||= '';
-			setProperty('text', t);
+			set_text_property('text', t);
 		}
 
 		public function get text () :String
@@ -135,6 +146,39 @@ package ras3r.reaction_view.helpers
 			if (e.newValue == this.htmlText) return;
 			// update display object
 			this.htmlText = e.newValue;
+		}
+
+		private function reset_text_size () :void
+		{
+			// if autoSizing, work around scroll bug with this height hack
+			if (_autoSize != 'none')
+			{
+				with (proxied_object)
+				{
+					autoSize = _autoSize;
+					var h:Number = height;
+					autoSize = 'none';
+					height = h + getTextFormat().leading;
+				}
+			}
+		}
+
+		private function set_text_property (p:String, t:String) :void
+		{
+			// if autoSizing, work around scroll bug with this height hack
+			if (_autoSize != 'none') proxied_object.autoSize = _autoSize;
+			t ||= '';
+			setProperty(p, t);
+			// if autoSizing, work around scroll bug with this height hack
+			if (_autoSize != 'none')
+			{
+				with (proxied_object)
+				{
+					var h:Number = height;
+					autoSize = 'none';
+					height = h + getTextFormat().leading;
+				}
+			}
 		}
 	}
 }

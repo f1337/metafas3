@@ -61,13 +61,15 @@ package ras3r.reaction_view.helpers
 		/**
 		*	proxy for display_object.height
 		**/
+        private var _height:Number;
 		public function get height () :Number
 		{
-			return display_object.height;
+			return (_height ? _height : display_object.height);
 		}
 
 		public function set height (val:Number) :void
 		{
+            _height = val;
 			draw(0, val);
 			update_text_field_position();
 		}
@@ -201,6 +203,7 @@ package ras3r.reaction_view.helpers
 		**/
 		private function update_text_field_position (...args) :void
 		{
+            //Logger.info('update_text_field_position h: ' + height + )
 			text_field.y = Math.ceil((height - text_field.textHeight) / 2);
 		}
 	}

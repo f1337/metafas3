@@ -4,7 +4,6 @@ package ras3r.reaction_view.helpers
 
 	dynamic public class Helper extends ObjectProxy
 	{
-		// >>> STATIC METHODS
 		/**
 		*	Helper.create:
 		*		returns a new instance of Helper klass,
@@ -25,14 +24,18 @@ package ras3r.reaction_view.helpers
 			return helper;
 		}
 
+        /**
+        *   reference to proxied object
+        **/
+        public var proxied_object:Object;
 
-		// >>> PUBLIC METHODS
 		/**
 		*	Constructor. Proxies a display_object.
 		**/
 		public function Helper (proxied_object:Object = null)
 		{
 			super(proxied_object);
+            this.proxied_object = proxied_object;
 		}
 	}
 }

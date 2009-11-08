@@ -235,7 +235,7 @@ package ras3r
 			super(attributes);
 
 			// assign attributes if passed
-			if (attrs is XML)
+			if ((attrs is XML) || (attrs is ByteArray))
 			{
 				load((new Response(attrs)).body);
 			}

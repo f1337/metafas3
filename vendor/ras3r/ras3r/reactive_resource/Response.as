@@ -1,7 +1,8 @@
 package ras3r.reactive_resource
 {
-	import ras3r.*;
 	import com.adobe.serialization.json.JSON;
+	import flash.utils.*;
+	import ras3r.*;
 
 	public class Response
 	{
@@ -23,13 +24,16 @@ package ras3r.reactive_resource
 			// default parse as XML
 			else
 			{
+                // embedded XML is passed as a ByteArray
+                if (response is ByteArray) response = (new XML(response.readUTFBytes(response.length)));
+
 				// process response as XML
 				var result:XML = XML(response);
+
 				// is this RSS or plain-ole XML?
 				_body = (result.name() == 'rss') ? decode_rss(result) : decode_xml(result);
 			}
 		}
-
 
 
 		// >>> PUBLIC METHODS
