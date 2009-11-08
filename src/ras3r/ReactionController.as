@@ -323,6 +323,8 @@ package ras3r
 			// default controller name
 			if (! options.controller) options.controller = controller_name();
 			ReactionController.redirect_to(options);
+			if (_layout) after_hide(_layout);
+			if (content) after_hide(content);
 		}
 
 		// layout('application')

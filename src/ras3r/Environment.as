@@ -80,19 +80,19 @@ package ras3r
 			switch (env)
 			{
 				case 'development':
-					include "../../../config/environments/development.as"
+					include "../../../../config/environments/development.as"
 					break;
 				case 'production':
-					include "../../../config/environments/production.as"
+					include "../../../../config/environments/production.as"
 					break;
 				case 'staging':
-					include "../../../config/environments/staging.as"
+					include "../../../../config/environments/staging.as"
 					break;
 				case 'standalone':
-					include "../../../config/environments/standalone.as"
+					include "../../../../config/environments/standalone.as"
 					break;
 				case 'test':
-					include "../../../config/environments/test.as"
+					include "../../../../config/environments/test.as"
 					break;
 				default:
 					throw new ArgumentError('Environment.include_environment: Invalid environment specified!');
