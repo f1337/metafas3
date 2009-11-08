@@ -61,6 +61,7 @@ package ras3r.reaction_view.helpers
 		{
 			_autoSize = s;
 			setProperty('autoSize', s);
+			reset_text_size();
 		}
 
 		/**
@@ -156,7 +157,7 @@ package ras3r.reaction_view.helpers
 				with (proxied_object)
 				{
 					autoSize = _autoSize;
-					var h:Number = height;
+					var h:Number = textHeight;
 					autoSize = 'none';
 					height = h + getTextFormat().leading;
 				}
@@ -169,16 +170,7 @@ package ras3r.reaction_view.helpers
 			if (_autoSize != 'none') proxied_object.autoSize = _autoSize;
 			t ||= '';
 			setProperty(p, t);
-			// if autoSizing, work around scroll bug with this height hack
-			if (_autoSize != 'none')
-			{
-				with (proxied_object)
-				{
-					var h:Number = height;
-					autoSize = 'none';
-					height = h + getTextFormat().leading;
-				}
-			}
+			reset_text_size();
 		}
 	}
 }
