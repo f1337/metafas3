@@ -78,17 +78,25 @@ package ras3r
 		{
 			var _assigns:Hash = new Hash;
 
-			// for each public controller property,
-			// add key and current value to assigns hash
-            var properties:XMLList = describeType(controller).variable;
+			// for each public controller property and accessor,
+			// add property name and current value to assigns hash
+			_assigns_from_controller(describeType(controller).variable, _assigns);
+			// filter to use accessors declared in controllers.*
+			// .accessor returns public accessors up the inheritance chain,
+			// .variable only returns public properties from current class
+			_assigns_from_controller(describeType(controller).accessor.(@declaredBy.indexOf('controllers::') == 0), _assigns);
+
+			return _assigns;
+		}
+
+		private function _assigns_from_controller (properties:XMLList, _assigns:Hash) :void
+		{
 			var p:String;
             for (var n:String in properties)
 			{
 				p = properties.@name[n];
 				_assigns[p] = controller[p];
 			}
-
-			return _assigns;
 		}
 
 
