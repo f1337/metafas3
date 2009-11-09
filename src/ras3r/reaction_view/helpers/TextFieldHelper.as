@@ -61,7 +61,6 @@ package ras3r.reaction_view.helpers
 		{
 			_autoSize = s;
 			setProperty('autoSize', s);
-			reset_text_size();
 		}
 
 		/**
@@ -87,7 +86,6 @@ package ras3r.reaction_view.helpers
 			// apply new text format
 			this.defaultTextFormat = tf;
 			this.setTextFormat(tf);
-			reset_text_size();
 		}
 
 		/**
@@ -125,6 +123,7 @@ package ras3r.reaction_view.helpers
 		{
 			proxied_object ||= display_object;
 			super(proxied_object);
+			proxied_object.addEventListener('render', after_textfield_render);
 		}
 
 		/**
@@ -149,28 +148,32 @@ package ras3r.reaction_view.helpers
 			this.htmlText = e.newValue;
 		}
 
+		private function after_textfield_render (e:Object) :void
+		{
+			reset_text_size();
+		}
+
+
 		private function reset_text_size () :void
 		{
 			// if autoSizing, work around scroll bug with this height hack
 			if (_autoSize != 'none')
 			{
+				proxied_object.autoSize = _autoSize;
 				with (proxied_object)
 				{
 					autoSize = _autoSize;
-					var h:Number = textHeight;
+					var h:Number = height;
 					autoSize = 'none';
-					height = h + getTextFormat().leading;
+					height = h + getTextFormat().leading + 4;
 				}
 			}
 		}
 
 		private function set_text_property (p:String, t:String) :void
 		{
-			// if autoSizing, work around scroll bug with this height hack
-			if (_autoSize != 'none') proxied_object.autoSize = _autoSize;
 			t ||= '';
 			setProperty(p, t);
-			reset_text_size();
 		}
 	}
 }
