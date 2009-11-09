@@ -307,7 +307,6 @@ package ras3r
 				addEventListener('complete', args.complete);
 			}
 			(this.id ? update() : create());
-/*			create();*/
 		}
 
 		public function to_xml () :XML
@@ -345,6 +344,12 @@ package ras3r
 		{
 			return ReactiveResource.element_path(self(), this.id, (options ? options : prefix_options()));
 		}
+
+        protected function id_from_response (response:Object) :String
+        {
+            var matches:Array = response.location.toString().match(/\/([^\/]*?)(\.\w+)?$/);
+            return (matches ? matches[1] : null);
+        }
 
 		protected function update () :void
 		{
@@ -391,9 +396,8 @@ package ras3r
 		// >>> EVENT HANDLERS
 		private function after_create (e:Event) :void
 		{
-			var location:String = e.target.data.location.toString();
-			if (! (location.length)) return after_create_failed(e);
-			after_find(e);
+            this.id = id_from_response(e.target.data);
+            after_find(e);
 		}
 
 		private function after_create_failed (e:Event) :void
