@@ -279,6 +279,22 @@ package ras3r
 			return prefix_options;
 		}
 
+		public function put (path:String, options:Object = null) :void
+		{
+			// clear errors
+			errors = new Array();
+
+			if (options && options.complete is Function)
+			{
+				// bubble complete event
+				addEventListener('complete', options.complete);
+			}
+
+			path = element_path().replace(/(\/[^\/\.]*)(\.xml)/, '$1/' + path + '$2');
+			Logger.info('put: ' + path);
+			send('PUT', path, to_xml(), after_update, after_update_failed);
+		}
+
 		public function reload (args:Object = null) :void
 		{
 			// clear errors
@@ -320,6 +336,8 @@ package ras3r
 			{
 				var node:XML = new XML('<' + i + ' />');
 				var value:String = String(this[i]);
+				// trap combobox serialization bug: value serializes as [object Object]
+				if (value == '[object Object]' && this[i].data) value = String(this[i].data);
 				xml.appendChild(node);
 				// every child node's value must be cast to String
 				xml[i] = value;
