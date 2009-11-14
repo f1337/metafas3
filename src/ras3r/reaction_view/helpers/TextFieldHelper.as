@@ -26,27 +26,34 @@ package ras3r.reaction_view.helpers
 
 		static public function create (options:Object = null) :TextFieldHelper
 		{
-			var closure:Function = function (helper:Helper, hoptions:Object) :void
-			{
-				// per ActionScript 3 Language Reference (TextField#condenseWhite):
-				// "Set the condenseWhite property before setting the htmlText property."
-				if (hoptions.condenseWhite) helper.condenseWhite = hoptions.remove('condenseWhite');
+			return (Helper.create(TextFieldHelper, options, create_helper_callback) as TextFieldHelper);
+		}
 
-				// is a custom font defined?
-				// if so, set default embedFonts = true
-				hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
+		static public function create_helper_callback (helper:Helper, hoptions:Object) :void
+		{
+			// per ActionScript 3 Language Reference (TextField#condenseWhite):
+			// "Set the condenseWhite property before setting the htmlText property."
+			if (hoptions.condenseWhite) helper.condenseWhite = hoptions.remove('condenseWhite');
 
-				/*
-				Advanced anti-aliasing allows font faces to be rendered
-				at very high quality at small sizes. It is best used 
-				with applications that have a lot of small text. 
-				Advanced anti-aliasing is not recommended for very 
-				large fonts (larger than 48 points).
-				*/ 
-				hoptions.antiAliasType = (hoptions.embedFonts && hoptions.format.size <= 48 && hoptions.antiAliasType != 'normal') ? 'advanced' : 'normal';
-			};
+			// is a custom font defined?
+			// if so, set default embedFonts = true
+			hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
 
-			return (Helper.create(TextFieldHelper, options, closure) as TextFieldHelper);
+			/**
+			*	Advanced anti-aliasing allows font faces to be rendered
+			*	at very high quality at small sizes. It is best used
+			*	with applications that have a lot of small text.
+			*	Advanced anti-aliasing is not recommended for very
+			*	large fonts (larger than 48 points).
+			**/
+			hoptions.antiAliasType = (hoptions.embedFonts && hoptions.format.size <= 48 && hoptions.antiAliasType != 'normal') ? 'advanced' : 'normal';
+
+			// apply textFormat before assigning htmlText
+			// to prevent htmlText rendering errors:
+			if (hoptions.format) helper.format = hoptions.remove('format');
+
+			// another bugfixing attempt: strange bugs sizing!
+			if (hoptions.autoSize) helper.autoSize = hoptions.remove('autoSize');
 		}
 
 
@@ -61,6 +68,7 @@ package ras3r.reaction_view.helpers
 		{
 			_autoSize = s;
 			setProperty('autoSize', s);
+			//after_textfield_render({});
 		}
 
 		/**
@@ -114,6 +122,18 @@ package ras3r.reaction_view.helpers
 			return getProperty('text');
 		}
 
+		private var _width:Number;
+		public function get width () :Number
+		{
+			return (_width ? _width : proxied_object.width);
+		}
+
+		public function set width (val:Number) :void
+		{
+			_width = val;
+			proxied_object.width = val;
+		}
+
 
 		// >>> PUBLIC METHODS
 		/**
@@ -148,13 +168,7 @@ package ras3r.reaction_view.helpers
 			this.htmlText = e.newValue;
 		}
 
-		private function after_textfield_render (e:Object) :void
-		{
-			reset_text_size();
-		}
-
-
-		private function reset_text_size () :void
+		protected function after_textfield_render (e:Object) :void
 		{
 			// if autoSizing, work around scroll bug with this height hack
 			if (_autoSize != 'none')
@@ -168,6 +182,12 @@ package ras3r.reaction_view.helpers
 					height = h + getTextFormat().leading + 4;
 				}
 			}
+
+            // force the width in case autoSize broke it:
+            if (proxied_object.width != _width)
+            {
+                proxied_object.width = _width;
+            }
 		}
 
 		private function set_text_property (p:String, t:String) :void

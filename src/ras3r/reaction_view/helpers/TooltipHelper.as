@@ -13,27 +13,7 @@ package ras3r.reaction_view.helpers
 
 		static public function create (options:Object = null) :TooltipHelper
 		{
-			var closure:Function = function (helper:Helper, hoptions:Object) :void
-			{
-				// per ActionScript 3 Language Reference (TextField#condenseWhite):
-				// "Set the condenseWhite property before setting the htmlText property."
-				if (hoptions.condenseWhite) helper.condenseWhite = hoptions.remove('condenseWhite');
-
-				// is a custom font defined?
-				// if so, set default embedFonts = true
-				hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
-
-				/*
-				Advanced anti-aliasing allows font faces to be rendered
-				at very high quality at small sizes. It is best used 
-				with applications that have a lot of small text. 
-				Advanced anti-aliasing is not recommended for very 
-				large fonts (larger than 48 points).
-				*/ 
-				hoptions.antiAliasType = (hoptions.embedFonts && hoptions.format.size <= 48 && hoptions.antiAliasType != 'normal') ? 'advanced' : 'normal';
-			};
-
-			return (Helper.create(TooltipHelper, options, closure) as TooltipHelper);
+			return (Helper.create(TooltipHelper, options, create_helper_callback) as TooltipHelper);
 		}
 
 
@@ -71,7 +51,9 @@ package ras3r.reaction_view.helpers
 		{
             _height = val;
 			draw(0, val);
-			update_text_field_position();
+            // we don't change the textfield height here,
+            // so call after_textfield_render to do so
+			after_textfield_render({});
 		}
 
 		private var _point:Object;
@@ -102,15 +84,15 @@ package ras3r.reaction_view.helpers
 		/**
 		*	proxy for display_object.width
 		**/
-		public function get width () :Number
+		override public function get width () :Number
 		{
-			return display_object.width;
+			return super.width;
 		}
 
-		public function set width (val:Number) :void
+		override public function set width (val:Number) :void
 		{
 			draw(val, 0);
-			text_field.width = val;
+            super.width = val;
 		}
 
 		/**
@@ -150,7 +132,6 @@ package ras3r.reaction_view.helpers
 			display_object = new Sprite();
 			display_object.addChild(arrow);
 			display_object.addChild(text_field);
-			text_field.addEventListener('render', update_text_field_position);
 		}
 
 
@@ -201,9 +182,9 @@ package ras3r.reaction_view.helpers
 		/**
 		*	vertically center text field
 		**/
-		private function update_text_field_position (...args) :void
+		override protected function after_textfield_render (e:Object) :void
 		{
-            //Logger.info('update_text_field_position h: ' + height + )
+			super.after_textfield_render(e);
 			text_field.y = Math.ceil((height - text_field.textHeight) / 2);
 		}
 	}
