@@ -15,7 +15,6 @@ package ras3r.reactive_resource
 		public var path:String;
 
 		private var loader:URLLoader;
-/*		private var today:Number = (new Date().getTime());*/
 
 		public function Request (_method:String, _path:String)
 		{
@@ -23,7 +22,6 @@ package ras3r.reactive_resource
 			path = _path;
 
 			loader = new URLLoader();
-			//loader = new SocketURLLoader();			
 			loader.addEventListener('complete', complete);
 			loader.addEventListener('httpStatus', status);
 			loader.addEventListener('ioError', io_error);
@@ -31,7 +29,6 @@ package ras3r.reactive_resource
 			loader.addEventListener('securityError', security_error);
 		}
 
-/*		public function load (timestamp:Number = 0) :void*/
 		public function load () :void
 		{
 			// DO NOT FORCE TIMESTAMPS HERE!!!
@@ -48,11 +45,7 @@ package ras3r.reactive_resource
 			request.data = data;
 
 			request.method = (method == 'GET') ? 'GET' : 'POST';
-			if (method != 'GET')
-			{
-				request.requestHeaders.push(new URLRequestHeader('Flash-Rails', 'true'));
-				if (method != 'POST') request.requestHeaders.push(new URLRequestHeader('X_HTTP_METHOD_OVERRIDE', method));
-			}
+			if (method != 'GET' && method != 'POST') request.requestHeaders.push(new URLRequestHeader('X_HTTP_METHOD_OVERRIDE', method));
 
 			loader.load(request);
 		}

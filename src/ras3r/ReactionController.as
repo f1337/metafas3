@@ -151,8 +151,9 @@ package ras3r
 
 			// Open security sandbox
 			var baseUrl:String = url_for('');
+
+			// NEVER allow Insecure Domain: bad dog!!
 			Security.allowDomain(baseUrl);
-//			Security.allowInsecureDomain(baseUrl);
 
 			// load policy file
 //			Security.loadPolicyFile(baseUrl + '/crossdomain.xml');
