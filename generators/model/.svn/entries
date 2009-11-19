@@ -1,42 +1,31 @@
 8
 
 dir
-7218
-svn+ssh://ustrive.net/home/repos/trunk/member.strive.to/newidgetui/generators/resource
-svn+ssh://ustrive.net/home/repos/trunk
+337113
+https://subversion.resource.com/repos/ResourceInteractive/Internal/OfftheWall/trunk/flash/flash_ui/vendor/ras3r/generators/model
+https://subversion.resource.com/repos/ResourceInteractive
 
 
 
-2009-03-17T22:30:11.418974Z
-6540
-dmilliron
+2009-11-19T18:42:32.724676Z
+337106
+mfleet
 
 
 svn:special svn:externals svn:needs-lock
-
-
-
-
-
-
-
-
-
-
-
-aaa9f5ea-4315-0410-bce3-b15ebf20dd12
 
-resource_generator.rb
+model_generator.rb
 file
 
 
 
 
-2009-03-19T04:34:33.000000Z
-a58e4f9d1214a874dd3d87c8314952cc
-2009-03-17T22:30:11.418974Z
-6540
-dmilliron
+2009-11-19T18:42:23.000000Z
+336b8f126d139bf845d68935a1d9132d
+2009-11-19T18:42:32.724676Z
+337106
+mfleet
+has-props
 
 templates
 dir

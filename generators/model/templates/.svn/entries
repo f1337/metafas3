@@ -1,64 +1,29 @@
 8
 
 dir
-7218
-svn+ssh://ustrive.net/home/repos/trunk/member.strive.to/newidgetui/generators/resource/templates
-svn+ssh://ustrive.net/home/repos/trunk
+337113
+https://subversion.resource.com/repos/ResourceInteractive/Internal/OfftheWall/trunk/flash/flash_ui/vendor/ras3r/generators/model/templates
+https://subversion.resource.com/repos/ResourceInteractive
 
 
 
-2008-06-02T19:36:24.292999Z
-5838
+2009-11-19T18:42:32.724676Z
+337106
 mfleet
 
 
 svn:special svn:externals svn:needs-lock
-
-
-
-
-
-
-
-
-
-
-
-aaa9f5ea-4315-0410-bce3-b15ebf20dd12
 
-Resource.as
+Model.as
 file
 
 
 
 
-2009-03-19T04:34:33.000000Z
-69f60d6e795fde6937ba0ed8945e77d2
-2008-06-02T19:30:31.027201Z
-5837
+2009-11-19T18:42:23.000000Z
+b1bbfc4604962236492496699eeb37b3
+2009-11-19T18:42:32.724676Z
+337106
 mfleet
-
-TestSuite.as
-file
-
-
-
-
-2009-03-19T04:34:33.000000Z
-3256171a2cf26e0d702d643d1ca57fb8
-2008-04-28T05:54:15.369649Z
-5560
-mfleet
-
-TestCase.as
-file
-
-
-
-
-2009-03-19T04:34:33.000000Z
-9a878bffa0730158e7b845e630c64646
-2008-05-27T03:42:30.438364Z
-5784
-mfleet
+has-props
 
