@@ -291,7 +291,6 @@ package ras3r
 			}
 
 			path = element_path().replace(/(\/[^\/\.]*)(\.xml)/, '$1/' + path + '$2');
-			Logger.info('put: ' + path);
 			send('PUT', path, to_xml(), after_update, after_update_failed);
 		}
 

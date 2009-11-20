@@ -113,7 +113,7 @@ package ras3r
 		public function build () :void
 		{
 			// override this method in subclasses (think: configUI())
-			Logger.info('DEPRECATION NOTICE: ReactionView#build');
+/*			Logger.info('DEPRECATION NOTICE: ReactionView#build');*/
 			//throw new Error('You must override build() in subclasses!');
 		}
 
@@ -299,7 +299,6 @@ package ras3r
 			var name:String = (object_name + '_' + object_property);
 			options = new Hash({ name: name }).update(options);
 			// TODO: replace with databinding
-			//Logger.info(assign_property + ' = ' + object_name + '.' + object_property + ' = ' + this[object_name][object_property]);
 			if (this[object_name][object_property] !== null) options[assign_property] = this[object_name][object_property];
 			this[name] = helper.create(options);
 			if (this[name].hasOwnProperty('bind_to'))
