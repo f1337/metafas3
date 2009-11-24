@@ -14,18 +14,52 @@ package ras3r.reaction_view.helpers
 		**/
 		static protected function create (klass:Class, options:Object = null) :UIComponentHelper
 		{
-			var closure:Function = function (helper:Helper, hoptions:Object) :void
-			{
-				// is a custom font defined?
-				// if so, set default embedFonts = true
-				hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
-			}
+			return (Helper.create(klass, options, create_helper_callback) as UIComponentHelper);
+		}
 
-			return (Helper.create(klass, options, closure) as UIComponentHelper);
+		static private function create_helper_callback (helper:Helper, hoptions:Object) :void
+		{
+			// is a custom font defined?
+			// if so, set default embedFonts = true
+			hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
+
+			/**
+			*	Advanced anti-aliasing allows font faces to be rendered
+			*	at very high quality at small sizes. It is best used
+			*	with applications that have a lot of small text.
+			*	Advanced anti-aliasing is not recommended for very
+			*	large fonts (larger than 48 points).
+			**/
+			hoptions.antiAliasType = (hoptions.embedFonts && hoptions.format.size <= 48 && hoptions.antiAliasType != 'normal') ? 'advanced' : 'normal';
+
+			// apply textFormat before assigning any text
+			// to prevent text rendering errors:
+			if (hoptions.format) helper.format = hoptions.remove('format');
 		}
 
 
 		// >>> PUBLIC PROPERTIES
+		/**
+		*	helper.antiAliasType = 'advanced' or 'normal'
+		*		applies value to display_object's textField (if present)
+		*		write-only
+		**/
+		public function set antiAliasType (type:String) :void
+		{
+			if (hasOwnProperty('textField'))
+			{
+				try
+				{
+					this.textField.antiAliasType = type;
+				}
+				// TextInput chokes when antiAliasType is set
+				catch (exception:Object)
+				{
+					// do nothing
+				}
+			}
+		}
+
 		/**
 		*	helper.embedFonts = true
 		*		applies value to "embedFonts" style on display_object

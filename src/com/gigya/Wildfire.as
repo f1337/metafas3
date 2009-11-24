@@ -14,59 +14,121 @@ package com.gigya
 	dynamic public class Wildfire extends Sprite
 	{
 		private var config:Object = {
-			advancedTracking	:	true,
-			defaultContent		:	'',
+			width 				:	200,
 			height				:	250,
-			onClose				:	after_close,
+
+			advancedTracking	:	true,
 			partner				:	000, // <-- YOUR PARTNER ID GOES HERE
-			UIConfig			:	<config baseTheme="v2"><display showDesktop="false" showEmail="true" showBookmark="true" showCloseButton="true"></display><body><controls><snbuttons iconsOnly="true"></snbuttons></controls></body></config>,
+			showCloseButton		:	true,
+			UIConfig			:	<config baseTheme="v2"><display showEmail="true" showBookmark="true" codeBoxHeight="auto" showCloseButton="true"></display><body><controls><snbuttons iconsOnly="true"></snbuttons></controls></body></config>,
+
+			// event handlers
+			onClose				:	after_close,
+			onPostProfile		:	after_post,
+			onLoad				:	after_load,
+
+			// content
+			contentIsLayout		:	false, // is it a MySpace layout?
+			defaultContent		:	markup, // the content to be posted
 			// true: Use FB app
 			// false: Post to FB news feed
-			useFacebookMystuff	:	false,
-			width 				:	200
+			useFacebookMystuff	:	false
+			// You can set different content for each network
+			//myspaceContent : '',
+			//friendsterContent : '',
+			//facebookContent : '',
+			//taggedContent : '',
+			//bloggerContent : '',
+			//hi5Content : '',
+			//freewebsContent : '',
+			//xangaContent : '',
+			//livejurnalContent : '',
+			//blackplanetContent : '',
+			//piczoContent : '',
+			//wordpressContent : '',
+			//typepadContent : '',
+
+			//bulletinSubject : '',  // The subject for bulletin messages of your content
+			//bulletinHTML : '',   // code for the bulletin, if it is different than the defaultContent
+
+			//facebookURL : '', // If you have your own facebook application you can set it's URL here
 		};
+
+		private function get domain () :String
+		{
+			return ((ssl ? 'cdns' : 'cdn') + '.gigya.com');
+		}
+
+		private var loader:Loader = new Loader();
 		private var module_id:String = 'PostModule1';
-		private var url:String = 'http://cdn.gigya.com/Wildfire/swf/WildfireInAS3.swf?ModuleID=';
+		private var ssl:Boolean = false;
+        private var swf:String; // <-- YOUR SWF URL GOES HERE
+
+		private function get url () :String
+		{
+			return ((ssl ? 'https://' : 'http://') + domain + '/Wildfire/swf/WildfireInAS3.swf?ModuleID=');
+		}
+
 		private var wildfire:DisplayObject;
 
 		public function Wildfire (options:Object = null)
 		{
 			super();
 
-			// allow cross-domain script for Gigya
-			Security.allowDomain('cdn.gigya.com');
-			Security.allowInsecureDomain('cdn.gigya.com');
+			// hide until requested
+			hide();
 
 			// merge options into default config
-			config = new Hash(config).update(options);
+			// "config" object passed to Gigya may *not* be a Hash
+			options = new Hash(options);
+            if (options.ssl) ssl = options.remove('ssl');
+            if (options.swf) swf = options.remove('swf');
+			options.apply(config);
+
+			// allow cross-domain script for Gigya
+			Security.allowDomain('cdns.gigya.com');
+			Security.allowDomain('cdn.gigya.com');
 
 			// load Wildfire remote .swf
-			var loader:Loader = new Loader();
 			this[module_id] = config;
 			loader.contentLoaderInfo.addEventListener('ioError', after_load_error);
 			loader.load(new URLRequest(url + module_id));
 			wildfire = loader.content;
 			addChild(loader);
-
-			addEventListener('addedToStage', after_added_to_stage);
 		}
 
-		// >>> PRIVATE METHODS
-		private function after_added_to_stage (e:Event) :void
-		{
-			// generate markup
-			config.defaultContent = markup();
-		}
-
-		private function after_close (e:Object) :void
+		public function hide ()  :void
 		{
 			visible = false;
+		}
+
+		public function show ()  :void
+		{
+			visible = true;
+		}
+
+
+		// >>> EVENT HANDLERS
+		private function after_close (e:Object) :void
+		{
+			hide();
 			wildfire['INIT']();
+		}
+
+		private function after_load (e:Object) :void
+		{
+			Logger.info('Wildfire#after_load! e.type: ' + e.type + ', e.ModuleID=' + e.ModuleID);
 		}
 
 		private function after_load_error (e:Event)  :void
 		{
 			Logger.info('Wildfire#after_load_error: ' + e);
+		}
+
+		private function after_post (e:Object) :void
+		{
+			dispatchEvent(new Event('wildfire_post'));
+			Logger.info('Wildfire#after_post! e.type: ' + e.type + ', e.network: ' + e.network + ', e.partnerData: ' + e.partnerData);
 		}
 
 		private function markup () :String
@@ -89,28 +151,10 @@ package com.gigya
 			  <param name="quality" value="autohigh" />
 			</object>
 			]]>).toString().replace(/\s+/g, ' ');
-			markup = markup.replace('{height}', bounds.height);
-			markup = markup.replace('{width}', bounds.width);
-			markup = markup.replace(/\{swf\}/g, Application.application.url);
+			markup = markup.replace('{height}', 426);
+			markup = markup.replace('{width}', 420);
+			markup = markup.replace(/\{swf\}/g, swf);
 			return markup;
 		}
 	}
 }
-
-
-/*    //This code assigns the configurations you set in our site to the Wildfire configuration object
-    cfg['width']='340';
-cfg['height']='260';
-cfg['widgetTitle']='Thunder Lizard';
-cfg['advancedTracking']='true';
-cfg['useFacebookMystuff']='false';
-cfg['partner']='738331';
-cfg['UIConfig']='<config baseTheme="v2"><display showDesktop="false" showEmail="true" showBookmark="true" showCloseButton="true"></display><body><controls><snbuttons iconsOnly="true"></snbuttons></controls></body></config>';;
-
-    // set up an event handler for the onClose event, this is called when the Wildfire UI is closed.
-    cfg['onClose']=function(eventObj:Object):void{
-        mcWF.visible = false;
-        ldr.content['INIT']();
-        //you can do additional cleanup here
-    }
-*/

@@ -113,6 +113,7 @@ package ras3r.reaction_view.helpers
 	}
 }
 
+import ras3r.*;
 class MyButton extends fl.controls.Button
 {
 	override protected function drawLayout () :void
@@ -121,8 +122,12 @@ class MyButton extends fl.controls.Button
 		// 8 >> 4 TEXT
 		// 12 >> 12 TEXT
 		// 8 TEXT
-		if (icon) icon.x = 8;
-		textField.x = ((icon ? icon.x : 0) + 8);
-		textField.y = Math.ceil((height - textField.textHeight) / 2) + 1;
+/*		if (icon) icon.x = 8;*/
+/*		textField.x = ((icon ? icon.x : 0) + 8);*/
+
+		// vertically center:
+		// SEE TextLineMetrics docs
+		// textHeight + 2 pixel gutter
+		textField.y = Math.round((height - (textField.textHeight + 2)) / 2);
 	}
 }
