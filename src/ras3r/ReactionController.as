@@ -261,8 +261,11 @@ package ras3r
 			tween(target, options);
 		}
 
-		public function hide (target:Object, effect:String, options:Object = null) :void
+		public function hide (target:Object, effect:String = null, options:Object = null) :void
 		{
+			// hide(target)
+			if (! effect) return after_hide(target);
+			// hide(target, effect)
 			options = new Hash(options).update({ onComplete: after_hide, onCompleteParams: [ target ] });
 			this[effect](target, options);
 		}
@@ -324,8 +327,8 @@ package ras3r
 			// default controller name
 			if (! options.controller) options.controller = controller_name();
 			ReactionController.redirect_to(options);
-			if (_layout) after_hide(_layout);
-			if (content) after_hide(content);
+			if (_layout) hide(_layout);
+			if (content) hide(content);
 		}
 
 		// layout('application')
@@ -369,15 +372,6 @@ package ras3r
 			// update options with reference to this controller
 			options.controller = this;
 
-			// render layout
-/*			_layout = layout(options.remove('layout'), options);*/
-/*			var layout_template:String = has_layout(options.remove('layout'));
-			if (layout_template)
-			{
-				var layout_options:Hash = options.merge({ scrollRect: bounds });
-				layout = new_view(('layouts/' + layout_template), layout_options);
-			}
-*/
 			// render view/content
 			var view_bounds:Rectangle = (_layout ? _layout.bounds : bounds);
 			var view_options:Hash = options.merge({
@@ -393,31 +387,37 @@ package ras3r
 			// show controller/layout/view stark
 			visible = true;
 			dispatchEvent(new Event('show_view'));
-/*			content.show();*/
 
 			// return reference to controller
 			return this;
 		}
 
-		// _show({ controller: 'home', action: 'show' }, 'appear', { duration: 1 });
+		// content = _show({ controller: 'home', action: 'show' }, 'appear', { duration: 1 });
 /*		options = new Hash({ duration: 1 }).update(options).update({ onComplete: after_hide, onCompleteParams: [ target ] });
 		this[effect](target, options);
-*/		public function _show (render_options:Object, effect:String, tween_options:Object = null) :void
+*/		public function _show (render_options:Object, effect:String = null, tween_options:Object = null) :*
 		{
 			render_options = new Hash({ controller: controller_name() }).update(render_options);
 			tween_options = new Hash({ duration: 1 }).update(tween_options);
 
 			// create new controller instance by name
-			content = controller(render_options.remove('controller'));
+			var content:* = controller(render_options.remove('controller'));
 			// invoke controller action via process method
 			var action:String = render_options.remove('action');
-			var f:Function = this[effect];
-			content.addEventListener('show_view', function (e:Object) :void
+
+			if (effect)
 			{
-				f(content, tween_options);
-			});
+				var f:Function = this[effect];
+				content.addEventListener('show_view', function (e:Object) :void
+				{
+					f(content, tween_options);
+				});
+			}
+
 			content.bounds = (_layout ? _layout.bounds : bounds);
 			content.process(action, render_options);
+
+			return content;
 		}
 
 
