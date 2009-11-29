@@ -19,6 +19,8 @@ package ras3r
 
 	import mx.events.PropertyChangeEvent;
 
+/*	use namespace flash_proxy;*/
+
 	public class ReactionView extends Sprite
 	{
 		// >>> STATIC PROPERTIES
@@ -126,8 +128,37 @@ package ras3r
 		{
 			dispatchEvent(new Event('show_view'));
 		}
-		
+
+
+
 		// >>> PROTECTED METHODS
+		/**
+		 *  Returns the value of the proxied object's method with the specified name.
+		 *
+		 *  @param name The name of the method being invoked.
+		 *
+		 *  @param rest An array specifying the arguments to the
+		 *  called method.
+		 *
+		 *  @return The return value of the called method.
+		 */
+/*
+		override flash_proxy function callProperty (name:*, ... rest): *
+		{
+			if (name.substr(-4) == '_for')
+			{
+				var helper:Helper = getDefinitionByName(Inflector.camelize(name.replace('_for', '_helper')));
+				return (helper_for(helper, rest));
+			}
+			else
+			{
+				rest.unshift(name);
+				return super.callProperty.apply(null, rest);
+			}
+		}
+*/
+
+
 		// >>> HELPERS
 		/**
 		*	TODO HELPERS:
@@ -192,12 +223,12 @@ package ras3r
 
 		protected function label_for (object_name:String, property:String, html:String, options:Object = null, styles:Object = null) :TextField
 		{
-			options = new Hash({ htmlText: html }).update(options);
-			if (debug) options = new Hash({ opaqueBackground: 0xddffdd }).update(options);
+			options = new Hash(options).update({ htmlText: html });
+			if (debug) options.update({ opaqueBackground: 0xddffdd });
 
-			var sprite:DisplayObject = TextFieldHelper.create(options).display_object;
-			assign_id_for_object({ id: (object_name + '_' + property + '_label') }, sprite);
-			return (addChild(sprite) as TextField);
+			var helper:Helper = TextFieldHelper.create(options);
+			assign_id_for_object({ id: (object_name + '_' + property + '_label') }, helper);
+			return (addChild(helper.display_object) as TextField);
 		}
 
 		protected function render (template:String, assigns:Object = null) :DisplayObject
@@ -293,7 +324,6 @@ package ras3r
 			}
 		}
 
-
 		private function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject
 		{
 			var name:String = (object_name + '_' + object_property);
@@ -307,7 +337,18 @@ package ras3r
 			}
 			return addChild(this[name].display_object);
 		}
+/*
+		private function new_helper_for (helper:*, object_name:String, object_property:String, options:Object) :DisplayObject
+		{
+			var name:String = (object_name + '_' + object_property);
+			options = new Hash({ name: name }).update(options);
 
+			this[name] = helper.create(options);
+			this[name].bind_to(this[object_name], object_property);
+
+			return addChild(this[name].display_object);
+		}
+*/
 
 		// >>> EVENT HANDLERS
 		private function after_added_to_stage (e:Event) :void

@@ -28,23 +28,8 @@ package ras3r
 	{
 		XML.prettyPrinting = false;
 
-		// >>> PUBLIC PROPERTIES
-		// Hashmap to track databound properties whose change events need broadcasted.
-		public var attributes:Object = new Object();
-		public var errors:Array = new Array();
-		public var location:String; // prevent location from serialzing
-		public var prefix:String = '/';
-
-		public function set error (msg:String) :void
-		{
-			errors.push(msg);
-		}
-
-		// >>> PROTECTED PROPERTIES
-
-		// >>> CONSTANTS
-
 		// >>> STATIC PROPERTIES
+		// >>> STATIC METHODS
 		static private function add_observers (o:*, options:Hash, complete:String = 'complete') :void
 		{
 			// after_find == complete
@@ -191,11 +176,8 @@ package ras3r
 
 		// For use ONLY in ReactiveResource subclasses for static init:
 		// extend(prototype.constructor)
-		static public function extend (c:Class, prefix:String = '/') :void
+		static public function model (c:Class) :void
 		{
-			// set prefix
-			c.prototype.prefix = prefix;
-
 			// define find method
 			c['find'] = function (...args) :*
 			{
@@ -226,6 +208,19 @@ package ras3r
 			url += collection_name(self);
 			
 			return url;
+		}
+
+
+		// >>> PUBLIC PROPERTIES
+		// Hashmap to track databound properties whose change events need broadcasted.
+		public var attributes:Object = new Object();
+		public var errors:Array = new Array();
+		public var location:String; // prevent location from serialzing
+		public var prefix:String = '/';
+
+		public function set error (msg:String) :void
+		{
+			errors.push(msg);
 		}
 
 
@@ -274,7 +269,8 @@ package ras3r
 
 			// for prefix: /stores/:store_id/
 			// calls inject_prefix_option(':store_id', 'store_id', 8, '/stores/:store_id/')
-			self().prototype.prefix.replace(/:(\w+)/g, inject_prefix_option);
+/*			self().prototype.prefix.replace(/:(\w+)/g, inject_prefix_option);*/
+			prefix.replace(/:(\w+)/g, inject_prefix_option);
 
 			return prefix_options;
 		}
@@ -347,6 +343,35 @@ package ras3r
 		}
 
 		// >>> PROTECTED METHODS
+		/**
+		 *  validates_presence_of('first_name', 'last_name', { message: '...' })
+		 *  =>
+		 *  Validates.presence_of(this, 'first_name', 'last_name', { message: '...' })
+		 *
+		 *  @param name The name of the validator method being invoked.
+		 *
+		 *  @param rest An array specifying the arguments to the
+		 *  called validator method.
+		 *
+		 *  @return The return value of the called validator method.
+		 */
+		override flash_proxy function callProperty (name:*, ... rest): *
+		{
+			if (name.toString().indexOf('validates_') == 0)
+			{
+				// add "this" to validator args
+				rest.unshift(this);
+				// invoke the validator method
+				Validates[name.toString().replace('validates_', '')].apply(null, rest);
+				return;
+			}
+/*			else
+			{
+				rest.unshift(name);
+				return super.callProperty.apply(null, rest);
+			}
+*/		}
+
 		protected function create () :void
 		{
 			send('POST', collection_path(), to_xml(), after_create, after_create_failed);
@@ -378,6 +403,15 @@ package ras3r
 			return getDefinitionByName(getQualifiedClassName(this).replace('::', '.')).prototype.constructor;
 		}
 
+	    /**
+	     *  Updates the specified property on the proxied object
+	     *  and sends notification of the update to the handler.
+	     *
+	     *  @param name Object containing the name of the property that
+	     *  should be updated on the proxied object.
+	     *
+	     *  @param value Value that should be set on the proxied object.
+	     */
 		override flash_proxy function setProperty (name:*, value:*) :void
 		{
 			// sanitize Boolean 'false' values
@@ -472,14 +506,25 @@ package ras3r
 
 		protected function after_property_change (e:PropertyChangeEvent) :void
 		{
-/*			Logger.info('after_property_change: ' + [ e.kind, e.property, e.oldValue, e.newValue, e.source.name ].join(', '));*/
-	        var event:PropertyChangeEvent = new PropertyChangeEvent(e.property + '_change');
-	        event.kind = e.kind;
-	        event.property = e.property;
-	        event.oldValue = e.oldValue;
-	        event.newValue = e.newValue;
-	        event.source = this;
-			dispatchEvent(event);
+			// dispatch property_change for "change" listeners
+	        var changeEvent:PropertyChangeEvent = new PropertyChangeEvent(e.property + '_change');
+	        changeEvent.kind = e.kind;
+	        changeEvent.property = e.property;
+	        changeEvent.oldValue = e.oldValue;
+	        changeEvent.newValue = e.newValue;
+	        changeEvent.source = this;
+			dispatchEvent(changeEvent);
+
+			// dispatch property_validate for validators
+			// prevents validators' stopImmediatePropagation() from
+			// 	interfering with "change" listeners
+	        var validateEvent:PropertyChangeEvent = new PropertyChangeEvent(e.property + '_validate');
+	        validateEvent.kind = e.kind;
+	        validateEvent.property = e.property;
+	        validateEvent.oldValue = e.oldValue;
+	        validateEvent.newValue = e.newValue;
+	        validateEvent.source = this;
+			dispatchEvent(validateEvent);
 		}
 
 		private function after_update (e:Event) :void

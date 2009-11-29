@@ -18,12 +18,21 @@ package models
 
 	dynamic public class <%= class_name %> extends ReactiveResource
 	{
-		// <%= class_name %>.site = 'http://www.example.com';
-		static public var site:String;
-
 		// mixin static methods, properties during static init
-		extend(prototype.constructor);
-		static public var find:Function; // = ReactiveResource.find;
+		extend(<%= class_name %>);
+
+		// syntactic sugar for <%= class_name %>.find:
+		static public var find:Function;
+
+		/**
+		* Blantantly copied from api.rubyonrails.org:
+		* Sets the URI of the REST resources to map for this class to the
+		* value in the site argument. The site variable is required for
+		* ReactiveResource‘s mapping to work.
+		*
+		* <%= class_name %>.site = 'http://www.example.com';
+		**/
+		static public var site:String;
 
 		// >>> PUBLIC PROPERTIES
 		// >>> PUBLIC METHODS
