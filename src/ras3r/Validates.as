@@ -36,6 +36,24 @@ package ras3r
 		}
 
 		/**
+		* validates_each('first_name', 'last_name', {
+		* 	message: 	'is invalid',
+		*	allow_nil:	false,
+		*	allow_blank:false,
+		* 	iff: 		function,
+		*	unless: 	function
+		* }, function (e:PropertyChangeEvent) :Boolean {
+		* 	return (e.newValue == 'Bob');
+		* })
+		**/
+		static public function each (object:Object, ...attr_names) :void
+		{
+			var validator:Function = (extract_options(attr_names) as Function);
+			var options:Hash = new Hash({ message: "{attr} is invalid" }).update(extract_options(attr_names));
+			add_validator(object, attr_names, options, validator);
+		}
+
+		/**
 		* validates_email_format_of('email', {
 		* 	message: 	'is invalid',
 		*	allow_nil:	false,
@@ -74,7 +92,7 @@ package ras3r
 		static public function format_of (object:Object, ...attr_names) :void
 		{
 			var options:Hash = new Hash({ message: "{attr} is invalid" }).update(extract_options(attr_names));
-			add_validator(object, attr_names, options, function (e:Object) :Boolean {
+			add_validator(object, attr_names, options, function (e:PropertyChangeEvent) :Boolean {
 				return Boolean(e.newValue.match(options.using) != null);
 			});
 		}
@@ -89,7 +107,7 @@ package ras3r
 		static public function presence_of (object:Object, ...attr_names) :void
 		{
 			var options:Hash = new Hash({ message: "{attr} can't be blank" }).update(extract_options(attr_names));
-			add_validator(object, attr_names, options, function (e:Object) :Boolean {
+			add_validator(object, attr_names, options, function (e:PropertyChangeEvent) :Boolean {
 				return Boolean(e.newValue);
 			});
 		}
@@ -111,6 +129,7 @@ package ras3r
 
 					// perform validation, create result object
 					var result:ValidationResult;
+					e.source = object;
 					if (! validator(e))
 					{
 						// INVALID! stop ALL other validators NOW!
@@ -132,7 +151,8 @@ package ras3r
 		static private function extract_options (args:Array) :Object
 		{
 			return (
-				(! (args[(args.length - 1)] is String)) ? args.pop() : {}
+				(typeof args[(args.length - 1)]).match(/function|object/) ? args.pop() : {}
+/*				(! (args[(args.length - 1)] is String)) ? args.pop() : {}*/
 			);
 		}
 	}
