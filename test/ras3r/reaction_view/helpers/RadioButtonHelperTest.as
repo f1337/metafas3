@@ -7,7 +7,6 @@ package ras3r.reaction_view.helpers
 	import flash.events.*;
 	import flash.text.*;
 	import ras3r.*;
-	import ras3r.utils.*;
 
 	public class RadioButtonHelperTest extends Spec
 	{

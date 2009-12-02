@@ -5,7 +5,6 @@ package ras3r.reaction_view.helpers
 	import flash.display.*;
 	import flash.text.*;
 	import ras3r.*;
-	import ras3r.utils.*;
 
 	dynamic public class RadioButtonGroupHelper extends Helper
 	{

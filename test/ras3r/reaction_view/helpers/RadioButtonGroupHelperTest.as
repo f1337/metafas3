@@ -5,7 +5,6 @@ package ras3r.reaction_view.helpers
 	import fl.data.*;
 	import flash.events.*;
 	import ras3r.*;
-	import ras3r.utils.*;
 
 	public class RadioButtonGroupHelperTest extends Spec
 	{

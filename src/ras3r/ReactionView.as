@@ -4,7 +4,6 @@ package ras3r
 
 	import ras3r.*;
 	import ras3r.reaction_view.helpers.*;
-	import ras3r.utils.*;
 
 	import fl.core.*;
 	import fl.controls.*;
@@ -18,8 +17,6 @@ package ras3r
 	import flash.utils.*;
 
 	import mx.events.PropertyChangeEvent;
-
-/*	use namespace flash_proxy;*/
 
 	public class ReactionView extends Sprite
 	{

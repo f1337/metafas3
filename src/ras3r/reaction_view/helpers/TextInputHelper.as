@@ -46,14 +46,6 @@ package ras3r.reaction_view.helpers
 		public var display_object:TextInput = new TextInput();
 
 		/**
-		*	textInputHelper.invalid = function event listener
-		**/
-		public function set invalid (listener:Function) :void
-		{
-			display_object.addEventListener('invalid', listener);
-		}
-
-		/**
 		*	textInputHelper.padding: applied to "textPadding" style of TextInput
 		**/
 		public function set padding (padding:Number) :void
@@ -75,18 +67,10 @@ package ras3r.reaction_view.helpers
 			return getProperty('text');
 		}
 
-		/**
-		*	textInputHelper.valid = function event listener
-		**/
-		public function set valid (listener:Function) :void
-		{
-			display_object.addEventListener('valid', listener);
-		}
-
 
 		// >>> PUBLIC METHODS
 		/**
-		*	Constructor. Proxies a display_object.
+		*	Constructor. Proxies a TextInput.
 		**/
 		public function TextInputHelper ()
 		{
@@ -96,16 +80,10 @@ package ras3r.reaction_view.helpers
 		/**
 		*	Set up data binding
 		**/
-		public function bind_to (object:*, property:String) :void
+		override public function bind_to (object:*, property:String) :void
 		{
 			// helper responds to changes to object[property]
 			object.addEventListener(property + '_change', after_property_change);
-
-			// helper responds to object[property] validation events
-			// use lower priority, so controllers may use stopImmediatePropagation()
-			// to prevent background color changes
-			object.addEventListener(property + '_invalid', after_property_invalid, false, -1);
-			object.addEventListener(property + '_valid', after_property_valid, false, -1);
 
 			// object[property] responds to changes to text_input.text
 			display_object.addEventListener('change', function (e:Object) :void
@@ -115,6 +93,9 @@ package ras3r.reaction_view.helpers
 				// update data object
 				object[property] = e.target.text;
 			});
+
+			// setup validation handlers
+			super.bind_to(object, property);
 		}
 
 
@@ -129,47 +110,5 @@ package ras3r.reaction_view.helpers
 			// update display object
 			this.text = e.newValue.toString();
 		}
-
-		private function after_property_invalid (e:ValidationResultEvent) :void
-		{
-			var newEvent:ValidationResultEvent = new ValidationResultEvent('invalid', false, true);
-			newEvent.field = e.field;
-			newEvent.results = e.results;
-			display_object.dispatchEvent(newEvent);
-
-			if (! newEvent.isDefaultPrevented())
-			{
-				this.opaqueBackground = 0xff0000;
-			}
-		}
-
-		private function after_property_valid (e:ValidationResultEvent) :void
-		{
-			var newEvent:ValidationResultEvent = new ValidationResultEvent('valid', false, true);
-			newEvent.field = e.field;
-			display_object.dispatchEvent(newEvent);
-
-			if (! newEvent.isDefaultPrevented())
-			{
-				this.opaqueBackground = null;
-			}
-		}
-/*
-	    private function textField_textInputHandler(event:TextEvent):void
-	    {
-	        event.stopImmediatePropagation();
-
-	        // Dispatch a cancelable version of this event.
-	        var newEvent:TextEvent =
-	            new TextEvent(TextEvent.TEXT_INPUT, false, true);
-	        newEvent.text = event.text;
-	        dispatchEvent(newEvent);
-
-	        // If any handler has called preventDefault(),
-	        // then stop the TextField from accepting the text.
-	        if (newEvent.isDefaultPrevented())
-	            event.preventDefault();
-	    }
-*/
 	}
 }

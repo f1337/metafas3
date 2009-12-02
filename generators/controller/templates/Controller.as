@@ -7,7 +7,6 @@
 package <%= package_name %>
 {
 	import ras3r.*;
-	import ras3r.utils.*;
 
 	import fl.data.*;
 	import fl.events.*;

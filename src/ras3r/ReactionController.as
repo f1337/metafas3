@@ -1,9 +1,6 @@
 package ras3r
 {
 	import com.greensock.TweenLite;
-
-	import ras3r.utils.*;
-
 	import flash.display.*;
 	import flash.geom.*;
 	import flash.events.*;

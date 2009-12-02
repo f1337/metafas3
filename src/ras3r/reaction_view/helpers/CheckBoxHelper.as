@@ -41,5 +41,14 @@ package ras3r.reaction_view.helpers
 		{
 			super(display_object);
 		}
+
+		/**
+		*	Set up data binding
+		**/
+		override public function bind_to (object:*, property:String) :void
+		{
+			// setup validation handlers
+			// super.bind_to(object, property);
+		}
 	}
 }

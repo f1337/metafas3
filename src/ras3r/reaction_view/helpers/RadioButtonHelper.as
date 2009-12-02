@@ -4,7 +4,6 @@ package ras3r.reaction_view.helpers
 	import flash.display.*;
 	import flash.text.*;
 	import ras3r.*;
-	import ras3r.utils.*;
 
 	dynamic public class RadioButtonHelper extends UIComponentHelper
 	{
@@ -107,6 +106,15 @@ package ras3r.reaction_view.helpers
 			display_object.addChild(radio_button);
 			display_object.addChild(text_field);
 			radio_button.addEventListener('render', after_radio_button_render);
+		}
+
+		/**
+		*	Set up data binding
+		**/
+		override public function bind_to (object:*, property:String) :void
+		{
+			// setup validation handlers
+			// super.bind_to(object, property);
 		}
 
 		/**

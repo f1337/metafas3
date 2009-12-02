@@ -92,7 +92,7 @@ package ras3r.reaction_view.helpers
 		/**
 		*	Set up data binding
 		**/
-		public function bind_to (object:*, property:String) :void
+		override public function bind_to (object:*, property:String) :void
 		{
 			// helper responds to changes to object[property]
 			object.addEventListener(property + '_change', after_property_change);

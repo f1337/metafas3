@@ -2,6 +2,7 @@ package ras3r.reaction_view.helpers
 {
 	import fl.controls.*;
 	import flash.text.*;
+	import mx.events.*;
 	import ras3r.*;
 
 	dynamic public class ComboBoxHelper extends UIComponentHelper
@@ -46,12 +47,14 @@ package ras3r.reaction_view.helpers
 		/**
 		*	Set up data binding
 		**/
-		public function bind_to (object:*, selection:String, collection:String = null) :void
+		override public function bind_to (object:*, selection:String) :void
 		{
 			// infer collection name from selection
-			collection ||= Inflector.pluralize(selection);
+			var collection:String = Inflector.pluralize(selection);
+
 			// helper responds to changes to object[selection]
 			object.addEventListener(selection + '_change', after_selection_change);
+
 			// object[selection] responds to changes to display_object.selectedItem
 			display_object.addEventListener('change', function (e:Object) :void
 			{
@@ -60,8 +63,12 @@ package ras3r.reaction_view.helpers
 				// update data object
 				object[selection] = e.target.selectedItem;
 			});
+
 			// helper responds to changes to object[collection]
 			object.addEventListener(collection + '_change', after_collection_change);
+
+			// setup validation handlers
+			super.bind_to(object, selection);
 		}
 
 		/**

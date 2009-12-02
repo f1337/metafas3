@@ -1,11 +1,18 @@
 package ras3r.reaction_view.helpers
 {
 	import flash.text.*;
+	import mx.events.*;
 	import ras3r.*;
 
 	dynamic public class UIComponentHelper extends Helper
 	{
-		// >>> STATIC METHODS
+		/**
+		*	UIComponentHelper.default_options:
+		*		a Hash of properties to be used as default assigns
+		*		to new instances of UIComponentHelper
+		**/
+		static public var default_options:Hash = new Hash;
+
 		/**
 		*	UIComponentHelper.create:
 		*		returns a new instance of UIComponentHelper klass,
@@ -14,6 +21,7 @@ package ras3r.reaction_view.helpers
 		**/
 		static protected function create (klass:Class, options:Object = null) :UIComponentHelper
 		{
+			options = default_options.merge(klass.default_options).update(options);
 			return (Helper.create(klass, options, create_helper_callback) as UIComponentHelper);
 		}
 
@@ -41,7 +49,7 @@ package ras3r.reaction_view.helpers
 		// >>> PUBLIC PROPERTIES
 		/**
 		*	helper.antiAliasType = 'advanced' or 'normal'
-		*		applies value to display_object's textField (if present)
+		*		applies value to proxied_object's textField (if present)
 		*		write-only
 		**/
 		public function set antiAliasType (type:String) :void
@@ -62,7 +70,7 @@ package ras3r.reaction_view.helpers
 
 		/**
 		*	helper.embedFonts = true
-		*		applies value to "embedFonts" style on display_object
+		*		applies value to "embedFonts" style on proxied_object
 		*		write-only
 		**/
 		public function set embedFonts (flag:Boolean) :void
@@ -72,7 +80,7 @@ package ras3r.reaction_view.helpers
 
 		/**
 		*	helper.format = textFormat
-		*		applies textFormat to "textFormat" style on display_object
+		*		applies textFormat to "textFormat" style on proxied_object
 		*		write-only
 		**/
 		public function set format (fmt:Object) :void
@@ -88,14 +96,71 @@ package ras3r.reaction_view.helpers
 			this.setStyle('textFormat', tf);
 		}
 
+		/**
+		*	helper.invalid = function validation event listener
+		**/
+		public function set invalid (listener:Function) :void
+		{
+			proxied_object.addEventListener('invalid', listener);
+		}
+
+		/**
+		*	helper.valid = function validation event listener
+		**/
+		public function set valid (listener:Function) :void
+		{
+			proxied_object.addEventListener('valid', listener);
+		}
+
+
 
 		// >>> PUBLIC METHODS
 		/**
-		*	Constructor. Proxies a display_object.
+		*	Constructor. Proxies a UI compontent.
 		**/
-		public function UIComponentHelper (display_object:Object = null)
+		public function UIComponentHelper (proxied_object:Object = null)
 		{
-			super(display_object);
+			super(proxied_object);
+		}
+
+		/**
+		*	Set up validation binding. Override for data binding.
+		*	Use super.bind_to() in subclass to use validation bindings.
+		**/
+		public function bind_to (object:*, property:String) :void
+		{
+			// helper responds to object[property] validation events
+			// use lower priority, so controllers may use stopImmediatePropagation()
+			// to prevent background color changes. -12 is an arbitrary index less than -1.
+			object.addEventListener(property + '_invalid', after_property_invalid, false, -12);
+			object.addEventListener(property + '_valid', after_property_valid, false, -12);
+		}
+
+
+		// >>> EVENT HANDLERS
+		protected function after_property_invalid (e:ValidationResultEvent) :void
+		{
+			var newEvent:ValidationResultEvent = new ValidationResultEvent('invalid', false, true);
+			newEvent.field = e.field;
+			newEvent.results = e.results;
+			proxied_object.dispatchEvent(newEvent);
+
+			if (! newEvent.isDefaultPrevented())
+			{
+				proxied_object.opaqueBackground = 0xff0000;
+			}
+		}
+
+		protected function after_property_valid (e:ValidationResultEvent) :void
+		{
+			var newEvent:ValidationResultEvent = new ValidationResultEvent('valid', false, true);
+			newEvent.field = e.field;
+			proxied_object.dispatchEvent(newEvent);
+
+			if (! newEvent.isDefaultPrevented())
+			{
+				proxied_object.opaqueBackground = null;
+			}
 		}
 	}
 }

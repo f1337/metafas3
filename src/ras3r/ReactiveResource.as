@@ -3,7 +3,6 @@
 */
 package ras3r 
 {
-	import ras3r.utils.*;
 	import ras3r.reactive_resource.*;
 
 	import fl.data.DataProvider;
@@ -115,7 +114,13 @@ package ras3r
 			add_observers(collection, options, DataChangeEvent.DATA_CHANGE);
 
 			// execute request
-			get((from ? from : collection_path(self, options)), Delegate.create(after_find_all, self, collection, limit), onFindAllFault, options);
+/*			get((from ? from : collection_path(self, options)), Delegate.create(after_find_all, self, collection, limit), onFindAllFault, options);*/
+/*			static public function after_find_all (e:Event, self:Class, collection:DataProvider, limit:uint) :void*/
+			var after_find:Function = function (e:Event) :void
+			{
+				after_find_all(e, self, collection, uint(limit));
+			};
+			get((from ? from : collection_path(self, options)), after_find, onFindAllFault, options);
 
 			// return collection (may be empty: listen for 'dataChange'!)
 			return collection;

@@ -7,7 +7,6 @@ package ras3r.reaction_view.helpers
 	import flash.system.*;
 	import flash.utils.*;
 	import ras3r.*;
-	import ras3r.utils.*;
 
 	use namespace flash_proxy;
 
