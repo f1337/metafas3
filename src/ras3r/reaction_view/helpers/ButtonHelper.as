@@ -72,6 +72,7 @@ package ras3r.reaction_view.helpers
 		**/
 		public function set skin (skin:Object) :void
 		{
+			if (skin is String) skin = getDefinitionByName('skins.' + skin.toString());
             var accessors:XMLList = describeType(skin).accessor.(@name != 'prototype');
             for each (var a:XML in accessors)
             {

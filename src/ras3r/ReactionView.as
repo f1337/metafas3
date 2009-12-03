@@ -268,19 +268,6 @@ package ras3r
 			return this[object_name + '_' + property];
 		}
 
-		protected function truncate (tf:TextField, suffix:String = '...') :void
-		{
-			var fw:Number = tf.width;
-			var tw:Number = tf.textWidth;
-			if (tw > fw)
-			{	
-				var sl:Number = tf.text.length;
-				var max_sl:Number = Math.round(sl * (fw / tw)) - 5;
-				var regex:RegExp = new RegExp('.{0,'+max_sl+'}\\b');
-				tf.text = regex.exec(tf.text) + '...';
-			}
-		}
-
 		protected function url_for (absolute_path:String, subdomain:String = null) :String
 		{
 			return ReactionController.url_for(absolute_path, subdomain);
@@ -323,6 +310,7 @@ package ras3r
 
 		private function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject
 		{
+			Logger.info('helper_for: ' + helper + ', this: ' + this);
 			var name:String = (object_name + '_' + object_property);
 			options = new Hash({ name: name }).update(options);
 			// TODO: replace with databinding
@@ -348,7 +336,7 @@ package ras3r
 */
 
 		// >>> EVENT HANDLERS
-		private function after_added_to_stage (e:Event) :void
+		protected function after_added_to_stage (e:Event) :void
 		{
 /*			try
 			{
@@ -393,6 +381,7 @@ package ras3r
 					parts.shift(); // drop on_
 					event = parts.pop(); // grab _event
 					element = parts.join('_');
+					Logger.info('mixin_members: ' + method + ', ' + this + '.hasOwnProperty(' + element + '): ' + this.hasOwnProperty(element));
 					if (this.hasOwnProperty(element)) ((this[element] is Helper) ? this[element].display_object : this[element]).addEventListener(event, controller[method]);
 				}
 			}

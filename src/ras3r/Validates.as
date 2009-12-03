@@ -100,7 +100,7 @@ package ras3r
 		* })
 		*
 		* TODO: This method is NOT RFC3696-compliant. It is IMPOSSIBLE
-		* 	to validate email addresses with regex and comply most recent RFCs.
+		* 	to validate email addresses with regex and comply with most recent RFCs.
 		*	Cal Henderson and Dominic Sayers have provided free PHP algorithms
 		*	for testing email address validity against RFC3696. I (mf) prefer the
 		*	readability of Cal's method, but either may be translated to AS3.

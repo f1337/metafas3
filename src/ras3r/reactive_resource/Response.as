@@ -101,7 +101,8 @@ package ras3r.reactive_resource
 						pval = {};
 						for each (var attribute:XML in attr.attributes())
 						{
-							pval[attribute.name().toString().replace('@', '')] = attribute;
+							pval[attribute.localName()] = attribute;
+/*							pval[attribute.name().toString().replace('@', '')] = attribute;*/
 						}
 						pval.text = attr.toString();
 					}

@@ -26,6 +26,8 @@ package
 	import ras3r.ReactionControllerTest;
 	import ras3r.ReactionViewTest;
 	import ras3r.reactive_resource.ResponseTest;
+	import ras3r.ValidatesTest;
+	import ras3r.XMLViewTest;
 
 	public class AllTests extends Suite
 	{
@@ -49,6 +51,8 @@ package
 			add(ras3r.ReactionControllerTest);
 			add(ras3r.ReactionViewTest);
 			add(ras3r.reactive_resource.ResponseTest);
+			add(ras3r.ValidatesTest);
+			add(ras3r.XMLViewTest);
 		}
 	}
 }
