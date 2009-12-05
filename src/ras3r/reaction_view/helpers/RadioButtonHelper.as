@@ -51,12 +51,12 @@ package ras3r.reaction_view.helpers
 		**/
 		public function get label () :String
 		{
-			return text_field.text;
+			return text_field.htmlText;
 		}
 
 		public function set label (val:String) :void
 		{
-			text_field.text = val;
+			text_field.htmlText = val;
 		}
 
 		/**
@@ -102,6 +102,8 @@ package ras3r.reaction_view.helpers
 			super(display_object);
 			radio_button.label = '';
 			text_field.autoSize = 'left';
+			text_field.multiline = true;
+			text_field.selectable = false;
 			text_field.wordWrap = true;
 			display_object.addChild(radio_button);
 			display_object.addChild(text_field);
@@ -155,7 +157,8 @@ package ras3r.reaction_view.helpers
 		private function after_radio_button_render (e:Object) :void
 		{
 			text_field.x = radio_button.textField.x;
-			text_field.y = radio_button.textField.y;
+			// vertically align text field with icon
+			text_field.y = radio_button.textField.y + 2;
 		}
 	}
 }

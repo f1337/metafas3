@@ -394,7 +394,8 @@ package ras3r
 
         protected function id_from_response (response:Object) :String
         {
-            var matches:Array = response.location.toString().match(/\/([^\/]*?)(\.\w+)?$/);
+			var matches:Array;
+			if (response.location) matches = response.location.toString().match(/\/([^\/]*?)(\.\w+)?$/);
             return (matches ? matches[1] : null);
         }
 

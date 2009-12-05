@@ -7,25 +7,14 @@ package ras3r
 
 	dynamic public class XMLView extends ReactionView
 	{
+		private var xml:XML;
+
 		override public function build () :void
-		{
-		}
-
-		// >>> PROTECTED METHODS
-		protected function content_for_layout (bounds:Object) :void
-		{
-			Logger.info('content_for_layout');
-			Logger.dump(bounds);
-		}
-
-		protected function render_xml (xml:XML) :void
 		{
 			var method:String;
 
 			for each (var child:XML in xml.children())
 			{
-				Logger.info('child: ' + child.toXMLString());
-
 				// <content x="24" y="24" width="372" height="369"/>
 				method = child.localName();
 
@@ -37,13 +26,20 @@ package ras3r
 					{
 						var args:Array = options.remove('for').toString().replace(/\{\s*/g, '').replace(/\s*\}/g, '').split('.');
 						args.push(options);
-						Logger.info(method + '_for(' + args + ')');
-						Logger.info('this is: ' + this);
 						this[method + '_for'].apply(this, args);
 					}
 				}
 			}
 		}
+
+
+		// >>> PROTECTED METHODS
+/*		protected function content_for_layout (bounds:Object) :void
+		{
+			Logger.info('content_for_layout');
+			Logger.dump(bounds);
+		}
+*/
 
 		// >>> PRIVATE METHODS
 		private function xml_to_hash (xml:XML) :Hash
@@ -54,7 +50,6 @@ package ras3r
 			for each (var attr:XML in xml.attributes())
 			{
 				options[attr.localName()] = attr;
-				Logger.info('options[' + attr.localName() + ']: ' + options[attr.localName()]);
 			}
 
 			// parse children as properties
@@ -63,7 +58,6 @@ package ras3r
 				options[child.localName()] = (
 					((! child.hasSimpleContent()) || child.attributes().length()) ?
 					xml_to_hash(child) : child.children().toString());
-				Logger.info('options[' + child.localName() + ']: ' + options[child.localName()]);
 			}
 
 			return options;
@@ -79,27 +73,23 @@ package ras3r
 			// load the XML template
 			var loader:URLLoader = new URLLoader();
 			loader.addEventListener('complete', after_load);
-/*			loader.addEventListener('httpStatus', after_load);*/
+			// loader.addEventListener('httpStatus', after_load);
 			loader.addEventListener('ioError', after_load);
-/*			loader.addEventListener('open', after_load);*/
-/*			loader.addEventListener('progress', after_load);*/
+			// loader.addEventListener('open', after_load);
+			// loader.addEventListener('progress', after_load);
 			loader.addEventListener('securityError', after_load);
-			loader.load((new URLRequest('http://mf.local/~mf/resource.com/offthewall/trunk/flash/flash_ui/bin/skins/1.xml')));
+			loader.load(ReactionController.url_request_for(this['path']));
 		}
 
 		// after XML template loads, resume event chain
 		private function after_load (e:Event) :void
 		{
-			Logger.info('after_load!');
-			Logger.info('after_load type: ' + e.type);
-			Logger.info('after_load data: ' + e.target.data);
-
 			// if XML template loaded,
 			if (e.target.data && e.target.data.toString().indexOf('<') == 0)
 			{
-				// parse as XML and render
-				render_xml(XML(e.target.data));
-				// resume event chain
+				// parse XML
+				xml = XML(e.target.data);
+				// resume event chain and build()
 				super.after_added_to_stage(e);
 			}
 		}

@@ -2,6 +2,7 @@ package ras3r.reaction_view.helpers
 {
 	import fl.controls.*;
 	import flash.display.*;
+	import flash.events.*;
 	import flash.text.*;
 	import flash.utils.*;
 	import ras3r.*;
@@ -33,24 +34,6 @@ package ras3r.reaction_view.helpers
 
 		// >>> PUBLIC PROPERTIES
 		/**
-		*	buttonHelper.disabledFormat = textFormat
-		*	applies textFormat to "disabledTextFormat" style on button
-		*	write-only
-		**/
-		public function set disabledFormat (fmt:Object) :void
-		{
-			// use Hash object for hash.apply
-			fmt = new Hash(fmt);
-			// get default text format
-			var tf:Object = this.getStyle('disabledTextFormat');
-			tf ||= new TextFormat();
-			// update text format
-			fmt.apply(tf);
-			// apply new textFormat
-			this.setStyle('disabledTextFormat', tf);
-		}
-
-		/**
 		*	buttonHelper.display_object
 		*	Every Helper is expected to provide a display_object.
 		*	This one is a Button
@@ -72,11 +55,12 @@ package ras3r.reaction_view.helpers
 		**/
 		public function set skin (skin:Object) :void
 		{
-			if (skin is String) skin = getDefinitionByName('skins.' + skin.toString());
+			if (skin is String) skin = getDefinitionByName(skin.toString());
             var accessors:XMLList = describeType(skin).accessor.(@name != 'prototype');
             for each (var a:XML in accessors)
             {
                 this.setStyle(a.@name, skin[a.@name]);
+/*				Logger.info('setStyle(' + a.@name + ', ' + skin[a.@name] + ')');*/
             }
 		}
 
@@ -88,6 +72,10 @@ package ras3r.reaction_view.helpers
 		public function ButtonHelper ()
 		{
 			super(display_object);
+
+			display_object.addEventListener('mouseDown', after_state_change);
+			display_object.addEventListener('rollOut', after_state_change);
+			display_object.addEventListener('rollOver', after_state_change);
 		}
 
 		/**
@@ -102,7 +90,7 @@ package ras3r.reaction_view.helpers
 
 		// >>> EVENT HANDLERS
 		/**
-		*	update text
+		*	data binding handler: update text
 		**/
 		private function after_property_change (e:Object) :void
 		{
@@ -110,6 +98,21 @@ package ras3r.reaction_view.helpers
 			if (e.newValue == this.label) return;
 			// update display object
 			this.label = e.newValue;
+		}
+
+		/**
+		*	after_state_change apply state's TextFormat
+		**/
+		protected function after_state_change (e:MouseEvent) :void
+		{
+			// map event to state: "rollOver" => 'over', "mouseDown" => 'down'
+			var state:String = e.type.match(/([A-Z][a-z]+)$/).pop().toString().toLowerCase();
+			// "rollOut" => 'up'
+			if (state == 'out') state = 'up';
+
+			// apply stateTextFormat, if exists
+			var fmt:Object = this.getStyle(state + 'TextFormat');
+			if (fmt) format = fmt;
 		}
 	}
 }
@@ -120,15 +123,9 @@ class MyButton extends fl.controls.Button
 	override protected function drawLayout () :void
 	{
 		super.drawLayout();
-		// 8 >> 4 TEXT
-		// 12 >> 12 TEXT
-		// 8 TEXT
-/*		if (icon) icon.x = 8;*/
-/*		textField.x = ((icon ? icon.x : 0) + 8);*/
 
-		// vertically center:
-		// SEE TextLineMetrics docs
-		// textHeight + 2 pixel gutter
-		textField.y = Math.round((height - (textField.textHeight + 2)) / 2);
+		// adjust vertical center by 1 px:
+		if (textField.y != int(textField.y)) Logger.info('*** textField.y: ' + textField.y);
+		textField.y++;
 	}
 }

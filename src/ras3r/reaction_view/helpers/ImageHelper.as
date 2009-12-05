@@ -60,14 +60,7 @@ package ras3r.reaction_view.helpers
 			if (s is String) s = ReactionController.url_for(s.toString());
 			setProperty('source', s);
 		}
-/*		public function set source (s:Object) :void
-		{
-			trace('set source: ' + s.toString());
-			_source = (s is URLRequest) ? 
-				(s as URLRequest) : ReactionController.url_request_for(s.toString());
-			load(_source);
-		}
-*/
+
 
 		// >>> PUBLIC METHODS
 		/**
@@ -151,7 +144,8 @@ class MyImage extends fl.containers.UILoader
 	{
 		super();
 
-		maintainAspectRatio = false;
+		blendMode = 'multiply';
+/*		maintainAspectRatio = false;*/
 	}
 
 	override public function load (request:URLRequest = null, context:LoaderContext = null) :void

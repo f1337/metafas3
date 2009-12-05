@@ -105,6 +105,48 @@ package ras3r.reaction_view.helpers
 		}
 
 		/**
+		*	helper.sharpness = -400 to 400
+		*		applies value to proxied_object's textField (if present)
+		*		write-only
+		**/
+		public function set sharpness (value:Number) :void
+		{
+			if (hasOwnProperty('textField'))
+			{
+				try
+				{
+					this.textField.sharpness = value;
+				}
+				// TextInput chokes when antiAliasType is set
+				catch (exception:Object)
+				{
+					// do nothing
+				}
+			}
+		}
+
+		/**
+		*	helper.thickness = -200 to 200
+		*		applies value to proxied_object's textField (if present)
+		*		write-only
+		**/
+		public function set thickness (value:Number) :void
+		{
+			if (hasOwnProperty('textField'))
+			{
+				try
+				{
+					this.textField.thickness = value;
+				}
+				// TextInput chokes when antiAliasType is set
+				catch (exception:Object)
+				{
+					// do nothing
+				}
+			}
+		}
+
+		/**
 		*	helper.valid = function validation event listener
 		**/
 		public function set valid (listener:Function) :void

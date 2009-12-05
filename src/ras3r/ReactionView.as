@@ -129,45 +129,14 @@ package ras3r
 
 
 		// >>> PROTECTED METHODS
-		/**
-		 *  Returns the value of the proxied object's method with the specified name.
-		 *
-		 *  @param name The name of the method being invoked.
-		 *
-		 *  @param rest An array specifying the arguments to the
-		 *  called method.
-		 *
-		 *  @return The return value of the called method.
-		 */
-/*
-		override flash_proxy function callProperty (name:*, ... rest): *
-		{
-			if (name.substr(-4) == '_for')
-			{
-				var helper:Helper = getDefinitionByName(Inflector.camelize(name.replace('_for', '_helper')));
-				return (helper_for(helper, rest));
-			}
-			else
-			{
-				rest.unshift(name);
-				return super.callProperty.apply(null, rest);
-			}
-		}
-*/
-
-
 		// >>> HELPERS
 		/**
 		*	TODO HELPERS:
-		*		* check_box
 		*		* fields_for
 		*		* file_field
 		*		* form_for?
-		*		* label
 		*		* password_field
-		*		* radio_button
 		*		* text_area
-		*		* text_field
 		**/
 		public function button_for (object_name:String, property:String, options:Object = null) :Helper
 		{
@@ -310,7 +279,7 @@ package ras3r
 
 		private function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject
 		{
-			Logger.info('helper_for: ' + helper + ', this: ' + this);
+/*			Logger.info('helper_for: ' + helper + ', this: ' + this);*/
 			var name:String = (object_name + '_' + object_property);
 			options = new Hash({ name: name }).update(options);
 			// TODO: replace with databinding
@@ -381,7 +350,7 @@ package ras3r
 					parts.shift(); // drop on_
 					event = parts.pop(); // grab _event
 					element = parts.join('_');
-					Logger.info('mixin_members: ' + method + ', ' + this + '.hasOwnProperty(' + element + '): ' + this.hasOwnProperty(element));
+/*					Logger.info('mixin_members: ' + method + ', ' + this + '.hasOwnProperty(' + element + '): ' + this.hasOwnProperty(element));*/
 					if (this.hasOwnProperty(element)) ((this[element] is Helper) ? this[element].display_object : this[element]).addEventListener(event, controller[method]);
 				}
 			}

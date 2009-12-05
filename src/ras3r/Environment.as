@@ -58,7 +58,7 @@ package ras3r
 			catch (exception:*)
 			{
 				// run the finally block
-				Logger.info('Environment.params mx.core.Application undefined: ' + exception);
+/*				Logger.info('Environment.params mx.core.Application undefined: ' + exception);*/
 			}
 
 			try
@@ -68,7 +68,7 @@ package ras3r
 			catch (exception:*)
 			{
 				// run the finally block
-				Logger.info('Environment.params Application undefined: ' + exception);
+/*				Logger.info('Environment.params Application undefined: ' + exception);*/
 			}
 
 			p ||= {};
