@@ -136,6 +136,23 @@ package ras3r
 		}
 
 		/**
+		* validates_length_of('zip', {
+		*	minimum:	5,
+		* 	message: 	'must be at least {{count}} characters long',
+		* 	iff: 		function,
+		*	unless: 	function
+		* })
+		**/
+		static public function length_of (object:Object, ...attr_names) :void
+		{
+			var options:Hash = new Hash({ message: "{attr} is too short" }).update(extract_options(attr_names));
+			add_validator(object, attr_names, options, function (e:PropertyChangeEvent) :void
+			{
+				dispatch_result_event_for(e, object, Boolean(e.newValue.length >= options.minimum), options.message);
+			});
+		}
+
+		/**
 		* validates_presence_of('first_name', {
 		* 	message: 	'can\'t be blank',
 		* 	iff: 		function,
