@@ -1,4 +1,4 @@
-package ras3r
+package
 {
 	import flash.utils.flash_proxy;
 	import mx.utils.ObjectProxy;
