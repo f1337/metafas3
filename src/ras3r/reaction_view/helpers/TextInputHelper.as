@@ -1,6 +1,7 @@
 package ras3r.reaction_view.helpers
 {
 	import fl.controls.*;
+	import flash.net.*;
 	import flash.text.*;
 	import flash.utils.*;
 	import mx.events.*;
@@ -33,8 +34,9 @@ package ras3r.reaction_view.helpers
 		/**
 		*	textInputHelper.background: applied to "upSkin" style of TextInput
 		**/
-		public function set background (skin:Class) :void
+		public function set background (skin:Object) :void
 		{
+			if (! (skin is Class)) skin = getClassByAlias(skin.toString());
 			this.setStyle('upSkin', skin);
 		}
 

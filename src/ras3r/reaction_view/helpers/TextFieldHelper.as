@@ -37,7 +37,7 @@ package ras3r.reaction_view.helpers
 
 			// is a custom font defined?
 			// if so, set default embedFonts = true
-			hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
+			// hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
 
 			/**
 			*	Advanced anti-aliasing allows font faces to be rendered

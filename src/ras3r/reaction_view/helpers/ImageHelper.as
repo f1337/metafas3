@@ -144,7 +144,7 @@ class MyImage extends fl.containers.UILoader
 	{
 		super();
 
-		blendMode = 'multiply';
+/*		blendMode = 'multiply';*/
 /*		maintainAspectRatio = false;*/
 	}
 

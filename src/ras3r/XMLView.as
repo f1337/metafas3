@@ -11,46 +11,81 @@ package ras3r
 
 		override public function build () :void
 		{
-			var method:String;
-
-			for each (var child:XML in xml.children())
-			{
-				// <content x="24" y="24" width="372" height="369"/>
-				method = child.localName();
-
-				if (method)
-				{
-					var options:Hash = xml_to_hash(child);
-
-					if (options['for'])
-					{
-						var args:Array = options.remove('for').toString().replace(/\{\s*/g, '').replace(/\s*\}/g, '').split('.');
-						args.push(options);
-						this[method + '_for'].apply(this, args);
-					}
-				}
-			}
+			xml_children_to_display_objects(xml.children());
 		}
 
 
 		// >>> PROTECTED METHODS
-/*		protected function content_for_layout (bounds:Object) :void
-		{
-			Logger.info('content_for_layout');
-			Logger.dump(bounds);
-		}
-*/
-
 		// >>> PRIVATE METHODS
-		private function xml_to_hash (xml:XML) :Hash
+		// parse XML attributes as properties
+		private function attributes_to_hash (xml:XML) :Hash
 		{
 			var options:Hash = new Hash;
-
-			// parse attributes as properties
 			for each (var attr:XML in xml.attributes())
 			{
-				options[attr.localName()] = attr;
+				options[attr.localName()] = (attr.toString() === 'false' ? false : attr.toString());
 			}
+			return options;
+		}
+
+		private function xml_children_to_display_objects (xml_children:XMLList) :Array
+		{
+			var display_objects:Array = new Array;
+			var method:String;
+
+			for each (var child:XML in xml_children)
+			{
+				method = child.localName();
+
+				if (method)
+				{
+					// args defaults to empty array
+					var args:Array= new Array;
+
+					// layout boxes
+					// <vbox x="160" y="0" padding="10">...</vbox>
+					// =>
+					// vbox({ x: 160, y: 0, padding: 10 }, ... );
+					if (method.match(/^[vh]box$/))
+					{
+						args = xml_children_to_display_objects(child.children());
+						args.unshift(attributes_to_hash(child));
+					}
+					// subtemplates:
+					// <orders.subtotal x="160" y="200" />
+					// =>
+					// render('orders/subtotal', { x: 160, y: 200 });
+					else if (method.indexOf('.') >= 0)
+					{
+						args = [ method.replace('.', '/') ];
+						args.push(attributes_to_hash(child))
+						method = 'render';
+					}
+					// other UI elements
+					else
+					{
+						var options:Hash = xml_to_hash(child);
+
+						if (options['for'])
+						{
+							args = options.remove('for').toString().split('.');
+							method += '_for';
+						}
+
+						args.push(options);
+					}
+
+
+					display_objects.push(this[method].apply(this, args));
+				}
+			}
+
+			return display_objects;
+		}
+
+		private function xml_to_hash (xml:XML) :Hash
+		{
+			var options:Hash = attributes_to_hash(xml);
 
 			// parse children as properties
 			for each (var child:XML in xml.children())

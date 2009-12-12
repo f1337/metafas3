@@ -50,20 +50,6 @@ package ras3r.reaction_view.helpers
 			this.setStyle('icon', icon);
 		}
 
-		/**
-		*	buttonHelper.skin: applies skins to Button
-		**/
-		public function set skin (skin:Object) :void
-		{
-			if (skin is String) skin = getDefinitionByName(skin.toString());
-            var accessors:XMLList = describeType(skin).accessor.(@name != 'prototype');
-            for each (var a:XML in accessors)
-            {
-                this.setStyle(a.@name, skin[a.@name]);
-/*				Logger.info('setStyle(' + a.@name + ', ' + skin[a.@name] + ')');*/
-            }
-		}
-
 
 		// >>> PUBLIC METHODS
 		/**

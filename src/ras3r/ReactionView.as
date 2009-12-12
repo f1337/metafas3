@@ -138,10 +138,27 @@ package ras3r
 		*		* password_field
 		*		* text_area
 		**/
+/*
+		public function button (options:Object) :Helper
+		{
+			var o:DisplayObject = (helper_for(ButtonHelper, options, 'label', object_name, property) as DisplayObject);
+			return this[object_name + '_' + property];
+		}
+*/
+		public function button (options:Object) :Button
+		{
+			return (helper(ButtonHelper, (new Hash(options))) as Button);
+		}
+
 		public function button_for (object_name:String, property:String, options:Object = null) :Helper
 		{
 			var o:DisplayObject = (helper_for(ButtonHelper, options, 'label', object_name, property) as DisplayObject);
 			return this[object_name + '_' + property];
+		}
+
+		protected function check_box (options:Object) :DisplayObject
+		{
+			return helper(CheckBoxHelper, (new Hash(options)));
 		}
 
 		public function check_box_for (object_name:String, property:String, options:Object = null) :CheckBox
@@ -149,13 +166,19 @@ package ras3r
 			return (helper_for(CheckBoxHelper, options, 'selected', object_name, property) as CheckBox);
 		}
 
-		public function combo_box_for (object_name:String, property:String, choices:*, attributes:Object = null) :ComboBox
+		public function combo_box_for (object_name:String, property:String, options:Object = null) :ComboBox
 		{
+			// hash-ify options
+			options = new Hash(options);
+			// extract choices from options
+			var choices:* = options.remove('choices');
+			// default choices: plural property
+			if (! choices) choices = this[object_name][Inflector.pluralize(property)];
 			// cast choices to DataProvider
 			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
-			// update atrributes with choices 
-			attributes = new Hash(attributes).update({ dataProvider: dataProvider });
-			return (helper_for(ComboBoxHelper, attributes, 'selectedItem', object_name, property) as ComboBox);
+			// update options with choices
+			options.update({ dataProvider: dataProvider });
+			return (helper_for(ComboBoxHelper, options, 'selectedItem', object_name, property) as ComboBox);
 		}
 
 		protected function hbox (options:Object, ...args) :DisplayObjectContainer
@@ -163,6 +186,19 @@ package ras3r
 			var box:DisplayObjectContainer = (addChild(BoxHelper.hbox(options, args)) as DisplayObjectContainer);
 			if (options.id) this[options.id] = box;
 			return box;
+		}
+
+		protected function image (options:Object) :DisplayObject
+		{
+			// catch if required param "source" exists
+			if (! options.source) throw new ArgumentError("Expected argument, options.source, is missing from ras3r::ReactionView/image(options).");
+			return helper(ImageHelper, (new Hash(options)));
+		}
+
+		protected function image_button (options:Object) :DisplayObject
+		{
+			// inject buttonMode: true into options
+			return helper(ImageHelper, (new Hash(options).update({ buttonMode: true })));
 		}
 
 		protected function image_button_for (object_name:String, property:String, options:Object = null) :DisplayObject
@@ -177,24 +213,49 @@ package ras3r
 			return helper_for(ImageHelper, options, 'source', object_name, property);
 		}
 
-		protected function label (html:String, options:Object = null) :TextField
+/*		protected function label (text:String, options:Object = null) :TextField*/
+/*		protected function label (options:Object) :TextField*/
+		protected function label (...args) :TextField
 		{
-			options = new Hash(options).update({ htmlText: html });
+			// HACK: pseudo-polymorphic params for XML templates:
+			if (args.length < 1) throw new ArgumentError("Argument count mismatch on ras3r::ReactionView/label(). Expected 1, got 0.");
+			var text:String = (args[0] is String ? args[0] : '');
+			var options:Hash = new Hash(args.length == 2 ? args[1] : args[0]);
+
+			if (text) options.update({ htmlText: text });
+			return (helper(TextFieldHelper, options) as TextField);
+/*
 			var id:String = options.remove('id');
 			if (debug) options.opaqueBackground = 0xddffdd;
 			var sprite:DisplayObject = TextFieldHelper.create(options).display_object;
-			assign_id_for_object({ id: id }, sprite);
+			assign_id_for_object(id, sprite);
 			return (addChild(sprite) as TextField);
+*/
 		}
 
-		protected function label_for (object_name:String, property:String, html:String, options:Object = null, styles:Object = null) :TextField
+/*		protected function label_for (object_name:String, property:String, html:String, options:Object = null) :TextField*/
+/*		protected function label_for (object_name:String, property:String, options:Object) :TextField*/
+		protected function label_for (object_name:String, property:String, ...args) :TextField
 		{
-			options = new Hash(options).update({ htmlText: html });
+			// HACK: pseudo-polymorphic params for XML templates:
+			if (args.length < 1) throw new ArgumentError("Argument count mismatch on ras3r::ReactionView/label_for(). Expected 3, got " + (args.length + 2) + '.');
+			var text:String = (args[0] is String ? args[0] : '');
+			var options:Hash = new Hash(args.length == 2 ? args[1] : args[0]);
+
+			if (text) options.update({ htmlText: text });
 			if (debug) options.update({ opaqueBackground: 0xddffdd });
 
+			return (helper(TextFieldHelper, options) as TextField);
+/*
 			var helper:Helper = TextFieldHelper.create(options);
-			assign_id_for_object({ id: (object_name + '_' + property + '_label') }, helper);
+			assign_id_for_object(id: (object_name + '_' + property + '_label'), helper);
 			return (addChild(helper.display_object) as TextField);
+*/
+		}
+
+		protected function radio_button (options:Object) :DisplayObject
+		{
+			return helper(RadioButtonHelper, (new Hash(options)));
 		}
 
 		protected function render (template:String, assigns:Object = null) :DisplayObject
@@ -205,8 +266,14 @@ package ras3r
 			return addChild(ReactionView.create(template, assigns));
 		}
 
-		public function radio_buttons_for (object_name:String, property:String, choices:*, options:Object = null) :DisplayObject
+		public function radio_button_group_for (object_name:String, property:String, options:Object = null) :DisplayObject
 		{
+			// hash-ify options
+			options = new Hash(options);
+			// extract choices from options
+			var choices:* = options.remove('choices');
+			// default choices: plural property
+			if (! choices) choices = this[object_name][Inflector.pluralize(property)];
 			// cast choices to DataProvider
 			var dataProvider:DataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
 			// update options with choices 
@@ -267,14 +334,20 @@ package ras3r
 		}
 
 		// >>> PRIVATE METHODS
-		private function assign_id_for_object (attr:Object, sprite:Object) :void
+		private function helper (helper:*, options:Hash) :DisplayObject
 		{
-			if (attr && attr.id)
+			// remove id for later assignment
+			var id:String = options.remove('id');
+			// invoke the helper factory
+			var object:Helper = helper.create(options);
+			// assign id, name
+			if (id)
 			{
-				this[attr.id] = sprite;
-				sprite.name = attr.id;
-				delete attr.id;
+				this[id] = object;
+				object.name = id;
 			}
+			// add to display list and return
+			return addChild(object.display_object as DisplayObject);
 		}
 
 		private function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject

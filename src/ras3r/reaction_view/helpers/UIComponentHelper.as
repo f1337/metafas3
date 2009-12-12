@@ -1,6 +1,7 @@
 package ras3r.reaction_view.helpers
 {
 	import flash.text.*;
+	import flash.utils.*;
 	import mx.events.*;
 	import ras3r.*;
 
@@ -29,7 +30,7 @@ package ras3r.reaction_view.helpers
 		{
 			// is a custom font defined?
 			// if so, set default embedFonts = true
-			hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
+			// hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
 
 			/**
 			*	Advanced anti-aliasing allows font faces to be rendered
@@ -123,6 +124,20 @@ package ras3r.reaction_view.helpers
 					// do nothing
 				}
 			}
+		}
+
+
+		/**
+		*	helper.skin: applies skins to UIComponents
+		**/
+		public function set skin (skin:Object) :void
+		{
+			if (skin is String) skin = getDefinitionByName(skin.toString());
+            var accessors:XMLList = describeType(skin).accessor.(@name != 'prototype');
+            for each (var a:XML in accessors)
+            {
+                this.setStyle(a.@name, skin[a.@name]);
+            }
 		}
 
 		/**
