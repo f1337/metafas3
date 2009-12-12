@@ -46,7 +46,7 @@ package ras3r.reaction_view.helpers
 			// assign properties from options hash
 			for (var p:String in options)
 			{
-				Logger.info('box ' + p + ': ' + options[p]);
+				// logger.info('box ' + p + ': ' + options[p]);
 				if (hasOwnProperty(p))
 				{
 					this[p] = options[p];
