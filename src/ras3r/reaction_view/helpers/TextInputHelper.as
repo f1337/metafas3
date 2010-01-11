@@ -32,15 +32,6 @@ package ras3r.reaction_view.helpers
 
 		// >>> PUBLIC PROPERTIES
 		/**
-		*	textInputHelper.background: applied to "upSkin" style of TextInput
-		**/
-		public function set background (skin:Object) :void
-		{
-			if (! (skin is Class)) skin = getClassByAlias(skin.toString());
-			this.setStyle('upSkin', skin);
-		}
-
-		/**
 		*	textInputHelper.display_object
 		*	Every Helper is expected to provide a display_object.
 		*	This one is a TextInput

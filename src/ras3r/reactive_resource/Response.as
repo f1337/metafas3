@@ -16,6 +16,8 @@ package ras3r.reactive_resource
 
 		public function set body (response:Object) :void
 		{
+			raw = response;
+
 			// parse as JSON if it begins with '{' or '[{'
 			if ((response is String) && (response.match(/^[\[\{]/)))
 			{
@@ -34,6 +36,9 @@ package ras3r.reactive_resource
 				_body = (result.name() == 'rss') ? decode_rss(result) : decode_xml(result);
 			}
 		}
+
+		// raw response
+		public var raw:Object;
 
 
 		// >>> PUBLIC METHODS

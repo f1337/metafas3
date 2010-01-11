@@ -222,6 +222,8 @@ package ras3r
 		public var errors:Array = new Array();
 		public var location:String; // prevent location from serialzing
 		public var prefix:String = '/';
+		public var response:Response;
+
 
 		public function set error (msg:String) :void
 		{
@@ -312,17 +314,23 @@ package ras3r
 			get(path, after_find, after_find_failed);
 		}
 
-		public function save (args:Object = null) :void
+		public function save (args:Object = null) :Boolean
 		{
 			// clear errors
 			errors = new Array();
+
+			// TODO: apply validations BEFORE any network operations
+			// 		 return false if validations fail
 
 			if (args && args.complete is Function)
 			{
 				// bubble complete event
 				addEventListener('complete', args.complete);
 			}
+
 			(this.id ? update() : create());
+
+			return true;
 		}
 
 		public function to_xml () :XML
@@ -392,11 +400,13 @@ package ras3r
 			return ReactiveResource.element_path(self(), this.id, (options ? options : prefix_options()));
 		}
 
-        protected function id_from_response (response:Object) :String
+        protected function id_from_response (response:Object) :void
         {
 			var matches:Array;
+			// parse id from location
 			if (response.location) matches = response.location.toString().match(/\/([^\/]*?)(\.\w+)?$/);
-            return (matches ? matches[1] : null);
+			// assign id IFF match is not null
+			if (matches && matches[1]) this.id = matches[1];
         }
 
 		protected function update () :void
@@ -453,7 +463,7 @@ package ras3r
 		// >>> EVENT HANDLERS
 		private function after_create (e:Event) :void
 		{
-            this.id = id_from_response(e.target.data);
+            id_from_response(e.target.data);
             after_find(e);
 		}
 
@@ -466,6 +476,8 @@ package ras3r
 		{
 			try
 			{
+				// store response
+				response = e.target.response;
 				// if response data is an array
 				// use the first item
 				var data:Object = (e.target.data is Array) ? e.target.data.shift() : e.target.data;

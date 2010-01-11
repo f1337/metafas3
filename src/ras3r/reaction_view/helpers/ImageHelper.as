@@ -32,10 +32,6 @@ package ras3r.reaction_view.helpers
 		}
 
 
-		// >>> PRIVATE PROPERTIES
-/*		private var _source:URLRequest;*/
-
-
 		// >>> PUBLIC PROPERTIES
 		/**
 		*	imageHelper.display_object
@@ -86,15 +82,6 @@ package ras3r.reaction_view.helpers
 			object.addEventListener(property + '_change', after_property_change);
 		}
 
-		/**
-		*	applies LoaderContext to allow bitmap smoothing
-		**/
-/*		public function load (request:URLRequest, context:LoaderContext = null) :void
-		{
-			if (! context) context = new LoaderContext(true);
-			super.load(request, context);
-		}
-*/
 
 		// >>> EVENT HANDLERS
 		/**
@@ -140,14 +127,6 @@ import fl.containers.*;
 
 class MyImage extends fl.containers.UILoader
 {
-	public function MyImage ()
-	{
-		super();
-
-/*		blendMode = 'multiply';*/
-/*		maintainAspectRatio = false;*/
-	}
-
 	override public function load (request:URLRequest = null, context:LoaderContext = null) :void
 	{
 		if (request && (! context))

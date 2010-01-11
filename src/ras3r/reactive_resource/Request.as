@@ -13,6 +13,7 @@ package ras3r.reactive_resource
 		public var data:Object;
 		public var method:String;
 		public var path:String;
+		public var response:Response;
 
 		private var loader:URLLoader;
 
@@ -87,7 +88,7 @@ package ras3r.reactive_resource
 		{
 			try
 			{
-				var response:Response = new Response(e.target.data);
+				response = new Response(e.target.data);
 				data = response.body;
 				// fire 'complete' if 200 (status_from_event defaults to 200)
 				if (status_from_event(e) == 200) dispatchEvent(e);

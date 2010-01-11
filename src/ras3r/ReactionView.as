@@ -266,6 +266,11 @@ package ras3r
 			return addChild(ReactionView.create(template, assigns));
 		}
 
+		public function radio_button_group (options:Object) :DisplayObject
+		{
+			return helper(RadioButtonGroupHelper, (new Hash(options)));
+		}
+
 		public function radio_button_group_for (object_name:String, property:String, options:Object = null) :DisplayObject
 		{
 			// hash-ify options
@@ -334,7 +339,7 @@ package ras3r
 		}
 
 		// >>> PRIVATE METHODS
-		private function helper (helper:*, options:Hash) :DisplayObject
+		protected function helper (helper:*, options:Hash) :DisplayObject
 		{
 			// remove id for later assignment
 			var id:String = options.remove('id');
@@ -350,7 +355,7 @@ package ras3r
 			return addChild(object.display_object as DisplayObject);
 		}
 
-		private function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject
+		protected function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject
 		{
 /*			Logger.info('helper_for: ' + helper + ', this: ' + this);*/
 			var name:String = (object_name + '_' + object_property);
@@ -423,7 +428,7 @@ package ras3r
 					parts.shift(); // drop on_
 					event = parts.pop(); // grab _event
 					element = parts.join('_');
-/*					Logger.info('mixin_members: ' + method + ', ' + this + '.hasOwnProperty(' + element + '): ' + this.hasOwnProperty(element));*/
+/*					logger.info('mixin_members: ' + method + ', ' + this + '.hasOwnProperty(' + element + '): ' + this.hasOwnProperty(element));*/
 					if (this.hasOwnProperty(element)) ((this[element] is Helper) ? this[element].display_object : this[element]).addEventListener(event, controller[method]);
 				}
 			}

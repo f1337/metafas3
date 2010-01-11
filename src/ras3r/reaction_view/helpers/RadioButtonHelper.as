@@ -36,14 +36,19 @@ package ras3r.reaction_view.helpers
 		/**
 		*	proxy for radio_button.group
 		**/
-		public function get group () :RadioButtonGroup
+		public function get group () :*
 		{
 			return radio_button.group;
 		}
 
-		public function set group (g:RadioButtonGroup) :void
+		public function set group (g:*) :void
 		{
-			radio_button.group = g;
+			var group:RadioButtonGroup = RadioButtonGroup.getGroup(g as String);
+			if (! group)
+			{
+				group = new RadioButtonGroup(g);
+			}
+			radio_button.group = group;
 		}
 
 		/**
@@ -63,6 +68,16 @@ package ras3r.reaction_view.helpers
 		*	RadioButton to proxy
 		**/
 		public var radio_button:RadioButton = new RadioButton();
+
+		public function get selected () :Boolean
+		{
+			return radio_button.selected;
+		}
+
+		public function set selected (selected:Boolean) :void
+		{
+			radio_button.selected = selected;
+		}
 
 		/**
 		*	TextField for wrapped text, finite layout control

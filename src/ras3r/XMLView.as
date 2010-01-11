@@ -7,7 +7,33 @@ package ras3r
 
 	dynamic public class XMLView extends ReactionView
 	{
-		private var xml:XML;
+		public var xml:XML;
+		private static var templates_cache:Object = {};
+
+/*		protected static function template_for (klass:Class, path:String) :void
+		{
+			load_template(klass, path, after_load);
+		}
+*/
+		private static function load_template (klass:Object, path:String, callback:Function) :void
+		{
+			// load the XML template
+			klass['loader'] = new URLLoader();
+			klass['loader'].addEventListener('ioError', after_load);
+			klass['loader'].addEventListener('securityError', after_load);
+			klass['loader'].addEventListener('complete', function (e:Event) :void
+			{
+				// if XML template loaded,
+				if (e.target.data && e.target.data.toString().indexOf('<') == 0)
+				{
+					// parse XML
+/*					Logger.info('k: ' + klass.toString());*/
+					templates_cache[klass.toString()] = XML(e.target.data);
+				}
+				callback(e);
+			});
+			klass['loader'].load(ReactionController.url_request_for(path));
+		}
 
 		override public function build () :void
 		{
@@ -105,28 +131,27 @@ package ras3r
 		{
 			removeEventListener('addedToStage', after_added_to_stage);
 
-			// load the XML template
-			var loader:URLLoader = new URLLoader();
-			loader.addEventListener('complete', after_load);
-			// loader.addEventListener('httpStatus', after_load);
-			loader.addEventListener('ioError', after_load);
-			// loader.addEventListener('open', after_load);
-			// loader.addEventListener('progress', after_load);
-			loader.addEventListener('securityError', after_load);
-			loader.load(ReactionController.url_request_for(this['path']));
-		}
-
-		// after XML template loads, resume event chain
-		private function after_load (e:Event) :void
-		{
-			// if XML template loaded,
-			if (e.target.data && e.target.data.toString().indexOf('<') == 0)
+/*			Logger.info('c: ' + this.constructor.toString());*/
+			if (! xml) xml = templates_cache[this.constructor.toString()];
+			Logger.info('xml?: ' + Boolean(xml));
+			if (xml)
 			{
-				// parse XML
-				xml = XML(e.target.data);
 				// resume event chain and build()
 				super.after_added_to_stage(e);
 			}
+			else if (this.constructor['loader'])
+			{
+				this.constructor['loader'].addEventListener('complete', after_added_to_stage);
+			}
+			else if (this['path'])
+			{
+				load_template(this.constructor, this['path'], after_added_to_stage);
+			}
+		}
+
+		// trap urlloader events
+		private static function after_load (e:Event) :void
+		{
 		}
 	}
 }

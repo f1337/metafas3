@@ -1,5 +1,6 @@
 package ras3r.reaction_view.helpers
 {
+	import flash.net.*;
 	import flash.text.*;
 	import flash.utils.*;
 	import mx.events.*;
@@ -67,6 +68,15 @@ package ras3r.reaction_view.helpers
 					// do nothing
 				}
 			}
+		}
+
+		/**
+		*	helper.background: applied to "upSkin" style of UIComponent
+		**/
+		public function set background (skin:Object) :void
+		{
+			if (! (skin is Class)) skin = getClassByAlias(skin.toString());
+			this.setStyle('upSkin', skin);
 		}
 
 		/**
