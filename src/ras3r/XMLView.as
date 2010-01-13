@@ -27,7 +27,7 @@ package ras3r
 				if (e.target.data && e.target.data.toString().indexOf('<') == 0)
 				{
 					// parse XML
-/*					Logger.info('k: ' + klass.toString());*/
+/*					logger.info('k: ' + klass.toString());*/
 					templates_cache[klass.toString()] = XML(e.target.data);
 				}
 				callback(e);
@@ -131,9 +131,10 @@ package ras3r
 		{
 			removeEventListener('addedToStage', after_added_to_stage);
 
-/*			Logger.info('c: ' + this.constructor.toString());*/
+/*			logger.info('c: ' + this.constructor.toString());*/
 			if (! xml) xml = templates_cache[this.constructor.toString()];
-			Logger.info('xml?: ' + Boolean(xml));
+
+			//logger.info('xml?: ' + Boolean(xml));
 			if (xml)
 			{
 				// resume event chain and build()
