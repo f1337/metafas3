@@ -355,6 +355,20 @@ package ras3r
 			return xml;
 		}
 
+		// dispatch property_validate for validators
+		// triggers validators for property
+		public function validate (property:*) :void
+		{
+			var validateEvent:PropertyChangeEvent = new PropertyChangeEvent(property + '_validate');
+			// validateEvent.kind = e.kind;
+			validateEvent.property = property;
+			// validateEvent.oldValue = e.oldValue;
+			validateEvent.newValue = this[property];
+			// validateEvent.source = this;
+			dispatchEvent(validateEvent);
+		}
+
+
 		// >>> PROTECTED METHODS
 		/**
 		 *  validates_presence_of('first_name', 'last_name', { message: '...' })
@@ -536,13 +550,7 @@ package ras3r
 			// dispatch property_validate for validators
 			// prevents validators' stopImmediatePropagation() from
 			// 	interfering with "change" listeners
-	        var validateEvent:PropertyChangeEvent = new PropertyChangeEvent(e.property + '_validate');
-	        validateEvent.kind = e.kind;
-	        validateEvent.property = e.property;
-	        validateEvent.oldValue = e.oldValue;
-	        validateEvent.newValue = e.newValue;
-	        validateEvent.source = this;
-			dispatchEvent(validateEvent);
+			validate(e.property);
 		}
 
 		private function after_update (e:Event) :void

@@ -95,7 +95,7 @@ package ras3r.reactive_resource
 			}
 			catch (err:Object)
 			{
-				Logger.debug('Request#complete: Unable to parse response from ' + path + '. Error: ' + err);
+				Logger.debug('Request#complete: Unable to parse response from ' + path + '. Error: ' + err.getStackTrace());
 /*				Logger.debug('Request#complete, unable to parse response. Error: ' + err + '. Data dump: ');
 				Logger.dump(e.target.data);
 				Logger.dump(e);

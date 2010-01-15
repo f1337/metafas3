@@ -10,11 +10,11 @@ package ras3r
 		public var xml:XML;
 		private static var templates_cache:Object = {};
 
-/*		protected static function template_for (klass:Class, path:String) :void
+		private static function cache_template (klass:Object, xml:XML) :void
 		{
-			load_template(klass, path, after_load);
+			templates_cache[klass.toString()] = xml;
 		}
-*/
+
 		private static function load_template (klass:Object, path:String, callback:Function) :void
 		{
 			// load the XML template
@@ -26,9 +26,7 @@ package ras3r
 				// if XML template loaded,
 				if (e.target.data && e.target.data.toString().indexOf('<') == 0)
 				{
-					// parse XML
-/*					logger.info('k: ' + klass.toString());*/
-					templates_cache[klass.toString()] = XML(e.target.data);
+					cache_template(klass, XML(e.target.data));
 				}
 				callback(e);
 			});
@@ -131,10 +129,17 @@ package ras3r
 		{
 			removeEventListener('addedToStage', after_added_to_stage);
 
-/*			logger.info('c: ' + this.constructor.toString());*/
-			if (! xml) xml = templates_cache[this.constructor.toString()];
+			// cache the XML, if defined
+			if (xml)
+			{
+				cache_template(this.constructor, xml);
+			}
+			// else lookup XML from cache
+			else
+			{
+				xml = templates_cache[this.constructor.toString()];
+			}
 
-			//logger.info('xml?: ' + Boolean(xml));
 			if (xml)
 			{
 				// resume event chain and build()

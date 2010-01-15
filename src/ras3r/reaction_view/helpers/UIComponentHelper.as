@@ -116,6 +116,13 @@ package ras3r.reaction_view.helpers
 		}
 
 		/**
+		*	helper.required = true/false
+		*	hack? used by bind_to to create ad-hoc validation
+		*	see bind_to below
+		**/
+		public var required:Boolean = false;
+
+		/**
 		*	helper.sharpness = -400 to 400
 		*		applies value to proxied_object's textField (if present)
 		*		write-only
@@ -180,7 +187,6 @@ package ras3r.reaction_view.helpers
 		}
 
 
-
 		// >>> PUBLIC METHODS
 		/**
 		*	Constructor. Proxies a UI compontent.
@@ -201,6 +207,19 @@ package ras3r.reaction_view.helpers
 			// to prevent background color changes. -12 is an arbitrary index less than -1.
 			object.addEventListener(property + '_invalid', after_property_invalid, false, -12);
 			object.addEventListener(property + '_valid', after_property_valid, false, -12);
+
+
+			// HACK? if required == true, applies an ad-hoc
+			//	validates_presence_of constraint to model
+			if (required)
+			{
+				Validates.presence_of(object, property, {
+					message: 'Please enter a valid {attr}.'
+				});
+
+				// SUPER HACK? manually trigger validation to catch nulls?
+				object.validate(property);
+			}
 		}
 
 

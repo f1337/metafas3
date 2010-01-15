@@ -148,12 +148,12 @@ package ras3r
 			var options:Hash = new Hash({ message: "{attr} is too short" }).update(extract_options(attr_names));
 			add_validator(object, attr_names, options, function (e:PropertyChangeEvent) :void
 			{
-				dispatch_result_event_for(e, object, Boolean(e.newValue.length >= options.minimum), options.message);
+				dispatch_result_event_for(e, object, Boolean(e.newValue && e.newValue.length >= options.minimum), options.message);
 			});
 		}
 
 		/**
-		* validates_presence_of('first_name', {
+		* Validates.presence_of(model, 'first_name', {
 		* 	message: 	'can\'t be blank',
 		* 	iff: 		function,
 		*	unless: 	function
@@ -192,7 +192,7 @@ package ras3r
 					 *	we *want* the equality (==) comparison,
 					 * 	NOT the strict equality (===) comparison
 					 */
-					if (options.allow_null == false && e.newValue == null) return;
+					if (options.allow_null == true && e.newValue == null) return;
 
 					/**
 					 *  Skip validation if value is blank
@@ -202,7 +202,7 @@ package ras3r
 					 * 	check for strict equality (===) with zero (0) to prevent zero from
 					 * 	being treated as "blank"
 					 */
-					if (options.allow_empty == false && Boolean(e.newValue) == false && e.newValue !== 0) return;
+					if (options.allow_empty == true && Boolean(e.newValue) == false && e.newValue !== 0) return;
 
 					/**
 					 * 	apply optional iff() and unless()
