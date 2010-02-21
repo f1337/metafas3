@@ -198,13 +198,16 @@ package ras3r
 		protected function image_button (options:Object) :DisplayObject
 		{
 			// inject buttonMode: true into options
-			return helper(ImageHelper, (new Hash(options).update({ buttonMode: true })));
+			return helper(ImageButtonHelper, (new Hash(options)));
+/*			return helper(ImageHelper, (new Hash(options).update({ buttonMode: true })));*/
+/*			return helper(ImageHelper, (new Hash(options).update({ buttonMode: true, tabEnabled: true })));*/
 		}
 
 		protected function image_button_for (object_name:String, property:String, options:Object = null) :DisplayObject
 		{
-			// inject buttonMode: true into options
+			// inject buttonMode, tabEnabled into options
 			options = new Hash(options).update({ buttonMode: true });
+/*			options = new Hash(options).update({ buttonMode: true, tabEnabled: true });*/
 			return helper_for(ImageHelper, options, 'source', object_name, property);
 		}
 
