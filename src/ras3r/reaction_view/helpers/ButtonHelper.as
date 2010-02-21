@@ -6,6 +6,7 @@ package ras3r.reaction_view.helpers
 	import flash.text.*;
 	import flash.utils.*;
 	import ras3r.*;
+	import ras3r.controls.*;
 
 	use namespace flash_proxy;
 
@@ -34,11 +35,25 @@ package ras3r.reaction_view.helpers
 
 		// >>> PUBLIC PROPERTIES
 		/**
+		*	buttonHelper.click = String
+		*	URL to fetch on "click" event
+		*	TODO: extend to accept controller/view syntax ("products/show")
+		*	write-only
+		**/
+		public function set click (url:String) :void
+		{
+			display_object.addEventListener('click', function (e:Event) :void
+			{
+				ReactionController.redirect_to_url(url);
+			});
+		}
+
+		/**
 		*	buttonHelper.display_object
 		*	Every Helper is expected to provide a display_object.
 		*	This one is a Button
 		**/
-		public var display_object:Button = new MyButton();
+		public var display_object:Button = new ReButton();
 
 		/**
 		*	buttonHelper.icon = Class
@@ -100,18 +115,5 @@ package ras3r.reaction_view.helpers
 			var fmt:Object = this.getStyle(state + 'TextFormat');
 			if (fmt) format = fmt;
 		}
-	}
-}
-
-import ras3r.*;
-class MyButton extends fl.controls.Button
-{
-	override protected function drawLayout () :void
-	{
-		super.drawLayout();
-
-		// adjust vertical center by 1 px:
-		if (textField.y != int(textField.y)) Logger.info('*** textField.y: ' + textField.y);
-		textField.y++;
 	}
 }
