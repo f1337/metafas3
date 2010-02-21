@@ -200,7 +200,7 @@ package ras3r
 		*	_blank MUST be default or sites with allowNetworking=internal
 		*	will cause error to be thrown on navigateToURL()
 		*/
-		public function redirect_to_url (url:String, target:String = '_blank', count:uint = 0) :void
+		public static function redirect_to_url (url:String, target:String = '_blank', count:uint = 0) :void
 		{
 			var u:URLRequest = new URLRequest(url);
 
