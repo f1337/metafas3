@@ -7,6 +7,7 @@ package ras3r.reaction_view.helpers
 	import flash.system.*;
 	import flash.utils.*;
 	import ras3r.*;
+	import ras3r.controls.*;
 
 	use namespace flash_proxy;
 
@@ -34,11 +35,25 @@ package ras3r.reaction_view.helpers
 
 		// >>> PUBLIC PROPERTIES
 		/**
+		*	imageHelper.click = String
+		*	URL to fetch on "click" event
+		*	TODO: extend to accept controller/view syntax ("products/show")
+		*	write-only
+		**/
+		public function set click (url:String) :void
+		{
+			display_object.addEventListener('click', function (e:Event) :void
+			{
+				ReactionController.redirect_to_url(url);
+			});
+		}
+
+		/**
 		*	imageHelper.display_object
 		*	Every Helper is expected to provide a display_object.
 		*	This one is an Image
 		**/
-		public var display_object:UILoader = new MyImage();
+		public var display_object:UILoader = new ReUILoader();
 
 		/**
 		*	returns URLRequest
@@ -118,27 +133,5 @@ package ras3r.reaction_view.helpers
 		{
 			Logger.info('ImageHelper#after_io_error: ' + e.text);
 		}
-	}
-}
-
-import flash.net.*;
-import flash.system.*;
-import fl.containers.*;
-
-class MyImage extends fl.containers.UILoader
-{
-	override public function load (request:URLRequest = null, context:LoaderContext = null) :void
-	{
-		if (request && (! context))
-		{
-			context = new LoaderContext(true);
-		}
-
-		super.load(request, context);
-
-		// HACK: to allow re-using Image#load
-		// if this isn't set here, UILoader#drawLayout() will throw an error
-		// b/c UILoader#load set contentInited=true if a DisplayObject exists!
-		contentInited = false;
 	}
 }
