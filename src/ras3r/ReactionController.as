@@ -14,6 +14,7 @@ package ras3r
 		// >>> STATIC PROPERTIES
 		static public var asset_host:String = '';
 		static public var container:DisplayObjectContainer; // ONLY for addChild
+		static public var view_path:String = './';
 
 		static private var before_filters:Dictionary = new Dictionary;
 

@@ -8,11 +8,12 @@ package ras3r
 	dynamic public class XMLView extends ReactionView
 	{
 		public var xml:XML;
-		private static var templates_cache:Object = {};
 
-		private static function cache_template (klass:Object, xml:XML) :void
+		private static var _templates_cache:Object = {};
+		private static function templates_cache (klass:Object, xml:XML = null) :XML
 		{
-			templates_cache[klass.toString()] = xml;
+			if (xml) _templates_cache[klass.toString()] = xml;
+			return _templates_cache[klass.toString()];
 		}
 
 		private static function load_template (klass:Object, path:String, callback:Function) :void
@@ -26,7 +27,7 @@ package ras3r
 				// if XML template loaded,
 				if (e.target.data && e.target.data.toString().indexOf('<') == 0)
 				{
-					cache_template(klass, XML(e.target.data));
+					templates_cache(klass['path'], XML(e.target.data));
 				}
 				callback(e);
 			});
@@ -132,12 +133,12 @@ package ras3r
 			// cache the XML, if defined
 			if (xml)
 			{
-				cache_template(this.constructor, xml);
+				templates_cache(this['path'], xml);
 			}
 			// else lookup XML from cache
 			else
 			{
-				xml = templates_cache[this.constructor.toString()];
+				xml = templates_cache(this['path']);
 			}
 
 			if (xml)
@@ -145,13 +146,13 @@ package ras3r
 				// resume event chain and build()
 				super.after_added_to_stage(e);
 			}
-			else if (this.constructor['loader'])
+			else if (this['loader'])
 			{
-				this.constructor['loader'].addEventListener('complete', after_added_to_stage);
+				this['loader'].addEventListener('complete', after_added_to_stage);
 			}
 			else if (this['path'])
 			{
-				load_template(this.constructor, this['path'], after_added_to_stage);
+				load_template(this, this['path'], after_added_to_stage);
 			}
 		}
 

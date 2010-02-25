@@ -49,7 +49,7 @@ package ras3r
 					timestamp_first_visit + '.' +
 					timestamp_last_visit + '.' +
 					timestamp_this_visit + '.' +
-					visit_count + ';+' +
+					session_count + ';+' +
 				'__utmz=' +
 					_hash + '.' +
 					timestamp_first_visit +
@@ -83,6 +83,9 @@ package ras3r
 			);
 		}
 
+		// total number of visits/sessions for this visitor to this swf/campaign
+		private static var session_count:int = 1;
+
 		// generate a mock session id
 		// session-persistent value between 1000000000000000000 and 9999999999999999999
 		private static var _session_id:String;
@@ -95,6 +98,10 @@ package ras3r
 
 			return _session_id;
 		}
+
+/*
+SharedObject.getLocal('analytics', '/')
+*/
 
 		// UNIX timestamp of FIRST visit to *this* swf/campaign EVER
 		private static var timestamp_first_visit:String = '1252000967';
@@ -110,9 +117,6 @@ package ras3r
 		{
 			return ((ssl ? 'https' : 'http') + '://' + base);
 		}
-
-		// total number of visits for this visitor to this swf/campaign
-		private static var visit_count:int = 1;
 
 
 		// >>> PUBLIC METHODS
@@ -135,8 +139,6 @@ package ras3r
 		// "/root/sprite39/movieclip2"
 		public static function page (title:String, path:String = '') :void
 		{
-			var qs:Array = [];
-
 			// build params hash
 			var p:Object = params();
 
@@ -144,71 +146,40 @@ package ras3r
 			p.utmdt = title;
 			p.utmp = path;
 
-			// build querstring
-			for (var s:String in p)
-			{
-				qs.push(s + '=' + encodeURIComponent(p[s]));
-			}
-
 			// ping URL
-			loader.load(new URLRequest(url + qs.join('&')));
+			load(p);
 		}
 
-		public static function purchase () :void
+		public static function purchase (order:Object) :void
 		{
+			// build params hash
+			var p:Object = params();
+
+			// inject page params
+			p.utmdt = order.title;
+			p.utmp = order.path;
+			// inject order params
+			p.utmipc = order.sku;
+			p.utmipn = order.product; // tee shirt
+			p.utmipr = order.price; // 17100.32
+			p.utmiqt = order.quantity;
+			p.utmiva = order.options; // red; or 5;33 ct
+			p.utmtci = order.city; // San Diego
+			p.utmtid = order.id;
+			p.utmtrg = order.region; // New Brunswick
+			p.utmtsp = order.shipping;
+			// Affiliation. Typically used for brick and mortar applications in ecommerce.
+			// utmtst=google%20mtv%20store
+			p.utmtst = order.affiliation;
+			p.utmtto = order.total; // 334.56
+			p.utmttx = order.tax; // 29.16
 			/*
-			utmipc
-			Product Code. This is the sku code for a given product.
-			utmipc=989898ajssi
-
-			utmipn
-			Product Name, which is a URL-encoded string.
-			utmipn=tee%20shirt
-
-			utmipr
-			Unit Price. Set at the item level. Value is set to numbers only in U.S. currency format.
-			utmipr=17100.32
-
-			utmiqt
-			Quantity.
-			utmiqt=4
-
-			utmiva
-			Variations on an item. For example: large, medium, small, pink, white, black, green. String is URL-encoded.
-			utmiva=red;
-
-			utmtci
-			Billing City
-			utmtci=San%20Diego
-
-			utmtco
 			Billing Country
 			utmtco=United%20Kingdom
-
-			utmtid
-			Order ID, URL-encoded string.
-			utmtid=a2343898
-
-			utmtrg
-			Billing region, URL-encoded string.
-			utmtrg=New%20Brunswick
-
-			utmtsp
-			Shipping cost. Values as for unit and price.
-			utmtsp=23.95
-
-			utmtst
-			Affiliation. Typically used for brick and mortar applications in ecommerce.
-			utmtst=google%20mtv%20store
-
-			utmtto
-			Total. Values as for unit and price.
-			utmtto=334.56
-
-			utmttx
-			Tax. Values as for unit and price.
-			utmttx=29.16
 			*/
+
+			// ping URL
+			load(p);
 		}
 
 
@@ -236,6 +207,21 @@ package ras3r
 			}
 
 			_hash = String(a);
+		}
+
+		private static function load (p:Object) :void
+		{
+			if (! (account && _hash)) return;
+
+			// build querstring
+			var qs:Array = [];
+			for (var s:String in p)
+			{
+				qs.push(s + '=' + encodeURIComponent(p[s]));
+			}
+
+			// ping URL
+			loader.load(new URLRequest(url + qs.join('&')));
 		}
 
 		// http://code.google.com/apis/analytics/docs/tracking/gaTrackingTroubleshooting.html#GIFVars
@@ -298,9 +284,3 @@ package ras3r
 		}
 	}
 }
-/*
-http://www.google-analytics.com/__utm.gif?utmcc=__utma%3D73423052.243182825886115876.1252000967.1252000968.1252000969.1%3B%2B__utmz%3D73423052.1252000967.1.1.utmcsr%3Dfacebook%7Cutmccn%3Doffthewall%7Cutmcmd%3Dwall%253B%3B%2B__utmv%3D73423052.otwtest_123&utmdt=OTWTest%20-%20123%20-%20Loaded&utmul=en&utmje=&utmr=&utmn=126671888530066247.42411077023&utmfl=10.0%20r42&utmsr=1440x900&utmhid=&utmsc=&utmcs=&utmhn=offthewall.resource.com&utmp=%2Fotwtest%2F123%2Floaded&utmac=UA-2777587-8&utmwv=4.5.9
-http://www.google-analytics.com/__utm.gif?utmwv=4.5.9&utmn=986816892&utmhn=offthewall.resource.com&utmcs=&utmsr=&utmsc=&utmul=&utmje=&utmfl=10.0%20r32&utmdt=Estore%20-%20Pilot%20-%20Buy%20Now%20Click&utmhid=&utmr=&utmp=%2Festore%2Fpilot%2Fbuynowclick&utmac=UA-2777587-8&utmcc=__utma%3D73423052.3.82651903293296E+018.1252000967.1252000968.1252000969.1%3B%2B__utmz%3D73423052.1252000967.1.1.utmcsr%3Dfacebook%7Cutmccn%3Doffthewall%7Cutmcmd%3Dwall%3B%3B%2B__utmv%3D73423052.estore_campaignpilot%3B
-http://www.google-analytics.com/__utm.gif?utmwv=4.5.9&utmn=<dynamic>&utmhn=offthewall.resource.com&utmcs=&utmsr=&utmsc=&utmul=&utmje=&utmfl=&utmdt=<Update>&utmhid=&utmr=&utmp=<Update>&utmac=UA-2777587-6&utmcc=__utma%3D73423052.<dynamic>.1252000967.1252000968.1252000969.1%3B%2B__utmz%3D73423052.1252000967.1.1.utmcsr%3D(direct)%7Cutmccn%3D(direct)%7Cutmcmd%3D(none)%3B%3B%2B__utmv%3D73423052.%3B
-http://www.google-analytics.com/__utm.gif?
-*/

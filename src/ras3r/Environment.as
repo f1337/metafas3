@@ -5,46 +5,28 @@ package ras3r
 
 	dynamic public class Environment
 	{
-		public static function load (url:String) :void
+		public static function load (env:String) :void
 		{
-			var env:String;
-
-			// WARNING: DO NOT CHANGE THIS REGEX
-			//					WITHOUT WRITTEN APPROVAL FROM Michael Fleet
-			// matches: http://blah.blahblah.blahblahblah.com/
-			// production: .com domains
-			if (url.search(/^https?:\/\/[^\/]+\.com\//) > -1)
-			{
-				env = 'production';
-			}
-			// staging: .net domains
-			else if (url.search(/^https?:\/\/[^\/]+\.net\//) > -1)
-			{
-				env = 'staging';
-			}
-			else if (Capabilities.playerType == 'StandAlone')
+			// override env if StandAlone player
+			if (Capabilities.playerType == 'StandAlone')
 			{
 				// test: test.swf
-				if (url.search(/test\.swf$/) > -1)
+				if (Application.application.url.search(/test\.swf$/) > -1)
 				{
 					env = 'test';
 				}
 				// standalone: DEFAULT if Capabilities.playerType == 'StandAlone'
-				else if (url != '')
+				else
 				{
 					env = 'standalone';
 				}
 			}
-			// development: now DEFAULT if url =~ http
-			else
-			// old way: localhost, 192.168.*, etc
-			// else if (url.search(/^http:\/\/(localhost|192\.168\.\d+\.\d+)[^\/]*\//) > -1)
+			// development: DEFAULT if env undefined
+			else if (! env)
 			{
 				env = 'development';
 			}
 
-			// default:
-			if (! env) env = url;
 			include_environment(env);
 		}
 

@@ -28,14 +28,11 @@ package ras3r
 		//			ReactionView.create('products/show', { title: 'Cheeseburger' });
 		// Instantiates DisplayObject/View described by @template, and 
 		// copies properties from assigns hash to new DisplayObject/View
-		static public function create (template:* = null, assigns:Object = null) :DisplayObject
+		static public function create (template:* = '', assigns:Object = null) :DisplayObject
 		{
-			// default to BaseReactionView if template empty
-			template = (template ? template_class_name(template) : BaseReactionView);
-			// lookup class definition from template name
-			var klass:Class = (template is Class ? template : (getDefinitionByName(template) as Class));
-			// new View()
-			var view:* = new klass();
+			// instantiate view class from template name
+			var view:* = template_view(template);
+
 			// assign controller property first
 			assigns = new Hash(assigns);
 			if (assigns.controller)
@@ -53,21 +50,47 @@ package ras3r
 			return (view as DisplayObject);
 		}
 
-		// template_class_name('layouts/application') => 'views.layouts.ApplicationLayout'
-		// template_class_name('rockets/show') => 'views.rockets.ShowRocket'
-		// template_class_name('rockets/list') => 'views.rockets.ListRockets'
-		static private function template_class_name (template:String) :String
+		// template_view('layouts/application') => views.layouts.ApplicationLayout
+		// template_view('rockets/show') => views.rockets.ShowRocket
+		// template_view('rockets/list') => views.rockets.ListRockets
+		// instantiate view class from template name
+		// returns an instance of ReactionView
+		static private function template_view (template:String) :*
 		{
-			var t:Array = template.split('/');
-			var className:String = 'views.';
-			className += t[0] + '.';
-			if (t[1])
+			var klass:Class;
+
+			if (template)
 			{
-				className += Inflector.camelize(t[1]);
-				if (t[1].indexOf('list') == -1) t[0] = Inflector.singularize(t[0]);
+				var t:Array = template.split('/');
+				var className:String = 'views.';
+				className += t[0] + '.';
+				if (t[1])
+				{
+					className += Inflector.camelize(t[1]);
+					if (t[1].indexOf('list') == -1) t[0] = Inflector.singularize(t[0]);
+				}
+				className += Inflector.camelize(t[0]);
+
+				// lookup class definition from template name
+				try
+				{
+					klass = (getDefinitionByName(className) as Class);
+				}
+				// fallback to XMLView
+				catch (exception:*)
+				{
+					var view:XMLView = new XMLView();
+					view.path = ReactionController.view_path + template + '.xml';
+					return view;
+				}
 			}
-			className += Inflector.camelize(t[0]);
-			return className;
+			// default to BaseReactionView if template empty
+			else
+			{
+				klass = BaseReactionView;
+			}
+
+			return (new klass());
 		}
 
 
