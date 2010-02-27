@@ -1,7 +1,8 @@
-package ras3r
+package
 {
 	import flash.system.*;
 	import flash.utils.*;
+	import ras3r.*;
 
 	dynamic public class Environment
 	{
@@ -27,7 +28,8 @@ package ras3r
 				env = 'development';
 			}
 
-			include_environment(env);
+			// lookup environment class
+			var klass:Class = (getDefinitionByName('config.environments.' + Inflector.camelize(env)) as Class);
 		}
 
 		public static function get params () :Object
@@ -55,31 +57,6 @@ package ras3r
 
 			p ||= {};
 			return p;
-		}
-
-		private static function include_environment (env:String) :void
-		{
-			switch (env)
-			{
-				case 'development':
-					include "../../../../config/environments/development.as"
-					break;
-				case 'production':
-					include "../../../../config/environments/production.as"
-					break;
-				case 'staging':
-					include "../../../../config/environments/staging.as"
-					break;
-				case 'standalone':
-					include "../../../../config/environments/standalone.as"
-					break;
-				case 'test':
-					include "../../../../config/environments/test.as"
-					break;
-				default:
-					throw new ArgumentError('Environment.include_environment: Invalid environment specified!');
-					break;
-			}
 		}
 	}
 }
