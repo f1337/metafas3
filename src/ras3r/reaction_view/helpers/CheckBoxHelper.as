@@ -1,7 +1,11 @@
 package ras3r.reaction_view.helpers
 {
-	import ras3r.*;
 	import fl.controls.*;
+	import flash.utils.*;
+	import mx.events.PropertyChangeEvent;
+	import ras3r.*;
+
+	use namespace flash_proxy;
 
 	public class CheckBoxHelper extends UIComponentHelper
 	{
@@ -32,6 +36,20 @@ package ras3r.reaction_view.helpers
 		**/
 		public var display_object:CheckBox = new CheckBox();
 
+		/**
+		*	proxy for display_object.width
+		**/
+		public function get width () :Number
+		{
+			return getProperty('width');
+		}
+
+		public function set width (w:Number) :void
+		{
+			setProperty('width', w);
+			display_object.textField.width = (w - display_object.textField.x);
+		}
+
 
 		// >>> PUBLIC METHODS
 		/**
@@ -40,6 +58,7 @@ package ras3r.reaction_view.helpers
 		public function CheckBoxHelper ()
 		{
 			super(display_object);
+			display_object.textField.wordWrap = true;
 		}
 
 		/**
@@ -47,8 +66,37 @@ package ras3r.reaction_view.helpers
 		**/
 		override public function bind_to (object:*, property:String) :void
 		{
+			// helper responds to changes to object[property]
+			object.addEventListener(property + '_change', after_property_change);
+
+			// object[property] responds to changes to text_input.text
+			display_object.addEventListener('change', function (e:Object) :void
+			{
+				// convert true/false to 1/0
+				var val:int = (e.target.selected ? 1 : 0);
+				// prevent superfluous event firing
+				if (object[property] == val) return;
+				// update data object
+				object[property] = val;
+			});
+
 			// setup validation handlers
 			// super.bind_to(object, property);
+		}
+
+
+		// >>> EVENT HANDLERS
+		/**
+		*	update display_object.selected
+		**/
+		private function after_property_change (e:PropertyChangeEvent) :void
+		{
+			// convert 1/0 to true/false
+			var selected:Boolean = Boolean(e.newValue);
+			// prevent superfluous event firing
+			if (selected == this['selected']) return;
+			// update display object
+			this['selected'] = selected;
 		}
 	}
 }
