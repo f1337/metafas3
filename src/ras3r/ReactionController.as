@@ -8,6 +8,7 @@ package ras3r
 	import flash.system.*;
 	import flash.ui.*;
 	import flash.utils.*;
+	import ru.etcs.utils.FontLoader;
 
 	public class ReactionController extends Sprite
 	{
@@ -169,6 +170,14 @@ package ras3r
 		{
 			if (! params.target) params.target = '_blank';
 			redirect_to_url(params.url, params.target);
+		}
+
+		public function load_fonts (s:*, after_load:Function = null) :void
+		{
+			var loader:FontLoader = new FontLoader();
+			if (s is String) s = ReactionController.url_request_for(s.toString());
+			if (after_load != null) loader.addEventListener('complete', after_load);
+			loader.load(s);
 		}
 
 		public function process (action_name:String, params:Hash) :void
