@@ -35,6 +35,11 @@ package ras3r.reaction_view.helpers
 			// "Set the condenseWhite property before setting the htmlText property."
 			if (hoptions.condenseWhite) helper.condenseWhite = hoptions.remove('condenseWhite');
 
+			// per fantasticmf:
+			// Set the multiline property before setting the htmlText property,
+			// if you want <li>s to render
+			if (hoptions.multiline) helper.multiline = hoptions.remove('multiline');
+
 			// is a custom font defined?
 			// if so, set default embedFonts = true
 			// hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);

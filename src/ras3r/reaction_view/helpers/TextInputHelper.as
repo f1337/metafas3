@@ -68,6 +68,7 @@ package ras3r.reaction_view.helpers
 		public function TextInputHelper ()
 		{
 			super(display_object);
+			display_object.addEventListener('render', after_display_object_render);
 		}
 
 		/**
@@ -102,6 +103,16 @@ package ras3r.reaction_view.helpers
 			if (e.newValue == this.text) return;
 			// update display object
 			this.text = e.newValue.toString();
+		}
+
+		/**
+		*	position custom text_field where radio_button's
+		*	internal textField is positioned
+		**/
+		private function after_display_object_render (e:Object) :void
+		{
+			// vertically align text field with background
+			display_object.textField.y = Math.floor((display_object.height - display_object.textHeight) / 2);
 		}
 	}
 }

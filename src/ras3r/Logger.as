@@ -1,5 +1,6 @@
 package ras3r
 {
+	import fl.data.DataProvider;
 	import flash.system.*;
 
 	public class Logger

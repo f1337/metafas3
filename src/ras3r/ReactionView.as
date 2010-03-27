@@ -194,7 +194,7 @@ package ras3r
 			// hash-ify options
 			options = new Hash(options);
 			// extract choices from options
-			var choices:* = options.remove('choices');
+			var choices:* = options.remove('dataProvider');
 			// default choices: plural property
 			if (! choices) choices = this[object_name][Inflector.pluralize(property)];
 			// cast choices to DataProvider

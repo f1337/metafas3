@@ -29,7 +29,7 @@ package
 			}
 
 			// lookup environment class
-			var klass:Class = (getDefinitionByName('config.environments.' + Inflector.camelize(env)) as Class);
+			var klass:Class = (getDefinitionByName('environments.' + Inflector.camelize(env)) as Class);
 		}
 
 		public static function get params () :Object

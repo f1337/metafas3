@@ -12,8 +12,13 @@ package ras3r
 		private static var _templates_cache:Object = {};
 		private static function templates_cache (klass:Object, xml:XML = null) :XML
 		{
-			if (xml) _templates_cache[klass.toString()] = xml;
-			return _templates_cache[klass.toString()];
+			// TODO: watch to ensure this doesn't break order's dynamic templates
+			// determine key for cache array:
+			//		if exists, use view's 'path'
+			//		else, use view's class name
+			var key:String = (klass['path'] ? klass['path'].toString() : getQualifiedClassName(klass));
+			if (xml) _templates_cache[key] = xml;
+			return _templates_cache[key];
 		}
 
 		private static function load_template (klass:Object, path:String, callback:Function) :void
@@ -24,10 +29,10 @@ package ras3r
 			klass['loader'].addEventListener('securityError', after_load);
 			klass['loader'].addEventListener('complete', function (e:Event) :void
 			{
-				// if XML template loaded,
+				// if XML template loaded successfully, cache the data
 				if (e.target.data && e.target.data.toString().indexOf('<') == 0)
 				{
-					templates_cache(klass['path'], XML(e.target.data));
+					templates_cache(klass, XML(e.target.data));
 				}
 				callback(e);
 			});
@@ -100,7 +105,6 @@ package ras3r
 						args.push(options);
 					}
 
-
 					display_objects.push(this[method].apply(this, args));
 				}
 			}
@@ -110,14 +114,35 @@ package ras3r
 
 		private function xml_to_hash (xml:XML) :Hash
 		{
+			var key:String;
 			var options:Hash = attributes_to_hash(xml);
+			var value:*;
 
 			// parse children as properties
 			for each (var child:XML in xml.children())
 			{
-				options[child.localName()] = (
+				// value is a simple string, or a hash deserialed from XML
+				value = (
 					((! child.hasSimpleContent()) || child.attributes().length()) ?
 					xml_to_hash(child) : child.children().toString());
+				key = child.localName().toString();
+
+				// options[key] is a single value
+				if (options[key] == null)
+				{
+					options[key] = value;
+				}
+				// options[key] is an array of values
+				else if (options[key] is Array)
+				{
+					options[key].push(value);
+				}
+				// options[key] already exists as a single value
+				// create an array of the old value and the new value
+				else
+				{
+					options[key] = [ options[key], value ];
+				}
 			}
 
 			return options;
@@ -133,12 +158,12 @@ package ras3r
 			// cache the XML, if defined
 			if (xml)
 			{
-				templates_cache(this['path'], xml);
+				templates_cache(this, xml);
 			}
 			// else lookup XML from cache
 			else
 			{
-				xml = templates_cache(this['path']);
+				xml = templates_cache(this);
 			}
 
 			if (xml)

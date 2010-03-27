@@ -173,7 +173,7 @@ package ras3r.reaction_view.helpers
 		{
 			text_field.x = radio_button.textField.x;
 			// vertically align text field with icon
-			text_field.y = radio_button.textField.y + 2;
+			text_field.y = Math.floor((radio_button.height - text_field.textHeight) / 2);
 		}
 	}
 }
