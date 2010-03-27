@@ -4,6 +4,7 @@ package ras3r.reaction_view.helpers
 	import flash.text.*;
 	import mx.events.*;
 	import ras3r.*;
+	import ras3r.controls.*;
 
 	dynamic public class ComboBoxHelper extends UIComponentHelper
 	{
@@ -32,7 +33,7 @@ package ras3r.reaction_view.helpers
 		*	Every Helper is expected to provide a display_object.
 		*	This one is a ComboBox
 		**/
-		public var display_object:ComboBox = new ComboBox();
+		public var display_object:ComboBox = new ReComboBox();
 
 
 		// >>> PUBLIC METHODS
@@ -56,6 +57,9 @@ package ras3r.reaction_view.helpers
 			object.addEventListener(selection + '_change', after_selection_change);
 
 			// object[selection] responds to changes to display_object.selectedItem
+			// "change" fires when value changes by:
+			//		* mouse click
+			//		* ENTER key (SPACE will not "change", even though the UX appears to change)
 			display_object.addEventListener('change', function (e:Object) :void
 			{
 				// prevent superfluous event firing
@@ -119,6 +123,9 @@ package ras3r.reaction_view.helpers
 		**/
 		private function after_selection_change (e:Object) :void
 		{
+			// does immediately redrawing fix binding bug? NOPE! (mf 2/12/2010)
+			// display_object.drawNow();
+
 			// prevent superfluous event firing
 			if (e.newValue && this.selectedItem && e.newValue.data == this.selectedItem.data) return;
 			// update display object

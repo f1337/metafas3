@@ -131,7 +131,7 @@ package ras3r
 			var options:Hash = new Hash({ message: "{attr} is invalid" }).update(extract_options(attr_names));
 			add_validator(object, attr_names, options, function (e:PropertyChangeEvent) :void
 			{
-				dispatch_result_event_for(e, object, Boolean(e.newValue.match(options.using) != null), options.message);
+				dispatch_result_event_for(e, object, Boolean(e.newValue != null && e.newValue.match(options.using) != null), options.message);
 			});
 		}
 

@@ -145,7 +145,7 @@ package ras3r
 			return rr;
 		}
 
-		static private function find_single (self:Class, id:int, args:Hash = null) :*
+		static private function find_single (self:Class, id:String, args:Hash = null) :*
 		{
 			// assemble from: path
 			args.from = element_path(self, id, args);

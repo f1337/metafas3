@@ -87,7 +87,6 @@ package ras3r
 				}
 
 				// assign Stage scaleMode, align BEFORE attempting to do any visual rendering
-				// TODO: move to base framework!!
 				stage.scaleMode = StageScaleMode.NO_SCALE;
 				stage.align = StageAlign.TOP_LEFT;				
 			}
@@ -97,9 +96,6 @@ package ras3r
 			}
 
 			ReactionController.container = this;
-
-			// load environment config
-			Environment.load(url);
 
 			var params:Hash = parameters.merge({ controller: 'application', action: 'load' });
 
