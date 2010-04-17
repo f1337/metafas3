@@ -11,7 +11,7 @@ package ras3r.reaction_view.helpers
 
 	use namespace flash_proxy;
 
-	public class ImageHelper extends Helper
+	dynamic public class ImageHelper extends Helper
 	{
 		/**
 		*	ImageHelper.default_options:

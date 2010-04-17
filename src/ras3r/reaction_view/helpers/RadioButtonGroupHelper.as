@@ -41,7 +41,8 @@ package ras3r.reaction_view.helpers
 						label:  dp.getItemAt(i).label
 					})) as RadioButtonHelper));
 				}
-				display_object.addChild(BoxHelper.vbox(options, children));
+				options.children = children;
+				display_object.addChild(BoxHelper.create(options).display_object);
 			}
 
 		}

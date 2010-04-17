@@ -58,7 +58,14 @@ package
 		{
 			for (var key:String in hash)
 			{
-				object[key] = getProperty(key);
+				try
+				{
+					object[key] = getProperty(key);
+				}
+				catch (exception:*)
+				{
+					logger.info('Unable to apply hash property "' + key + '" to ' + object + "\n>>>EXCEPTION:\n" + exception);
+				}
 			}
 			return object;
 		}

@@ -56,6 +56,12 @@ package ras3r.reaction_view.helpers
 			// helper responds to changes to object[selection]
 			object.addEventListener(selection + '_change', after_selection_change);
 
+			// initialize selectedItem with object[selection], if defined
+			if (object[selection])
+			{
+				this.selectedItem = object[selection];
+			}
+
 			// object[selection] responds to changes to display_object.selectedItem
 			// "change" fires when value changes by:
 			//		* mouse click
@@ -123,14 +129,27 @@ package ras3r.reaction_view.helpers
 		**/
 		private function after_selection_change (e:Object) :void
 		{
-			// does immediately redrawing fix binding bug? NOPE! (mf 2/12/2010)
-			// display_object.drawNow();
+			if (
+				// e.newValue defined?
+				e.newValue &&
+				// and this.selectedItem defined?
+				this.selectedItem &&
+				(
+					// and e.newValue equals this.selectedItem
+					e.newValue.hasOwnProperty('data') ?
+					(e.newValue.data == this.selectedItem.data) : // compare as objects for XML/JSON support
+					(e.newValue == this.selectedItem.data) // compare as string for HTML5 hidden input support
+				)
+			// then return now to prevent superfluous event firing
+			) return;
 
-			// prevent superfluous event firing
-			if (e.newValue && this.selectedItem && e.newValue.data == this.selectedItem.data) return;
 			// update display object
 			this.selectedItem = e.newValue;
 			display_object.drawNow();
 		}
 	}
 }
+
+
+
+

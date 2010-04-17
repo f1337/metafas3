@@ -61,20 +61,12 @@ package ras3r
 
 		static public function collection_path (self:Class, prefix_options:Object = null, query_options:Object = null) :String // pseudo-equivalent to RoR's table_name
 		{
-			var url:String = prefix_source(self, prefix_options);
-						
-			url += '.xml';
-
-			return url;
+			return (prefix_source(self, prefix_options) + '.' + model_format(self));
 		}
 		
 		static public function element_path (self:Class, id:Object, prefix_options:Object = null, query_options:Object = null) :String // pseudo-equivalent to RoR's table_name
 		{
-			var url:String = prefix_source(self, prefix_options);
-			
-			url += '/' + id + '.xml';
-
-			return url;
+			return (prefix_source(self, prefix_options) + '/' + id + '.' + model_format(self));
 		}
 
 		// Rails-inspired finder
@@ -97,6 +89,48 @@ package ras3r
 			}
 		}
 
+		/**
+		* SHOULD BE DEFINED IN SUBCLASS.
+		* AS3 DOESN'T INHERIT STATICS.
+		*
+		* Blantantly copied from api.rubyonrails.org:
+		* Sets the format that attributes are sent and received in from
+		* a mime type reference:
+		*
+		<code>
+			Person.format = 'html';
+			Person.find(1) # => GET /people/1.html
+
+			Person.format = 'json';
+			Person.find(1) # => GET /people/1.json
+
+			Person.format = 'xml';
+			Person.find(1) # => GET /people/1.xml
+		</code>
+		*
+		* Default format is 'xml'.
+		**/
+		// static public var format:String;
+		static private function model_format (self:Class) :String
+		{
+			// if self.format is undefined, use 'xml' as default
+			return ((self.format) ? self.format : 'xml');
+		}
+
+		/**
+		* SHOULD BE DEFINED IN SUBCLASS.
+		* AS3 DOESN'T INHERIT STATICS.
+		*
+		* Blantantly copied from api.rubyonrails.org:
+		* Sets the URI of the REST resources to map for this class to the
+		* value in the site argument. The site variable is required for
+		* ReactiveResource‘s mapping to work.
+		*
+		* Product.site = 'http://www.example.com';
+		**/
+		// static public var site:String;
+
+
 		static private function find_all (self:Class, options:Hash = null) :DataProvider
 		{
 			// pop from: param
@@ -109,13 +143,10 @@ package ras3r
 			var collection:DataProvider = new DataProvider();
 
 			// bubble DataChange event to 'complete' handler
-			//if (options && options.complete is Function) collection.addEventListener(DataChangeEvent.DATA_CHANGE, options.remove('complete'));
 			// wire event handlers (aka 'observers')
 			add_observers(collection, options, DataChangeEvent.DATA_CHANGE);
 
 			// execute request
-/*			get((from ? from : collection_path(self, options)), Delegate.create(after_find_all, self, collection, limit), onFindAllFault, options);*/
-/*			static public function after_find_all (e:Event, self:Class, collection:DataProvider, limit:uint) :void*/
 			var after_find:Function = function (e:Event) :void
 			{
 				after_find_all(e, self, collection, uint(limit));
@@ -293,8 +324,8 @@ package ras3r
 				addEventListener('complete', options.complete);
 			}
 
-			path = element_path().replace(/(\/[^\/\.]*)(\.xml)/, '$1/' + path + '$2');
-			send('PUT', path, to_xml(), after_update, after_update_failed);
+			path = element_path().replace(/(\/[^\/\.]*)(\.\w+)/, '$1/' + path + '$2');
+			send('PUT', path, after_update, after_update_failed);
 		}
 
 		public function reload (args:Object = null) :void
@@ -331,6 +362,29 @@ package ras3r
 			(this.id ? update() : create());
 
 			return true;
+		}
+
+		public function to_param () :URLVariables
+		{
+			// create collection
+			var params:URLVariables = new URLVariables();
+
+			var root:String = Inflector.demodulize(getQualifiedClassName(this));
+
+			// populate values
+			for (var i:String in attributes)
+			{
+				// every child's value must be cast to String
+				var value:String = String(this[i]);
+				// trap combobox serialization bug: value serializes as [object Object]
+				if (value == '[object Object]' && this[i].data) value = String(this[i].data);
+				// assign to collection
+/*				params[i] = value;*/
+				params['data[' + root + '][' + i + ']'] = value;
+			}
+
+			// send it back
+			return params;
 		}
 
 		public function to_xml () :XML
@@ -401,7 +455,7 @@ package ras3r
 
 		protected function create () :void
 		{
-			send('POST', collection_path(), to_xml(), after_create, after_create_failed);
+			send('POST', collection_path(), after_create, after_create_failed);
 		}
 
 		protected function collection_path (options:Object = null) :String
@@ -414,18 +468,30 @@ package ras3r
 			return ReactiveResource.element_path(self(), this.id, (options ? options : prefix_options()));
 		}
 
-        protected function id_from_response (response:Object) :void
+        protected function id_from_response (request:Object) :void
         {
-			var matches:Array;
-			// parse id from location
-			if (response.location) matches = response.location.toString().match(/\/([^\/]*?)(\.\w+)?$/);
-			// assign id IFF match is not null
-			if (matches && matches[1]) this.id = matches[1];
+			var fmt:String = model_format(self());
+
+			if (fmt == 'html')
+			{
+				var root:String = Inflector.underscore(Inflector.demodulize(getQualifiedClassName(this)));
+				var re:RegExp = new RegExp('<input[^>]*id="' + root + '_id"[^>]*>');
+				var input:XML = XML(request.response.raw.match(re).toString());
+				this.id = input.@value.toString();
+			}
+			else if (fmt == 'xml')
+			{
+				var matches:Array;
+				// parse id from location
+				if (request.data.location) matches = request.data.location.toString().match(/\/([^\/]*?)(\.\w+)?$/);
+				// assign id IFF match is not null
+				if (matches && matches[1]) this.id = matches[1];
+			}
         }
 
 		protected function update () :void
 		{
-			send('PUT', element_path(), to_xml(), after_update, after_update_failed);
+			send('PUT', element_path(), after_update, after_update_failed);
 		}
 
 		protected function self () :Class
@@ -455,15 +521,19 @@ package ras3r
 
 		// >>> PRIVATE METHODS
 		// TODO: move to a connection management object of some sort
-		private function send (method:String, path:String, data:XML, success:Function, failure:Function) :void
+		private function send (method:String, path:String, success:Function, failure:Function) :void
 		{
+			var fmt:String = model_format(self());
+
 			var request:Request = new Request(method, path);
 
 			// Set the data property to the dataToSave XML instance to send the XML
 			// data to the server
-			request.data = data;
-			// Set the contentType to signal XML data being sent
-			request.contentType = 'text/xml';
+			request.data = (fmt == 'xml' ? to_xml() : to_param());
+
+			// Set the contentType
+			// TODO: Extend to support JSON, others!
+			request.contentType = (fmt == 'html' ? 'application/x-www-form-urlencoded' : ('text/' + fmt));
 
 			// When the server response is finished downloading, invoke handleResponse
 			request.addEventListener('complete', success);
@@ -477,7 +547,7 @@ package ras3r
 		// >>> EVENT HANDLERS
 		private function after_create (e:Event) :void
 		{
-            id_from_response(e.target.data);
+            id_from_response(e.target);
             after_find(e);
 		}
 

@@ -7,7 +7,7 @@ package ras3r.reaction_view.helpers
 
 	use namespace flash_proxy;
 
-	dynamic public class TextFieldHelper extends Helper
+	dynamic public class TextFieldHelper extends FormattableHelper
 	{
 		static public var default_options:Hash = new Hash({
 			// autosize to end-run the 100x100 base size
@@ -18,9 +18,12 @@ package ras3r.reaction_view.helpers
 			*		probably best to EXCLUDE from default_options
 			**/
 			// condenseWhite: true,
+			// multiline: true for HTML5 support!
+			multiline: true,
 			// prevent selection
 			selectable: false,
 			// wordWrap forces textField to expand to full given width
+			// also true for HTML5 support!
 			wordWrap:	true
 		});
 
@@ -40,22 +43,30 @@ package ras3r.reaction_view.helpers
 			// if you want <li>s to render
 			if (hoptions.multiline) helper.multiline = hoptions.remove('multiline');
 
-			// is a custom font defined?
-			// if so, set default embedFonts = true
-			// hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
+			// invoke FormattableHelper's callback
+			FormattableHelper.create_helper_callback(helper, hoptions);
 
-			/**
-			*	Advanced anti-aliasing allows font faces to be rendered
-			*	at very high quality at small sizes. It is best used
-			*	with applications that have a lot of small text.
-			*	Advanced anti-aliasing is not recommended for very
-			*	large fonts (larger than 48 points).
-			**/
-			hoptions.antiAliasType = (hoptions.embedFonts && hoptions.format.size <= 48 && hoptions.antiAliasType != 'normal') ? 'advanced' : 'normal';
+			// HACKTASTIC HACK! stylesheet hack!
+			// these styles are hard-coded until they can be
+			// REMOVED in favor of runtime CSS in <style> tags
+			var style:StyleSheet = new StyleSheet();
+			style.setStyle('a:link', {
+				textDecoration: 'none'
+			});
+			style.setStyle('a:hover', {
+				textDecoration: 'underline'
+			});
+			style.setStyle('a:active', {
+				textDecoration: 'underline'
+			});
 
-			// apply textFormat before assigning htmlText
-			// to prevent htmlText rendering errors:
-			if (hoptions.format) helper.format = hoptions.remove('format');
+			// this may need to become template-specific
+			// in which case, inline styles won't be enough!
+			style.setStyle('li', {
+				marginLeft: -18
+			});
+			hoptions.styleSheet = style;
+
 
 			// another bugfixing attempt: strange bugs sizing!
 			if (hoptions.autoSize) helper.autoSize = hoptions.remove('autoSize');
@@ -86,7 +97,6 @@ package ras3r.reaction_view.helpers
 		/**
 		*	textFieldHelper.format = textFormat
 		*		applies textFormat to "textFormat" style on display_object
-		*		write-only
 		**/
 		public function set format (fmt:Object) :void
 		{
@@ -99,6 +109,15 @@ package ras3r.reaction_view.helpers
 			// apply new text format
 			this.defaultTextFormat = tf;
 			this.setTextFormat(tf);
+		}
+
+		/**
+		*	textFieldHelper.format => defaultTextFormat
+		*		returns display_object.defaultTextFormat
+		**/
+		public function get format () :Object
+		{
+			return this.defaultTextFormat;
 		}
 
 		/**
@@ -161,6 +180,7 @@ package ras3r.reaction_view.helpers
 		}
 
 
+		// >>> PROTECTED METHODS
 		// >>> EVENT HANDLERS
 		/**
 		*	update text

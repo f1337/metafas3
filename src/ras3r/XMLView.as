@@ -70,7 +70,7 @@ package ras3r
 				if (method)
 				{
 					// args defaults to empty array
-					var args:Array= new Array;
+					var args:Array = new Array;
 
 					// layout boxes
 					// <vbox x="160" y="0" padding="10">...</vbox>
@@ -96,6 +96,7 @@ package ras3r
 					{
 						var options:Hash = xml_to_hash(child);
 
+						// handle data bindings
 						if (options['for'])
 						{
 							args = options.remove('for').toString().split('.');
@@ -125,9 +126,10 @@ package ras3r
 				value = (
 					((! child.hasSimpleContent()) || child.attributes().length()) ?
 					xml_to_hash(child) : child.children().toString());
-				key = child.localName().toString();
 
-				// options[key] is a single value
+				// use node name as key for non-text childrean
+				key = child.localName();
+
 				if (options[key] == null)
 				{
 					options[key] = value;

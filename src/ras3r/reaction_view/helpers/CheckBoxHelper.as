@@ -36,21 +36,6 @@ package ras3r.reaction_view.helpers
 		**/
 		public var display_object:CheckBox = new CheckBox();
 
-		/**
-		*	proxy for display_object.width
-		**/
-		public function get width () :Number
-		{
-			return getProperty('width');
-		}
-
-		public function set width (w:Number) :void
-		{
-			setProperty('width', w);
-			display_object.textField.width = (w - display_object.textField.x);
-		}
-
-
 		// >>> PUBLIC METHODS
 		/**
 		*	Constructor. Proxies a display_object.
@@ -58,7 +43,7 @@ package ras3r.reaction_view.helpers
 		public function CheckBoxHelper ()
 		{
 			super(display_object);
-			display_object.textField.wordWrap = true;
+			display_object.label = '';
 		}
 
 		/**
@@ -72,16 +57,27 @@ package ras3r.reaction_view.helpers
 			// object[property] responds to changes to text_input.text
 			display_object.addEventListener('change', function (e:Object) :void
 			{
-				// convert true/false to 1/0
-				var val:int = (e.target.selected ? 1 : 0);
 				// prevent superfluous event firing
-				if (object[property] == val) return;
+				if (object[property] == selected) return;
 				// update data object
-				object[property] = val;
+				object[property] = selected;
 			});
 
 			// setup validation handlers
 			// super.bind_to(object, property);
+		}
+
+		/**
+		*	override "selected" property setter to translate 1/0 as true/false
+		**/
+		public function set selected (n:uint) :void
+		{
+			setProperty('selected', (n === 1 ? true : false))
+		}
+
+		public function get selected () :uint
+		{
+			return (getProperty('selected') ? 1 : 0);
 		}
 
 
@@ -91,12 +87,10 @@ package ras3r.reaction_view.helpers
 		**/
 		private function after_property_change (e:PropertyChangeEvent) :void
 		{
-			// convert 1/0 to true/false
-			var selected:Boolean = Boolean(e.newValue);
 			// prevent superfluous event firing
-			if (selected == this['selected']) return;
+			if (e.newValue == selected) return;
 			// update display object
-			this['selected'] = selected;
+			selected = uint(e.newValue);
 		}
 	}
 }

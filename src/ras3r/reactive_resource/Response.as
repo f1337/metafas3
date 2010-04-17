@@ -23,6 +23,17 @@ package ras3r.reactive_resource
 			{
 				_body = decode_json(response);
 			}
+			// <html>?
+			else if (response.toString().indexOf('<!DOCTYPE html>') > -1)
+			{
+				var ignoreWhitespace:Boolean = XML.ignoreWhitespace;
+				XML.ignoreWhitespace = false;
+
+				head = XML(response.match(/<head>.*<\/head>/s).toString());
+				_body = XML(response.match(/<body>.*<\/body>/s).toString());
+
+				XML.ignoreWhitespace = ignoreWhitespace;
+			}
 			// default parse as XML
 			else
 			{
@@ -36,6 +47,9 @@ package ras3r.reactive_resource
 				_body = (result.name() == 'rss') ? decode_rss(result) : decode_xml(result);
 			}
 		}
+
+		// html <head>, if exists
+		public var head:XML;
 
 		// raw response
 		public var raw:Object;
@@ -95,11 +109,12 @@ package ras3r.reactive_resource
 			for each (attr in attrs)
 			{
 				var children:XMLList = attr.children();
-				var pname:String = attr.localName().toLowerCase();
+				var pname:String = attr.localName();
 
 				// don't set null node names!
 				if (pname && children.length())
 				{
+					pname = pname.toLowerCase();
 					var pval:Object;
 					if (parse_attributes && attr.attributes().length())
 					{

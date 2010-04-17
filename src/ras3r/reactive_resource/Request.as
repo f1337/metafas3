@@ -32,10 +32,8 @@ package ras3r.reactive_resource
 
 		public function load () :void
 		{
-			// DO NOT FORCE TIMESTAMPS HERE!!!
+			// DO NOT FORCE CACHE-BREAKING TIMESTAMPS HERE!!!
 			// DOING SO BREAKS SOME 3rd PARTY FEEDS!!
-			// the condition that follows supports "cache-breaking" upon request
-/*			var url:String = ((timestamp > 0) ? (path + '?ievil=' + timestamp) : path);*/
 			var url:String = path;
 
 			// translate PUT and DELETE

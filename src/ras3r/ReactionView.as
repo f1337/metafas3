@@ -20,6 +20,10 @@ package ras3r
 
 	public class ReactionView extends Sprite
 	{
+		// >>> BASE VIEW CLASSES
+		private static var xhtmlView:XHTMLView;
+		private static var xmlView:XMLView;
+
 		// >>> STATIC PROPERTIES
 		public static var debug:Boolean = false;
 
@@ -76,11 +80,16 @@ package ras3r
 				{
 					klass = (getDefinitionByName(className) as Class);
 				}
-				// fallback to XMLView
+				// fallback to XMLView/XHTMLView
 				catch (exception:*)
 				{
-					var view:XMLView = new XMLView();
-					view.path = ReactionController.view_path + template + '.xml';
+					// support 'update' and 'update.xhtml' and 'update.xml'
+					t = template.split('.');
+					className = 'ras3r.' + (t[1] ? t[1].toUpperCase() : 'XML') + 'View';
+					klass = (getDefinitionByName(className) as Class);
+
+					var view:* = (new klass());
+					view.path = ReactionController.view_path + template;
 					return view;
 				}
 			}
@@ -206,9 +215,9 @@ package ras3r
 
 		protected function hbox (options:Object, ...args) :DisplayObjectContainer
 		{
-			var box:DisplayObjectContainer = (addChild(BoxHelper.hbox(options, args)) as DisplayObjectContainer);
-			if (options.id) this[options.id] = box;
-			return box;
+			options.children = args;
+			options.direction = 'horizontal';
+			return (helper(BoxHelper, new Hash(options)) as DisplayObjectContainer);
 		}
 
 		protected function image (options:Object) :DisplayObject
@@ -220,10 +229,7 @@ package ras3r
 
 		protected function image_button (options:Object) :DisplayObject
 		{
-			// inject buttonMode: true into options
 			return helper(ImageButtonHelper, (new Hash(options)));
-/*			return helper(ImageHelper, (new Hash(options).update({ buttonMode: true })));*/
-/*			return helper(ImageHelper, (new Hash(options).update({ buttonMode: true, tabEnabled: true })));*/
 		}
 
 		protected function image_button_for (object_name:String, property:String, options:Object = null) :DisplayObject
@@ -245,18 +251,9 @@ package ras3r
 		{
 			// HACK: pseudo-polymorphic params for XML templates:
 			if (args.length < 1) throw new ArgumentError("Argument count mismatch on ras3r::ReactionView/label(). Expected 1, got 0.");
-			var text:String = (args[0] is String ? args[0] : '');
-			var options:Hash = new Hash(args.length == 2 ? args[1] : args[0]);
-
-			if (text) options.update({ htmlText: text });
+			var options:Hash = new Hash(args.pop());
+			if (args.length) options.update({ htmlText: args.pop() });
 			return (helper(TextFieldHelper, options) as TextField);
-/*
-			var id:String = options.remove('id');
-			if (debug) options.opaqueBackground = 0xddffdd;
-			var sprite:DisplayObject = TextFieldHelper.create(options).display_object;
-			assign_id_for_object(id, sprite);
-			return (addChild(sprite) as TextField);
-*/
 		}
 
 /*		protected function label_for (object_name:String, property:String, html:String, options:Object = null) :TextField*/
@@ -265,10 +262,8 @@ package ras3r
 		{
 			// HACK: pseudo-polymorphic params for XML templates:
 			if (args.length < 1) throw new ArgumentError("Argument count mismatch on ras3r::ReactionView/label_for(). Expected 3, got " + (args.length + 2) + '.');
-			var text:String = (args[0] is String ? args[0] : '');
-			var options:Hash = new Hash(args.length == 2 ? args[1] : args[0]);
-
-			if (text) options.update({ htmlText: text });
+			var options:Hash = new Hash(args.pop());
+			if (args.length) options.update({ htmlText: args.pop() });
 			if (debug) options.update({ opaqueBackground: 0xddffdd });
 
 			return (helper(TextFieldHelper, options) as TextField);
@@ -347,9 +342,9 @@ package ras3r
 
 		protected function vbox (options:Object, ...args) :DisplayObjectContainer
 		{
-			var box:DisplayObjectContainer = (addChild(BoxHelper.vbox(options, args)) as DisplayObjectContainer);
-			if (options.id) this[options.id] = box;
-			return box;
+			options.children = args;
+			options.direction = 'vertical';
+			return (helper(BoxHelper, new Hash(options)) as DisplayObjectContainer);
 		}
 
 		public function vrule (options:Object) :DisplayObject
@@ -367,8 +362,25 @@ package ras3r
 		// >>> PRIVATE METHODS
 		protected function helper (helper:*, options:Hash) :DisplayObject
 		{
-			// remove id for later assignment
+			// remove id, name for later assignment
 			var id:String = options.remove('id');
+			var name:String = options.remove('name');
+			var matches:Array;
+			// prep for databinding
+			if (name)
+			{
+				// strip cakephp's data[] prefix
+				name = name.replace(/^data\[(\w+)\]/, '$1');
+				// infer data binding params from name
+				matches = name.match(/(\w+)\[(\w+)\]/);
+				if (matches)
+				{
+					// sanitize model name
+					matches[1] = matches[1].toLowerCase();
+					// set id to object_property
+					options.name = id = matches[1] + '_' + matches[2];
+				}
+			}
 			// invoke the helper factory
 			var object:Helper = helper.create(options);
 			// assign id, name
@@ -377,13 +389,19 @@ package ras3r
 				this[id] = object;
 				object.name = id;
 			}
+
+			// invoke the databinding helper
+			if (matches && object.hasOwnProperty('bind_to')) object.bind_to(this[matches[1]], matches[2]);
+
 			// add to display list and return
 			return addChild(object.display_object as DisplayObject);
 		}
 
+
+		// >>> DEPRECATE THIS METHOD INTO OBLIVION!!
 		protected function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject
 		{
-/*			Logger.info('helper_for: ' + helper + ', this: ' + this);*/
+			logger.info("DEPRECATION NOTICE: helper_for will disapper with HTML5 templates!!");
 			var name:String = (object_name + '_' + object_property);
 			options = new Hash({ name: name }).update(options);
 			// TODO: replace with databinding
@@ -454,7 +472,6 @@ package ras3r
 					parts.shift(); // drop on_
 					event = parts.pop(); // grab _event
 					element = parts.join('_');
-/*					logger.info('mixin_members: ' + method + ', ' + this + '.hasOwnProperty(' + element + '): ' + this.hasOwnProperty(element));*/
 					if (this.hasOwnProperty(element)) ((this[element] is Helper) ? this[element].display_object : this[element]).addEventListener(event, controller[method]);
 				}
 			}

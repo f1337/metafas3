@@ -6,7 +6,7 @@ package ras3r.reaction_view.helpers
 	import mx.events.*;
 	import ras3r.*;
 
-	dynamic public class UIComponentHelper extends Helper
+	dynamic public class UIComponentHelper extends FormattableHelper
 	{
 		/**
 		*	UIComponentHelper.default_options:
@@ -24,28 +24,9 @@ package ras3r.reaction_view.helpers
 		static protected function create (klass:Class, options:Object = null) :UIComponentHelper
 		{
 			options = default_options.merge(klass.default_options).update(options);
-			return (Helper.create(klass, options, create_helper_callback) as UIComponentHelper);
+			return (Helper.create(klass, options, FormattableHelper.create_helper_callback) as UIComponentHelper);
 		}
 
-		static private function create_helper_callback (helper:Helper, hoptions:Object) :void
-		{
-			// is a custom font defined?
-			// if so, set default embedFonts = true
-			// hoptions.embedFonts = Boolean(hoptions.format && hoptions.format.font && hoptions.embedFonts !== false);
-
-			/**
-			*	Advanced anti-aliasing allows font faces to be rendered
-			*	at very high quality at small sizes. It is best used
-			*	with applications that have a lot of small text.
-			*	Advanced anti-aliasing is not recommended for very
-			*	large fonts (larger than 48 points).
-			**/
-			hoptions.antiAliasType = (hoptions.embedFonts && hoptions.format.size <= 48 && hoptions.antiAliasType != 'normal') ? 'advanced' : 'normal';
-
-			// apply textFormat before assigning any text
-			// to prevent text rendering errors:
-			if (hoptions.format) helper.format = hoptions.remove('format');
-		}
 
 
 		// >>> PUBLIC PROPERTIES
@@ -82,11 +63,19 @@ package ras3r.reaction_view.helpers
 		/**
 		*	helper.embedFonts = true
 		*		applies value to "embedFonts" style on proxied_object
-		*		write-only
 		**/
 		public function set embedFonts (flag:Boolean) :void
 		{
 			this.setStyle('embedFonts', flag);
+		}
+
+		/**
+		*	helper.embedFonts => getStyle('embedFonts')
+		*		retruns proxied_object.getStyle('embedFonts')
+		**/
+		public function get embedFonts () :Boolean
+		{
+			return this.getStyle('embedFonts');
 		}
 
 		/**
@@ -106,6 +95,16 @@ package ras3r.reaction_view.helpers
 			// apply new textFormat
 			this.setStyle('textFormat', tf);
 		}
+
+		/**
+		*	helper.format => getStyle('textFormat')
+		*		returns display_object.defaultTextFormat
+		**/
+		public function get format () :Object
+		{
+			return this.getStyle('textFormat');
+		}
+
 
 		/**
 		*	helper.invalid = function validation event listener
