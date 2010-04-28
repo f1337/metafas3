@@ -10,6 +10,7 @@ package ras3r.reaction_view.helpers
 			if (hoptions.color) hoptions.format.color = hoptions.remove('color').replace('#', '0x');
 			if (hoptions.fontFamily) hoptions.format.font = hoptions.remove('fontFamily');
 			if (hoptions.fontSize) hoptions.format.size = hoptions.remove('fontSize');
+			if (hoptions.fontStyle) hoptions.format.italic = (hoptions.remove('fontStyle') == 'italic');
 			if (hoptions.fontWeight) hoptions.format.bold = (hoptions.remove('fontWeight') == 'bold');
 			if (hoptions.leading) hoptions.format.leading = hoptions.remove('leading');
 			if (hoptions.letterSpacing) hoptions.format.letterSpacing = hoptions.remove('letterSpacing');

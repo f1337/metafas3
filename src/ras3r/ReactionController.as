@@ -17,7 +17,7 @@ package ras3r
 		static public var container:DisplayObjectContainer; // ONLY for addChild
 		static public var view_path:String = './';
 
-		static private var before_filters:Dictionary = new Dictionary;
+		static private var before_filters:Array = new Array;
 
 
 		// >>> PROTECTED PROPERTIES
@@ -74,8 +74,12 @@ package ras3r
 		// >>> STATIC PUBLIC METHODS
 		static public function append_before_filter (c:Class, name:String) :void
 		{
-			before_filters[c] ||= new Array;
-			before_filters[c].push(name);
+			before_filters.push({ klass: c, name: name });
+		}
+
+		static public function prepend_before_filter (c:Class, name:String) :void
+		{
+			before_filters.unshift({ klass: c, name: name });
 		}
 
 		/**
@@ -315,16 +319,8 @@ package ras3r
 		// >>> PROTECTED METHODS
 		private function new_view (template:String, options:Hash) :*
 		{
-/*			var after_hide:String = (options.hide ? options.remove('hide') : 'hide_view');*/
-/*			var after_show:String = (options.show ? options.remove('show') : 'show_view');*/
-
 			var view:ReactionView = ReactionView.create(template, options) as ReactionView;
-
-/*			view.addEventListener('hide_view', this[after_hide]);*/
-/*			view.addEventListener('show_view', this[after_show]);*/
-
 			addChild(view);
-
 			return view;
 		}
 
@@ -368,6 +364,9 @@ package ras3r
 		// render('list')
 		protected function render (template:String, options:Object = null) :*
 		{
+			// allow _show() to pass layout via params:
+			if ((! _layout) && params.layout) layout(params.layout);
+
 			// sanitize input
 			if (template.indexOf('/') == -1) template = (controller_name() + '/' + template);
 			options = new Hash(options);
@@ -383,8 +382,7 @@ package ras3r
 			var view_bounds:Rectangle = (_layout ? _layout.bounds : bounds);
 			var view_options:Hash = options.merge({
 				x: view_bounds.x,
-				y: view_bounds.y,
-				scrollRect: (new Rectangle(0, 0, view_bounds.width, view_bounds.height))
+				y: view_bounds.y
 			});
 			content = new_view(template, view_options);
 
@@ -435,14 +433,11 @@ package ras3r
 		private function apply_before_filters (f:Function) :Boolean
 		{
 			var ok:Boolean = true;
-			for (var c:* in before_filters)
+			for each (var filter:Object in before_filters)
 			{
+				var c:* = filter.klass;
 				if (! (this is c)) continue;
-				for (var i:uint = 0; i < before_filters[c].length; i++)
-				{
-					ok = this[before_filters[c][i]](f);
-					if (! ok) break;
-				}
+				ok = this[filter.name](f);
 				if (! ok) break;
 			}
 			return ok;

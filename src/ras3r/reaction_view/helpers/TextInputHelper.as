@@ -76,6 +76,9 @@ package ras3r.reaction_view.helpers
 		**/
 		override public function bind_to (object:*, property:String) :void
 		{
+			// initialize "text" w/ current value of object[property]:
+			if (object[property] !== null) text = object[property];
+
 			// helper responds to changes to object[property]
 			object.addEventListener(property + '_change', after_property_change);
 
@@ -83,9 +86,9 @@ package ras3r.reaction_view.helpers
 			display_object.addEventListener('change', function (e:Object) :void
 			{
 				// prevent superfluous event firing
-				if (object[property] == e.target.text) return;
+				if (object[property] == text) return;
 				// update data object
-				object[property] = e.target.text;
+				object[property] = text;
 			});
 
 			// setup validation handlers
@@ -100,9 +103,9 @@ package ras3r.reaction_view.helpers
 		private function after_property_change (e:PropertyChangeEvent) :void
 		{
 			// prevent superfluous event firing
-			if (e.newValue == this.text) return;
+			if (e.newValue == text) return;
 			// update display object
-			this.text = e.newValue.toString();
+			text = e.newValue.toString();
 		}
 
 		/**

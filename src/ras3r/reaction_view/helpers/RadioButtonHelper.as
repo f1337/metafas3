@@ -3,6 +3,7 @@ package ras3r.reaction_view.helpers
 	import fl.controls.*;
 	import flash.display.*;
 	import flash.text.*;
+	import mx.events.PropertyChangeEvent;
 	import ras3r.*;
 
 	dynamic public class RadioButtonHelper extends UIComponentHelper
@@ -130,8 +131,22 @@ package ras3r.reaction_view.helpers
 		**/
 		override public function bind_to (object:*, property:String) :void
 		{
+			// helper responds to changes to object[property]
+			object.addEventListener(property + '_change', after_property_change);
+
+			// object[property] responds to changes to text_input.text
+			display_object.addEventListener('change', function (e:Object) :void
+			{
+				// prevent superfluous event firing
+				if (selected && object[property] != value)
+				{
+					// update data object
+					object[property] = value;
+				}
+			});
+
 			// setup validation handlers
-			// super.bind_to(object, property);
+			super.bind_to(object, property);
 		}
 
 		/**
@@ -163,6 +178,17 @@ package ras3r.reaction_view.helpers
 					break;
 			}
 			radio_button.setStyle(key, value);
+		}
+
+		/**
+		*	update display_object.selected
+		**/
+		private function after_property_change (e:PropertyChangeEvent) :void
+		{
+			// prevent superfluous event firing
+			if (e.newValue == this.value && this.selected) return;
+			// update display object
+			selected = (e.newValue == value);
 		}
 
 		/**

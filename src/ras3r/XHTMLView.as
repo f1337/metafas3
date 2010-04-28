@@ -5,20 +5,29 @@ package ras3r
 	import flash.display.*;
 	import flash.events.*;
 	import flash.net.*;
+	import flash.system.*;
 	import flash.text.*;
 	import flash.utils.*;
 	import ras3r.reaction_view.helpers.*;
+	import ras3r.reaction_view.tags.*;
 
 	dynamic public class XHTMLView extends ReactionView
 	{
 		public var xml:XML;
 
+		// >>> COMPILER HACKS
+		private static var __div:Function = div;
+		private static var __embed:Function = embed;
+		private static var __img:Function = img;
+		private static var __input:Function = input;
+		private static var __label:Function = label;
+		private static var __select:Function = select;
+
 		private static var layout_tags:Object = {
-			article:	'box',
-			aside:		'box',
-			fieldset:	'box',
-			header:		'box',
-			section:	'box'
+			article:	'div',
+			aside:		'div',
+			fieldset:	'div',
+			section:	'div'
 		};
 
 		private static var text_tags:Object = {
@@ -30,7 +39,6 @@ package ras3r
 			h4:			true,
 			h5:			true,
 			h6:			true,
-/*			label:		true,*/
 			p:			true,
 			span:		true
 		};
@@ -58,7 +66,10 @@ package ras3r
 				// if XML template loaded successfully, cache the data
 				if (e.target.data && e.target.data.toString().indexOf('<') == 0)
 				{
-					templates_cache(klass, XML(e.target.data));
+					var ignoreWhitespace:Boolean = XML.ignoreWhitespace;
+					XML.ignoreWhitespace = false;
+					templates_cache(klass, XML(e.target.data.match(/<body>.*<\/body>/s).toString()));
+					XML.ignoreWhitespace = ignoreWhitespace;
 				}
 				callback(e);
 			});
@@ -128,6 +139,7 @@ package ras3r
 					}
 
 					// invoke the helper method, if it exists
+					method = '_' + method;
 					if (this[method])
 					{
 						display_object = this[method].apply(this, args);
@@ -155,10 +167,6 @@ package ras3r
 			for each (var child:XML in xml.children())
 			{
 				// value is a simple string, or a hash deserialed from XML
-/*				value = (
-					((! child.hasSimpleContent()) || child.attributes().length()) ?
-					xml_to_hash(child) : child.children().toString());
-*/
 				value = (
 					(child.hasComplexContent() || child.attributes().length()) ?
 					xml_to_hash(child) : child.toString());
@@ -233,123 +241,91 @@ package ras3r
 
 
 		// >>> TAG HANDLERS
-		protected function box (options:Object, ...args) :DisplayObjectContainer
+		protected function _div (options:Hash, ...children) :BoxHelper
 		{
-			options.children = args;
-			options.direction ||= 'vertical';
-			return (helper(BoxHelper, new Hash(options)) as DisplayObjectContainer);
+			return (tag('div', options, children) as BoxHelper);
 		}
 
-		protected function fieldset (options:Object, ...args) :DisplayObjectContainer
+		protected function _embed (options:Hash) :ImageHelper
 		{
-			options.children = args;
-			options.direction ||= 'horizontal';
-			return (helper(FieldsetHelper, new Hash(options)) as DisplayObjectContainer);
+			return (tag('embed', options) as ImageHelper);
 		}
 
-		// parse <embed> tag as "Image" (custom UILoader)
-		// (mf) kinda defeats the purpose of HTML5 fallback content?
-/*		protected function embed (options:Hash) :DisplayObject
-		{
-			options.remove('type'); // discard type, we don't use it.
-			options.source = options.remove('src');
-			return image(options);
-		}
-*/
-		override protected function image (options:Object) :DisplayObject
+		protected function _image (options:Object) :*
 		{
 			throw(new Error('<image> is not a valid XHTML tag!'));
 		}
 
-		// parse <img> tag as "Image" (custom UILoader)
-		protected function img (options:Hash) :DisplayObject
+		protected function _img (options:Hash) :ImageHelper
 		{
-			options.remove('alt'); // discard alt, we don't use it.
-			options.source = options.remove('src');
-			return super.image(options);
+			return (tag('img', options) as ImageHelper);
 		}
 
-		// parse <input> tags as corresponding UIComponents
-		protected function input (options:Hash) :DisplayObject
+		protected function _input (options:Hash) :Helper
 		{
-			// infer data bindings from field names
-			var bindings:Array;
-			if (options.name)
-			{
-				bindings = options.remove('name').match(/(data\[)?(\w+)\]?\[(\w+)\]/);
-				if (bindings) bindings[2] = bindings[2].toLowerCase()
-			}
-
-			var method:String;
-			var type:String = options.remove('type');
-			switch (type)
-			{
-				case 'checkbox':
-					method = 'check_box_for';
-					break;
-				case 'radio':
-					return radio_button(options);
-					break;
-				// allow hidden fields to assign model properties
-				case 'hidden':
-					if (bindings) this[bindings[2]][bindings[3]] = options.value;
-					break;
-				case 'image':
-					options.source = options.remove('src');
-					return image_button(options);
-					break;
-				case 'text':
-				default:
-					method = 'text_input_for';
-					break;
-			}
-
-			return ((method && bindings) ? this[method](bindings[2], bindings[3], options) : null);
+			return tag('input', options);
 		}
 
-		override protected function label (...args) :TextField
+		protected function _label (options:Hash) :TextFieldHelper
 		{
-			var options:Hash = args.pop();
-
-			// support <label> nodes
-			if (options._text) options.text = options.remove('_text');
-
-			// strip <span>s and convert to <font>
-			// <span style="color: #b87236; font-family: 'Helvetica Neue LT Std 56 Italic'; font-style: italic;"> special discount </span>
-			if (options.htmlText)
-			{
-				options.htmlText = options.htmlText.replace(/\s{2,}/gs, '').replace(/<span[^>]*style="([^>]+)"[^>]*>([^<]+)<\/span>/g, ' $2 ');
-/*				options.condenseWhite = false;*/
-				logger.info('htmlText: ' + options.htmlText);
-			}
-
-
-			// hijack <a>nchor href properties
-			if (options.href) options.htmlText = options.htmlText.replace(/<a([^>]+)href="[^\"]+"/, '<a$1href="event:' + options.remove('href') + '"');
-
-			return super.label(options);
+			return (tag('label', options) as TextFieldHelper);
 		}
 
-		// parse <select> tag as ComboBox
-		protected function select (options:Hash) :ComboBox
+		protected function _select (options:Hash) :ComboBoxHelper
 		{
-			// extract choices from options
-			var choices:* = options.remove('option');
-			// translate XHTML5 option data for ComboBox
-			choices.every(function (o:Hash, ...args) :Boolean
+			return (tag('select', options) as ComboBoxHelper);
+		}
+
+
+
+		private function tag (node:String, options:Hash, ...args) :Helper
+		{
+			// remove id, name for later assignment
+			var id:String = options.remove('id');
+			var name:String = options.remove('name');
+			var matches:Array;
+
+			// TODO: theoretically, all this databinding belongs in tags or helpers
+			// parse name="model[property]" for databinding
+			if (name)
 			{
-				// re-key "value" as "data"
-				o.data = o.remove('value');
-				// re-key "text" as "label"
-				o.label = o.remove('_text');
-				// assign selected item
-				if (o.remove('selected')) options.selectedItem = o;
-				return true;
-			});
-			// cast choices to DataProvider
-			options.dataProvider = (choices is DataProvider) ? choices : (new DataProvider(choices));
-			// invoke the ComboBox factory and return
-			return (helper(ComboBoxHelper, options) as ComboBox);
+				// strip cakephp's data[] prefix
+				name = name.replace(/^data\[(\w+)\]/, '$1');
+				// infer data binding params from name
+				matches = name.match(/(\w+)\[(\w+)\]/);
+				if (matches)
+				{
+					// sanitize model name
+					matches[1] = matches[1].toLowerCase();
+					// set id to object_property
+					options.name = id = matches[1] + '_' + matches[2];
+					// allow <input type="hidden"> fields to assign model properties
+					if (node == 'input' && options.type == 'hidden') this[matches[1]][matches[2]] = options.value;
+				}
+			}
+
+			// invoke the tag factory
+			var ztag:* = getDefinitionByName('ras3r.reaction_view.tags::' + node);
+			args.unshift(options);
+			var object:Helper = ztag.apply(null, args);
+
+			if (object)
+			{
+				// assign id, name
+				if (id)
+				{
+					this[id] = object;
+					object.name = id;
+				}
+
+				// invoke the databinding helper
+				if (matches && object.hasOwnProperty('bind_to')) object.bind_to(this[matches[1]], matches[2]);
+
+				// add to display list and return
+				addChild(object.display_object);
+			}
+
+			return object;
 		}
 	}
 }

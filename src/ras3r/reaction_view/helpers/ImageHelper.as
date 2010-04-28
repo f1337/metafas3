@@ -29,6 +29,9 @@ package ras3r.reaction_view.helpers
 		**/
 		static public function create (options:Object = null) :ImageHelper
 		{
+			// catch if required param "source" exists
+			if (! options.source) throw new ArgumentError("Expected argument, options.source, is missing from ImageHelper.create(options).");
+
 			return (Helper.create(ImageHelper, options) as ImageHelper);
 		}
 

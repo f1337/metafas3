@@ -51,6 +51,11 @@ package ras3r.reaction_view.helpers
 		}
 
         /**
+        *   placeholder for position: absolute/relative/inline CSS property
+        **/
+		public var position:String;
+
+        /**
         *   reference to proxied object
         **/
         public var proxied_object:Object;
@@ -77,11 +82,11 @@ package ras3r.reaction_view.helpers
 				// strip "-ras3r-" style prefix
 				args[0] = args[0].replace('-ras3r-', '');
 				// convert dashed-css-syntax to camelizedMethodSyntax
-				args[0] = Inflector.camelize(Inflector.underscore(args[0]), false);
+				args[0] = Inflector.camelize(args[0].replace(/\-/g, '_'), false);
 
 				// sanitize value
 				// strip 'px', 'pt' units
-				args[1] = args[1].replace(/^(\d+)(px|pt)$/, '$1');
+				args[1] = args[1].replace(/^([\-\d]+)(px|pt)$/, '$1');
 				// strip enclosing quotes
 				args[1] = args[1].replace(/^[\"\']([^\'\"]+)[\'"]$/, '$1');
 

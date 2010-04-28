@@ -26,30 +26,11 @@ package ras3r.reaction_view.helpers
 		public var fill:uint = 0xffffff;
 
 		/**
-		*	proxy for display_object.filters
-		**/
-		public function get filters () :Array
-		{
-			return display_object.filters;
-		}
-
-		public function set filters (f:Array) :void
-		{
-			display_object.filters = f;
-		}
-
-		/**
 		*	proxy for display_object.height
 		**/
-        private var _height:Number;
-		public function get height () :Number
+		override public function set height (val:Number) :void
 		{
-			return (_height ? _height : display_object.height);
-		}
-
-		public function set height (val:Number) :void
-		{
-            _height = val;
+			super.height = val;
 			draw(0, val);
             // we don't change the textfield height here,
             // so call after_textfield_render to do so
@@ -66,20 +47,7 @@ package ras3r.reaction_view.helpers
 		/**
 		*	text for tooltip
 		**/
-		public var text_field:TextField = new TextField();
-
-		/**
-		*	proxy for display_object.visible
-		**/
-		public function get visible () :Boolean
-		{
-			return display_object.visible;
-		}
-
-		public function set visible (val:Boolean) :void
-		{
-			display_object.visible = val;
-		}
+/*		public var text_field:TextField = new TextField();*/
 
 		/**
 		*	proxy for display_object.width
@@ -95,32 +63,6 @@ package ras3r.reaction_view.helpers
             super.width = val;
 		}
 
-		/**
-		*	proxy for display_object.x
-		**/
-		public function get x () :Number
-		{
-			return display_object.x;
-		}
-
-		public function set x (val:Number) :void
-		{
-			display_object.x = val;
-		}
-
-		/**
-		*	proxy for display_object.y
-		**/
-		public function get y () :Number
-		{
-			return display_object.y;
-		}
-
-		public function set y (val:Number) :void
-		{
-			display_object.y = val;
-		}
-
 
 		// >>> PUBLIC METHODS
 		/**
@@ -129,9 +71,9 @@ package ras3r.reaction_view.helpers
 		public function TooltipHelper ()
 		{
 			super(text_field);
-			display_object = new Sprite();
+/*			display_object = new Sprite();*/
 			display_object.addChild(arrow);
-			display_object.addChild(text_field);
+/*			display_object.addChild(text_field);*/
 		}
 
 

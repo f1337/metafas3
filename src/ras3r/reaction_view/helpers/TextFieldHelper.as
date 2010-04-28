@@ -92,7 +92,22 @@ package ras3r.reaction_view.helpers
 		*	Every Helper is expected to provide a display_object.
 		*	This one is a TextField
 		**/
-		public var display_object:* = new TextField;
+/*		public var display_object:* = new TextField;*/
+		public var display_object:Sprite = new Sprite();
+		public var text_field:TextField = new TextField();
+
+		/**
+		*	proxy for display_object.filters
+		**/
+		public function get filters () :Array
+		{
+			return display_object.filters;
+		}
+
+		public function set filters (f:Array) :void
+		{
+			display_object.filters = f;
+		}
 
 		/**
 		*	textFieldHelper.format = textFormat
@@ -121,6 +136,21 @@ package ras3r.reaction_view.helpers
 		}
 
 		/**
+		*	proxy for display_object.height
+		**/
+        private var _height:Number;
+		public function get height () :Number
+		{
+			return (_height ? _height : text_field.height);
+		}
+
+		public function set height (val:Number) :void
+		{
+            _height = val;
+			text_field.height = (text_field.y - val);
+		}
+
+		/**
 		*	prevent textFieldHelper.htmlText from being set to null
 		**/
 		public function set htmlText (t:String) :void
@@ -131,6 +161,28 @@ package ras3r.reaction_view.helpers
 		public function get htmlText () :String
 		{
 			return getProperty('htmlText');
+		}
+
+
+		/**
+		*	provides CSS-style padding support
+		**/
+		public function set padding (n:Number) :void
+		{
+			paddingLeft = n;
+			paddingTop = n;
+		}
+
+		public function set paddingLeft (n:Number) :void
+		{
+			text_field.x = n;
+			text_field.width = (width - n);
+		}
+
+		public function set paddingTop (n:Number) :void
+		{
+			text_field.y = n;
+			text_field.height = (height - n);
 		}
 
 		/**
@@ -146,16 +198,55 @@ package ras3r.reaction_view.helpers
 			return getProperty('text');
 		}
 
+		/**
+		*	proxy for display_object.visible
+		**/
+		public function get visible () :Boolean
+		{
+			return display_object.visible;
+		}
+
+		public function set visible (val:Boolean) :void
+		{
+			display_object.visible = val;
+		}
+
 		private var _width:Number;
 		public function get width () :Number
 		{
-			return (_width ? _width : proxied_object.width);
+			return (_width ? _width : text_field.width);
 		}
 
 		public function set width (val:Number) :void
 		{
 			_width = val;
-			proxied_object.width = val;
+			text_field.width = (text_field.x - val);
+		}
+
+		/**
+		*	proxy for display_object.x
+		**/
+		public function get x () :Number
+		{
+			return display_object.x;
+		}
+
+		public function set x (val:Number) :void
+		{
+			display_object.x = val;
+		}
+
+		/**
+		*	proxy for display_object.y
+		**/
+		public function get y () :Number
+		{
+			return display_object.y;
+		}
+
+		public function set y (val:Number) :void
+		{
+			display_object.y = val;
 		}
 
 
@@ -165,9 +256,10 @@ package ras3r.reaction_view.helpers
 		**/
 		public function TextFieldHelper (proxied_object:Object = null)
 		{
-			proxied_object ||= display_object;
+			proxied_object ||= text_field;
 			super(proxied_object);
 			proxied_object.addEventListener('render', after_textfield_render);
+			display_object.addChild(text_field);
 		}
 
 		/**

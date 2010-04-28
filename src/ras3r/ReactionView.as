@@ -193,7 +193,7 @@ package ras3r
 			return helper(CheckBoxHelper, (new Hash(options)));
 		}
 
-		public function check_box_for (object_name:String, property:String, options:Object = null) :CheckBox
+		public function check_box_for (object_name:String, property:String, options:Object = null) :*
 		{
 			return (helper_for(CheckBoxHelper, options, 'selected', object_name, property) as CheckBox);
 		}
@@ -220,14 +220,12 @@ package ras3r
 			return (helper(BoxHelper, new Hash(options)) as DisplayObjectContainer);
 		}
 
-		protected function image (options:Object) :DisplayObject
+		protected function image (options:Object) :*
 		{
-			// catch if required param "source" exists
-			if (! options.source) throw new ArgumentError("Expected argument, options.source, is missing from ras3r::ReactionView/image(options).");
 			return helper(ImageHelper, (new Hash(options)));
 		}
 
-		protected function image_button (options:Object) :DisplayObject
+		public function image_button (options:Object) :DisplayObject
 		{
 			return helper(ImageButtonHelper, (new Hash(options)));
 		}
@@ -247,7 +245,7 @@ package ras3r
 
 /*		protected function label (text:String, options:Object = null) :TextField*/
 /*		protected function label (options:Object) :TextField*/
-		protected function label (...args) :TextField
+		protected function label (...args) :*
 		{
 			// HACK: pseudo-polymorphic params for XML templates:
 			if (args.length < 1) throw new ArgumentError("Argument count mismatch on ras3r::ReactionView/label(). Expected 1, got 0.");
@@ -319,7 +317,7 @@ package ras3r
 			return (helper_for(TextFieldHelper, options, 'htmlText', object_name, property) as TextField);
 		}
 
-		public function text_input_for (object_name:String, property:String, options:Object = null) :TextInput
+		public function text_input_for (object_name:String, property:String, options:Object = null) :*
 		{
 			return (helper_for(TextInputHelper, options, 'text', object_name, property) as TextInput);
 		}
@@ -362,6 +360,12 @@ package ras3r
 		// >>> PRIVATE METHODS
 		protected function helper (helper:*, options:Hash) :DisplayObject
 		{
+			// add to display list and return
+			return (newhelper(helper, options).display_object as DisplayObject);
+		}
+
+		protected function newhelper (helper:*, options:Hash) :Helper
+		{
 			// remove id, name for later assignment
 			var id:String = options.remove('id');
 			var name:String = options.remove('name');
@@ -394,14 +398,21 @@ package ras3r
 			if (matches && object.hasOwnProperty('bind_to')) object.bind_to(this[matches[1]], matches[2]);
 
 			// add to display list and return
-			return addChild(object.display_object as DisplayObject);
+			addChild(object.display_object);
+			return object;
 		}
 
 
 		// >>> DEPRECATE THIS METHOD INTO OBLIVION!!
 		protected function helper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :DisplayObject
 		{
-			logger.info("DEPRECATION NOTICE: helper_for will disapper with HTML5 templates!!");
+			return (newhelper_for(helper, options, assign_property, object_name, object_property).display_object as DisplayObject);
+		}
+
+		// >>> DEPRECATE THIS METHOD INTO OBLIVION!!
+		protected function newhelper_for (helper:*, options:Object, assign_property:String, object_name:String, object_property:String) :Helper
+		{
+			logger.info("DEPRECATION NOTICE: helper_for should disappear with HTML5 templates!!");
 			var name:String = (object_name + '_' + object_property);
 			options = new Hash({ name: name }).update(options);
 			// TODO: replace with databinding
@@ -411,20 +422,11 @@ package ras3r
 			{
 				this[name].bind_to(this[object_name], object_property);
 			}
-			return addChild(this[name].display_object);
+			// add to display list and return
+			addChild(this[name].display_object);
+			return this[name];
 		}
-/*
-		private function new_helper_for (helper:*, object_name:String, object_property:String, options:Object) :DisplayObject
-		{
-			var name:String = (object_name + '_' + object_property);
-			options = new Hash({ name: name }).update(options);
 
-			this[name] = helper.create(options);
-			this[name].bind_to(this[object_name], object_property);
-
-			return addChild(this[name].display_object);
-		}
-*/
 
 		// >>> EVENT HANDLERS
 		protected function after_added_to_stage (e:Event) :void

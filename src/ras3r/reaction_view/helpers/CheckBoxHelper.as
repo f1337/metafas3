@@ -51,6 +51,9 @@ package ras3r.reaction_view.helpers
 		**/
 		override public function bind_to (object:*, property:String) :void
 		{
+			// initialize "selected" w/ current value of object[property]:
+			if (object[property] !== null) selected = object[property];
+
 			// helper responds to changes to object[property]
 			object.addEventListener(property + '_change', after_property_change);
 
