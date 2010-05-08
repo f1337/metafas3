@@ -1,12 +1,12 @@
-package ras3r
+package metafas3
 {
 	import as3spec.*;
 	import flash.display.*;
 	import flash.events.*;
 	import fl.controls.*;
 	import fl.data.*;
-	import ras3r.*;
-	import ras3r.reaction_view.helpers.*;
+	import metafas3.*;
+	import metafas3.reaction_view.helpers.*;
 
 	public class ReactionViewTest extends Spec
 	{

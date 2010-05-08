@@ -4,7 +4,7 @@ package <%= package_name %>
 	import fl.containers.*;
 	import fl.controls.*;
 	import flash.text.*;
-	import ras3r.*;
+	import metafas3.*;
 
 	public class <%= test_case_name  %> extends Spec
 	{

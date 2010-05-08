@@ -1,8 +1,8 @@
-package ras3r.reaction_view.helpers
+package metafas3.reaction_view.helpers
 {
 	import as3spec.*;
 	import fl.controls.*;
-	import ras3r.*;
+	import metafas3.*;
 
 	public class ComboBoxHelperTest extends Spec
 	{

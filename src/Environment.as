@@ -2,7 +2,7 @@ package
 {
 	import flash.system.*;
 	import flash.utils.*;
-	import ras3r.*;
+	import metafas3.*;
 
 	dynamic public class Environment
 	{

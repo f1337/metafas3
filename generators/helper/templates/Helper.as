@@ -3,7 +3,7 @@ package <%= package_name %>
 	import fl.controls.*;
 	import flash.text.*;
 	import flash.utils.*;
-	import ras3r.*;
+	import metafas3.*;
 
 	use namespace flash_proxy;
 

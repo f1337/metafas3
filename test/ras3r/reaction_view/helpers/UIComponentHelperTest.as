@@ -1,4 +1,4 @@
-package ras3r.reaction_view.helpers
+package metafas3.reaction_view.helpers
 {
 	import as3spec.*;
 

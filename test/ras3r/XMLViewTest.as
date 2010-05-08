@@ -1,4 +1,4 @@
-package ras3r
+package metafas3
 {
 	import as3spec.*;
 

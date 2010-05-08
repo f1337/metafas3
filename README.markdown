@@ -1,17 +1,17 @@
-# Ras3r #
+# Metafas3 #
 
-Ras3r is a small MVC/P framework for AS3, inspired by [Ruby on Rails](http://rubyonrails.org/), implementing the [Supervising Controller/Presenter](http://martinfowler.com/eaaDev/SupervisingPresenter.html) pattern. Ras3r is built upon the [Sprouts](http://projectsprouts.org) project-generation tool for ActionScript/Flash/Flex/AIR.
+Metafas3 is a small [MVP](http://martinfowler.com/eaaDev/uiArchs.html#Model-view-presentermvp) framework for AS3, inspired by [Ruby on Rails](http://rubyonrails.org/), implementing the [Supervising Controller/Presenter](http://martinfowler.com/eaaDev/SupervisingPresenter.html) pattern. Metafas3 is built upon the [Sprouts](http://projectsprouts.org) project-generation tool for ActionScript/Flash/Flex/AIR.
 
-## Why Ras3r? ##
+## Why Metafas3? ##
 
-* **MVC/P:** Ras3r implements the [Supervising Controller/Presenter](http://martinfowler.com/eaaDev/SupervisingPresenter.html) pattern as defined by Martin Fowler. Ras3r is [opinionated](http://gettingreal.37signals.com/ch04_Make_Opinionated_Software.php) software, where Views are meant to be declarative and "dumb", Controllers to be event handlers and delegates, and Models to be data validators and API consumers.
+* **MVP:** Metafas3 implements the [Supervising Controller/Presenter](http://martinfowler.com/eaaDev/SupervisingPresenter.html) pattern as defined by Martin Fowler. Metafas3 is [opinionated](http://gettingreal.37signals.com/ch04_Make_Opinionated_Software.php) software, where Views are meant to be declarative and "dumb", Controllers to be event handlers for user gestures, and Models to provide business logic and data validaton.
 * **Lightweight:** Less than 70k for a fully-loaded .swf compiled with fl.controls.ComboBox, RadioButton, CheckBox, TextInput, Button and UILoader. The equivalent .swf built with Flex exceeds 400k.
-* **Declarative:** Like Flex, Ras3r provides a declarative XML syntax for views. Unlike Flex, Ras3r also provides a declarative AS3 syntax for views.
-* **Data Bindings:** Like Flex, Ras3r provides a simple declarative data-binding syntax.
-* **Validations:** Like Flex, Ras3r provides in-UX validations. Unlike Flex, Ras3r applies validations in the Model layer, not in the View layer. The only exception: Like Flex, Ras3r provides a shortcut 'required="true"' syntax for simple view-defined validations.
-* **REST:** Inpsired, and partially copied from, Ruby on Rails, Ras3r's ReactiveResource models provide a simple method for interacting with REST web services.
-* **Runtime Views:** Ras3r XML views may be compiled into the .swf, or loaded and rendered at *runtime*.
-* **BDD/TDD Unit Testing:** Thanks to [Sprouts](http://projectsprouts.org), Ras3r provides *two* automated testing suites:[AS3spec](http://github.com/fantasticmf/as3spec) and [AsUnit](http://github.com/lukebayes/asunit/).
+* **Declarative:** Like Flex, Metafas3 provides a declarative markup language (XHTML5) for views. Unlike Flex, Metafas3 also provides a declarative AS3 syntax for views.
+* **Data Bindings:** Like Flex, Metafas3 provides a simple declarative data-binding syntax.
+* **Validations:** Like Flex, Metafas3 provides in-UX validations. Unlike Flex, Metafas3 applies validations in the Model layer, not in the View layer. The only exception: Like Flex, Metafas3 provides a shortcut 'required="true"' syntax for simple view-defined validations.
+* **REST:** Inpsired, and partially copied from, Ruby on Rails, Metafas3's ReactiveResource models provide a simple method for interacting with REST web services.
+* **Runtime Views:** Metafas3 XTHML5 views may be compiled into the .swf, or loaded and rendered at *runtime*.
+* **BDD/TDD Unit Testing:** Thanks to [Sprouts](http://projectsprouts.org), Metafas3 provides *two* automated testing suites:[AS3spec](http://github.com/fantasticmf/as3spec) and [AsUnit](http://github.com/lukebayes/asunit/).
 
 ## Quick Start ##
 

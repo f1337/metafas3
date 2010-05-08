@@ -1,4 +1,4 @@
-package ras3r.reactive_resource
+package metafas3.reactive_resource
 {
 	import as3spec.*;
 

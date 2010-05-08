@@ -6,7 +6,7 @@
 
 package models
 {
-	import ras3r.*;
+	import metafas3.*;
 	import flash.utils.*;
 
 	use namespace flash_proxy;

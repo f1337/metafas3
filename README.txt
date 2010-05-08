@@ -3,16 +3,16 @@ EARLY ALPHA CODE. INCOMPLETE EXAMPLE BELOW.
 
 package controllers
 {
-	import ras3r.*;
+	import metafas3.*;
 	import fl.data.*;
 	import models.domain.*;
 
-	public class ApplicationController extends ReactionController
+	public class ApplicationController extends SupervisingController
 	{
 		public var skin:Object = {
 			background:				'images/background.jpg',
 			review_order_button:	'images/review_order_button.png',
-			footer_html:			"ras3r &#169; Michael R. Fleet."
+			footer_html:			"metafas3 &#169; Michael R. Fleet."
 		};
 
 		public var order:Order = new Order({
@@ -23,7 +23,7 @@ package controllers
 		// >>> PUBLIC METHODS
 		public function load () :void
 		{
-			ReactionController.asset_host = Application.application.url.replace(/[^\/\.]+\.swf.*$/, '');
+			SupervisingController.asset_host = Application.application.url.replace(/[^\/\.]+\.swf.*$/, '');
 			redirect_to({ controller: 'products', action: 'show' });
 		}
 	}
@@ -31,7 +31,7 @@ package controllers
 
 package controllers
 {
-	import ras3r.*;
+	import metafas3.*;
 	import fl.events.*;
 	import controllers.*;
 
@@ -80,8 +80,8 @@ package controllers
 package views.layouts
 {
 	import flash.geom.*;
-	import ras3r.*;
-	import ras3r.controls.*;
+	import metafas3.*;
+	import metafas3.controls.*;
 
 	dynamic public class ApplicationLayout extends ReactionView
 	{
@@ -111,8 +111,8 @@ package views.layouts
 
 package views.orders
 {
-	import ras3r.*;
-	import ras3r.controls.*;
+	import metafas3.*;
+	import metafas3.controls.*;
 
 	dynamic public class NewOrder extends ReactionView
 	{

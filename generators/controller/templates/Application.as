@@ -6,7 +6,7 @@
 
 package
 {
-	import ras3r.*;
+	import metafas3.*;
 	<% controller_classes.each do |controller| %>
 	import <%= controller %>;<% end %>
 	<% environment_classes.each do |env| %>

@@ -1,10 +1,10 @@
-package ras3r.reaction_view.helpers
+package metafas3.reaction_view.helpers
 {
 	import as3spec.*;
 	import fl.controls.*;
 	import fl.data.*;
 	import flash.events.*;
-	import ras3r.*;
+	import metafas3.*;
 
 	public class RadioButtonGroupHelperTest extends Spec
 	{

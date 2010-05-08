@@ -6,7 +6,7 @@
 
 package <%= package_name %>
 {
-	import ras3r.*;
+	import metafas3.*;
 
 	import fl.data.*;
 	import fl.events.*;
@@ -21,7 +21,7 @@ package <%= package_name %>
 	import <%= model %>;<% end %>
 
 
-	public class ApplicationController extends ReactionController
+	public class ApplicationController extends SupervisingController
 	{
 		// >>> FILTERS
 		extend(prototype.constructor);

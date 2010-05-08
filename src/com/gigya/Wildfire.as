@@ -2,7 +2,7 @@
 // or part of a broader GigyaHelper?
 package com.gigya
 {
-	import ras3r.*;
+	import metafas3.*;
 
 	import flash.display.*;
 	import flash.events.*;

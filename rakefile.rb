@@ -9,7 +9,7 @@ require 'lib/tasks/mxmlc_spec'
 ############################################
 # Configure your Project Model
 model = project_model :model do |m|
-  m.project_name            = 'ras3r'
+  m.project_name            = 'metafas3'
   m.language                = 'as3'
   m.background_color        = '#FFFFFF'
   m.width                   = 970
@@ -27,7 +27,7 @@ model = project_model :model do |m|
   # m.asset_dir             = 'assets'
   # m.compiler_gem_name     = 'sprout-flex4sdk-tool'
   # m.compiler_gem_version  = '>= 4.0.0'
-  # m.source_path           	<< "#{m.lib_dir}/ras3r"
+  # m.source_path           	<< "#{m.lib_dir}/metafas3"
 	m.libraries								<< :corelib
 	m.libraries								<< :as3spec
 	m.test_output							= "#{m.bin_dir}/#{m.project_name}-test.swf"
@@ -47,7 +47,7 @@ spec :spec
 # 	t.input					= "#{model.src_dir}/#{model.project_name}Runner.as"
 # 	t.output				= model.test_output
 # 	t.source_path		<< model.test_dir
-# 	t.source_path		<< "#{model.lib_dir}/ras3r"
+# 	t.source_path		<< "#{model.lib_dir}/metafas3"
 # 	t.library_path	<< "#{model.swc_dir}/as3spec.swc"
 # 	t.library_path	<< "#{model.swc_dir}/corelib.swc"
 # 	t.library_path	<< "#{model.swc_dir}/cs3_components.swc"

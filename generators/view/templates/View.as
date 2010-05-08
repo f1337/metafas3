@@ -6,7 +6,7 @@
 
 package <%= package_name %>
 {
-	import ras3r.*;
+	import metafas3.*;
 
 	dynamic public class <%= class_name %> extends ReactionView
 	{

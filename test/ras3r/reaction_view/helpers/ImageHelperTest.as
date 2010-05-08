@@ -1,9 +1,9 @@
-package ras3r.reaction_view.helpers
+package metafas3.reaction_view.helpers
 {
 	import as3spec.*;
 	import fl.containers.*;
 	import flash.display.*;
-	import ras3r.*;
+	import metafas3.*;
 
 	public class ImageHelperTest extends Spec
 	{
