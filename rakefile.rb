@@ -31,7 +31,7 @@ model = project_model :model do |m|
 	m.libraries								<< :corelib
 	m.libraries								<< :as3spec
 	m.test_output							= "#{m.bin_dir}/#{m.project_name}-test.swf"
-	m.library_path						<< "#{m.swc_dir}/cs3_components.swc"
+	m.library_path						<< "#{m.swc_dir}/cs4_components.swc"
 end
 
 desc 'Compile and debug the application'
