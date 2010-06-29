@@ -1,16 +1,16 @@
 # Metafas3 #
 
-Metafas3 is a small [MVP](http://martinfowler.com/eaaDev/uiArchs.html#Model-view-presentermvp) framework for AS3, inspired by [Ruby on Rails](http://rubyonrails.org/), implementing the [Supervising Controller/Presenter](http://martinfowler.com/eaaDev/SupervisingPresenter.html) pattern. Metafas3 is built upon the [Sprouts](http://projectsprouts.org) project-generation tool for ActionScript/Flash/Flex/AIR.
+Metafas3 (pronounced "metaphase") is a small [MVP](http://martinfowler.com/eaaDev/uiArchs.html#Model-view-presentermvp) framework for AS3, inspired by [Ruby on Rails](http://rubyonrails.org/), implementing the [Supervising Controller/Presenter](http://martinfowler.com/eaaDev/SupervisingPresenter.html) pattern. Metafas3 is built upon the [Sprouts](http://projectsprouts.org) project-generation tool for ActionScript/Flash/Flex/AIR.
 
 ## Why Metafas3? ##
 
-* **MVP:** Metafas3 implements the [Supervising Controller/Presenter](http://martinfowler.com/eaaDev/SupervisingPresenter.html) pattern as defined by Martin Fowler. Metafas3 is [opinionated](http://gettingreal.37signals.com/ch04_Make_Opinionated_Software.php) software, where Views are meant to be declarative and "dumb", Controllers to be event handlers for user gestures, and Models to provide business logic and data validaton.
+* **MVP:** Metafas3 implements the [Supervising Controller/Presenter](http://martinfowler.com/eaaDev/SupervisingPresenter.html) pattern as defined by Martin Fowler. Metafas3 is [opinionated](http://gettingreal.37signals.com/ch04_Make_Opinionated_Software.php) software, where Views are meant to be declarative and "dumb", Controllers to be event handlers for user gestures, and Models to provide business logic and data validation.
+* **Runtime Views:** Metafas3 X/HTML5 views may be compiled into the .swf, or loaded and rendered at *runtime*.
 * **Lightweight:** Less than 70k for a fully-loaded .swf compiled with fl.controls.ComboBox, RadioButton, CheckBox, TextInput, Button and UILoader. The equivalent .swf built with Flex exceeds 400k.
-* **Declarative:** Like Flex, Metafas3 provides a declarative markup language (XHTML5) for views. Unlike Flex, Metafas3 also provides a declarative AS3 syntax for views.
+* **Declarative:** Like Flex, Metafas3 provides a declarative markup language (X/HTML5) for views.
 * **Data Bindings:** Like Flex, Metafas3 provides a simple declarative data-binding syntax.
 * **Validations:** Like Flex, Metafas3 provides in-UX validations. Unlike Flex, Metafas3 applies validations in the Model layer, not in the View layer. The only exception: Like Flex, Metafas3 provides a shortcut 'required="true"' syntax for simple view-defined validations.
-* **REST:** Inpsired, and partially copied from, Ruby on Rails, Metafas3's ReactiveResource models provide a simple method for interacting with REST web services.
-* **Runtime Views:** Metafas3 XTHML5 views may be compiled into the .swf, or loaded and rendered at *runtime*.
+* **REST:** Inspired, and partially copied from, Ruby on Rails, Metafas3's ReactiveResource models provide a simple method for interacting with REST web services.
 * **BDD/TDD Unit Testing:** Thanks to [Sprouts](http://projectsprouts.org), Metafas3 provides *two* automated testing suites:[AS3spec](http://github.com/fantasticmf/as3spec) and [AsUnit](http://github.com/lukebayes/asunit/).
 
 ## Quick Start ##
