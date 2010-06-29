@@ -1,2 +1,0 @@
-* ReactionView needs refactored into an ObjectProxy descendent. Views should not need extend ReactionView. Instead, ReactionView should "wrap" the View class (like a helper).
-* Once ReactionView extends ObjectProxy, it should implement "method_missing" for Helpers: text_input_for => databinds using TextInputHelper, combo_box_for => databinds using ComboBoxHelper, etc.
