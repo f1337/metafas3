@@ -3,13 +3,14 @@ package metafas3
 	import flash.display.*;
 	import flash.net.*;
 	import flash.system.*;
+	import metafas3.*;
 
 	public class Tracker
 	{
 		// >>> PUBLIC PROPERTIES
-		// Account String. Appears on all requests.
+		// Array of GA account IDs. At least ONE account ID required for all requests.
 		// ex: UA-2202604-2
-		public static var account:String = '';
+		public static var accounts:Array = [];
 
 		// base tracking URL
 		public static var base:String = 'www.google-analytics.com/__utm.gif?';
@@ -140,20 +141,20 @@ SharedObject.getLocal('analytics', '/')
 		public static function page (title:String, path:String = '') :void
 		{
 			// build params hash
-			var p:Object = params();
+			var p:Hash = new Hash();
 
 			// inject title, path
 			p.utmdt = title;
 			p.utmp = path;
 
 			// ping URL
-			load(p);
+			ping(p);
 		}
 
 		public static function purchase (order:Object) :void
 		{
 			// build params hash
-			var p:Object = params();
+			var p:Hash = new Hash();
 
 			// inject page params
 			p.utmdt = order.title;
@@ -179,7 +180,7 @@ SharedObject.getLocal('analytics', '/')
 			*/
 
 			// ping URL
-			load(p);
+			ping(p);
 		}
 
 
@@ -209,25 +210,10 @@ SharedObject.getLocal('analytics', '/')
 			_hash = String(a);
 		}
 
-		private static function load (p:Object) :void
-		{
-			if (! (account && _hash)) return;
-
-			// build querstring
-			var qs:Array = [];
-			for (var s:String in p)
-			{
-				qs.push(s + '=' + encodeURIComponent(p[s]));
-			}
-
-			// ping URL
-			loader.load(new URLRequest(url + qs.join('&')));
-		}
-
 		// http://code.google.com/apis/analytics/docs/tracking/gaTrackingTroubleshooting.html#GIFVars
-		private static function params () :Object
+		private static function params (account:String, options:Hash) :Object
 		{
-			return {
+			return options.apply({
 				utmwv:		GA_version,
 				utmn:		request_id(),
 				utmhn:		_hostname,
@@ -243,7 +229,29 @@ SharedObject.getLocal('analytics', '/')
 				utmp:		'', // path
 				utmac:		account,
 				utmcc:		cookie
-			};
+			});
+		}
+
+		private static function ping (options:Hash) :void
+		{
+			if (! (accounts.length && _hash)) return;
+
+			var p:Object;
+			var qs:Array;
+			for each (var account:String in accounts)
+			{
+				p = params(account, options);
+				// build/reset querstring
+				qs = new Array();
+				for (var s:String in p)
+				{
+					qs.push(s + '=' + encodeURIComponent(p[s]));
+				}
+
+				// ping URL
+				logger.info('GA ping: ' + url + qs.join('&'));
+				loader.load(new URLRequest(url + qs.join('&')));
+			}
 		}
 
 		// Random number between 1000000000 and 9999999999

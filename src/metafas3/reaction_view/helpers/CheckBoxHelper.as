@@ -1,6 +1,7 @@
 package metafas3.reaction_view.helpers
 {
 	import fl.controls.*;
+	import flash.events.*;
 	import flash.utils.*;
 	import mx.events.PropertyChangeEvent;
 	import metafas3.*;
@@ -36,6 +37,32 @@ package metafas3.reaction_view.helpers
 		**/
 		public var display_object:CheckBox = new CheckBox();
 
+		/**
+		*	sets up label clicks to trigger checkbox clicks
+		**/
+		public function set label (helper:TextFieldHelper) :void
+		{
+			helper.display_object.addEventListener('click', function (e:Event) :void
+			{
+				display_object.dispatchEvent(new MouseEvent('click'));
+			});
+			
+		}
+
+		/**
+		*	override "selected" property setter to translate 1/0 as true/false
+		**/
+		public function set selected (n:uint) :void
+		{
+			setProperty('selected', (n === 1 ? true : false))
+		}
+
+		public function get selected () :uint
+		{
+			return (getProperty('selected') ? 1 : 0);
+		}
+
+
 		// >>> PUBLIC METHODS
 		/**
 		*	Constructor. Proxies a display_object.
@@ -68,19 +95,6 @@ package metafas3.reaction_view.helpers
 
 			// setup validation handlers
 			// super.bind_to(object, property);
-		}
-
-		/**
-		*	override "selected" property setter to translate 1/0 as true/false
-		**/
-		public function set selected (n:uint) :void
-		{
-			setProperty('selected', (n === 1 ? true : false))
-		}
-
-		public function get selected () :uint
-		{
-			return (getProperty('selected') ? 1 : 0);
 		}
 
 

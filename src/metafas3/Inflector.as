@@ -9,6 +9,18 @@ package metafas3
 {
 	public class Inflector
 	{
+		// >>> EXTEND BASE CLASS String
+		String.prototype['foreign_key'] = function () :String
+		{
+			return Inflector.foreign_key(this);
+		}
+
+		String.prototype['singularize'] = function () :String
+		{
+			return Inflector.singularize(this);
+		}
+
+
 		// active_record => ActiveRecord
 		// active_record/errors => ActiveRecord::Errors
 		public static function camelize (lower_case_and_underscored_word:String, first_letter_in_uppercase:Boolean = true) :String
@@ -32,8 +44,8 @@ package metafas3
 		}
 
 		/**
-		*	capitalize()
-		*	Converts the first character to uppercase and the remainder to lowercase.
+		*	Inflector.capitalize(str)
+		*	Returns a copy of str with the first character converted to uppercase and the remainder to lowercase.
 		*
 		*	Example:
 		*		Inflector.capitalize('washington') #=> "Washington"
@@ -53,6 +65,21 @@ package metafas3
 		public static function demodulize (qualifiedClassName:String) :String
 		{
 			return qualifiedClassName.replace(/^.*::/, '');
+		}
+
+		/**
+		*	Inflector.foreign_key(class_name, separate_class_name_and_id_with_underscore)
+		*	Creates a foreign key name from a class name. separate_class_name_and_id_with_underscore
+		*	sets whether the method should put ‘_’ between the name and ‘id’.
+		*
+		*	Examples:
+		*		Inflector.foreign_key("Message")		# => "message_id"
+		*		Inflector.foreign_key("Message", false)	# => "messageid"
+		*		Inflector.foreign_key("Admin::Post")	# => "post_id"
+ 		**/
+		public static function foreign_key (class_name:String, separate_class_name_and_id_with_underscore:Boolean = true) :String
+		{
+			return (singularize(underscore(demodulize(class_name))) + (separate_class_name_and_id_with_underscore ? '_id' : 'id'))
 		}
 
 		/**

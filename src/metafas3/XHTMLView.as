@@ -16,8 +16,10 @@ package metafas3
 		public var xml:XML;
 
 		// >>> COMPILER HACKS
+		private static var __a:Function = a;
 		private static var __div:Function = div;
 		private static var __embed:Function = embed;
+		private static var __form:Function = form;
 		private static var __img:Function = img;
 		private static var __input:Function = input;
 		private static var __label:Function = label;
@@ -28,23 +30,28 @@ package metafas3
 			article:	'div',
 			aside:		'div',
 			fieldset:	'div',
+			form:		'form',
 			section:	'div'
 		};
 
 		private static var text_tags:Object = {
-			a:			true,
-			div:		true,
-			h1:			true,
-			h2:			true,
-			h3:			true,
-			h4:			true,
-			h5:			true,
-			h6:			true,
-			p:			true,
-			span:		true
+			div:		'label',
+			h1:			'label',
+			h2:			'label',
+			h3:			'label',
+			h4:			'label',
+			h5:			'label',
+			h6:			'label',
+			p:			'label',
+			span:		'label'
 		};
 
-		private static var _templates_cache:Object = {};
+		/**
+		*	TEMPLATE CACHING: DEPRECATED 2010/06/27 per @mfleet
+		* 	Now that XHTML views are truly dynamic, runtime views,
+		*	caching interferes with dynamic content.
+		**/
+/*		private static var _templates_cache:Object = {};
 		private static function templates_cache (klass:Object, xml:XML = null) :XML
 		{
 			// TODO: watch to ensure this doesn't break order's dynamic templates
@@ -55,26 +62,27 @@ package metafas3
 			if (xml) _templates_cache[key] = xml;
 			return _templates_cache[key];
 		}
-
-		private static function load_template (klass:Object, path:String, callback:Function) :void
+*/
+		private var loader:URLLoader;
+		private function load_template (path:String) :void
 		{
 			// load the XML template
-			klass['loader'] = new URLLoader();
-			klass['loader'].addEventListener('ioError', after_load);
-			klass['loader'].addEventListener('securityError', after_load);
-			klass['loader'].addEventListener('complete', function (e:Event) :void
+			loader = new URLLoader();
+			loader.addEventListener('ioError', after_load_error);
+			loader.addEventListener('securityError', after_load_error);
+			loader.addEventListener('complete', function (e:Event) :void
 			{
-				// if XML template loaded successfully, cache the data
+				// update template markup
 				if (e.target.data && e.target.data.toString().indexOf('<') == 0)
 				{
 					var ignoreWhitespace:Boolean = XML.ignoreWhitespace;
 					XML.ignoreWhitespace = false;
-					templates_cache(klass, XML(e.target.data.match(/<body>.*<\/body>/s).toString()));
+					xml = XML(e.target.data.match(/<body>.*<\/body>/s).toString());
 					XML.ignoreWhitespace = ignoreWhitespace;
 				}
-				callback(e);
+				after_added_to_stage(e);
 			});
-			klass['loader'].load(SupervisingController.url_request_for(path));
+			loader.load(SupervisingController.url_request_for(path));
 		}
 
 		override public function build () :void
@@ -98,6 +106,7 @@ package metafas3
 
 		private function xml_children_to_display_objects (xml_children:XMLList) :Array
 		{
+			var children:Array;
 			var display_objects:Array = new Array;
 			var display_object:Object;
 			var method:String;
@@ -119,35 +128,37 @@ package metafas3
 					// <h2>text</h2>
 					if (text_tags[method])
 					{
+						method = text_tags[method];
 						options = attributes_to_hash(child);
 						// re-serialize HTML for htmlText
 						options.update({
 							htmlText: child.toXMLString() // includes "child", its attributes, and children
 						});
 						args.push(options);
-						method = 'label';
 					}
 					// layout boxes
 					else if (layout_tags[method])
 					{
-						var vargs:Array = args;
 						method = layout_tags[method];
 						args = xml_children_to_display_objects(child.children());
 						args.unshift(attributes_to_hash(child));
-						logger.info(child);
-						logger.info('--------box--------');
-						logger.info('args: ' + args);
-						logger.dump(args);
-						logger.info('===================');
-						vargs.push(xml_to_hash(child));
-						logger.info('vargs: ' + vargs);
-						logger.dump(vargs);
-						logger.info('++++++++box++++++++');
 					}
 					// other UI elements
 					else
 					{
-						options = xml_to_hash(child);
+						options = xml_to_hash(child); // can we deprecate?? NO, b/c expects _text from this method!
+
+						// HACK! to support <a> attaching event handlers to children
+						if (method == 'a')
+						{
+							children = xml_children_to_display_objects(child.children());
+							if (children && children.length) options.children = children;
+							// re-serialize HTML for tag helpers
+							options.update({
+								html: child.toXMLString() // includes "child", its attributes, and children
+							});
+						}
+
 						args.push(options);
 					}
 
@@ -157,13 +168,16 @@ package metafas3
 					// add resulting object to display list
 					if (display_object)
 					{
+/*						logger.info('method: ' + method + ', display object: ' + display_object);*/
 						display_objects.push(display_object);
 					}
 					// helper method unknown: ignore the parent tag,
 					//	process its children as siblings
 					else
 					{
-						display_objects.push.apply(display_objects, xml_children_to_display_objects(child.children()));
+						children ||= xml_children_to_display_objects(child.children());
+/*						logger.info('method: ' + method + ', display object children: ' + children);*/
+						display_objects.push.apply(display_objects, children);
 					}
 				}
 			}
@@ -222,7 +236,7 @@ package metafas3
 		{
 			removeEventListener('addedToStage', after_added_to_stage);
 
-			// cache the XML, if defined
+/*			// cache the XML, if defined
 			if (xml)
 			{
 				templates_cache(this, xml);
@@ -232,7 +246,7 @@ package metafas3
 			{
 				xml = templates_cache(this);
 			}
-
+*/
 			if (xml)
 			{
 				// resume event chain and build()
@@ -244,12 +258,12 @@ package metafas3
 			}
 			else if (this['path'])
 			{
-				load_template(this, this['path'], after_added_to_stage);
+				load_template(this['path']);
 			}
 		}
 
 		// trap urlloader events
-		private static function after_load (e:Event) :void
+		private function after_load_error (e:Event) :void
 		{
 		}
 
@@ -269,6 +283,7 @@ package metafas3
 
 			// remove id, name for later assignment
 			var id:String = options.remove('id');
+			var events_for:String = options.remove('for');
 			var name:String = options.remove('name');
 			var matches:Array;
 
@@ -293,25 +308,29 @@ package metafas3
 
 			// invoke the tag factory
 			args.unshift(options);
-			var object:Helper = ztag.apply(null, args);
+			var helper:Helper = ztag.apply(null, args);
 
-			if (object)
+			if (helper)
 			{
 				// assign id, name
 				if (id)
 				{
-					this[id] = object;
-					object.name = id;
+					this[id] = helper;
+					helper.name = id;
+					dispatchEvent(new Event(id + '_created'));
 				}
 
-				// invoke the databinding helper
-				if (matches && object.hasOwnProperty('bind_to')) object.bind_to(this[matches[1]], matches[2]);
+				// invoke the helper's event-binding method
+				if (events_for && helper.hasOwnProperty('events_for')) helper.events_for(this, events_for);
+
+				// invoke the helper's data-binding method
+				if (matches && helper.hasOwnProperty('bind_to')) helper.bind_to(this[matches[1]], matches[2]);
 
 				// add to display list and return
-				addChild(object.display_object);
+				addChild(helper.display_object);
 			}
 
-			return object;
+			return helper;
 		}
 	}
 }

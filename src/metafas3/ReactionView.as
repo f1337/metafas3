@@ -22,7 +22,6 @@ package metafas3
 	{
 		// >>> BASE VIEW CLASSES
 		private static var xhtmlView:XHTMLView;
-		private static var xmlView:XMLView;
 
 		// >>> STATIC PROPERTIES
 		public static var debug:Boolean = false;
@@ -80,16 +79,11 @@ package metafas3
 				{
 					klass = (getDefinitionByName(className) as Class);
 				}
-				// fallback to XMLView/XHTMLView
+				// fallback to XHTMLView
 				catch (exception:*)
 				{
-					// support 'update' and 'update.xhtml' and 'update.xml'
-					t = template.split('.');
-					className = 'metafas3.' + (t[1] ? t[1].toUpperCase() : 'XML') + 'View';
-					klass = (getDefinitionByName(className) as Class);
-
-					var view:* = (new klass());
-					view.path = SupervisingController.view_path + template;
+					var view:* = (new XHTMLView());
+					view.path = ((template.indexOf('http') == 0) ? template : SupervisingController.view_path + template);
 					return view;
 				}
 			}
@@ -322,12 +316,6 @@ package metafas3
 			return (helper_for(TextInputHelper, options, 'text', object_name, property) as TextInput);
 		}
 
-		public function tool_tip_for (object_name:String, property:String, options:Object = null) :Helper
-		{
-			var o:DisplayObject = (helper_for(TooltipHelper, options, 'htmlText', object_name, property) as DisplayObject);
-			return this[object_name + '_' + property];
-		}
-
 		protected function url_for (absolute_path:String, subdomain:String = null) :String
 		{
 			return SupervisingController.url_for(absolute_path, subdomain);
@@ -451,12 +439,10 @@ package metafas3
 		{
 			removeEventListener('render', after_render);
 			// mixin on_instance_event methods
-			mixin_members(describeType(controller).method.(@name.indexOf('on_') == 0));
-			// mixin on_instance_event properties
-			mixin_members(describeType(controller).variable.(@name.indexOf('on_') == 0));
+			controller.map_event_listeners(this);
 		}
 
-		private function mixin_members (methods:XMLList) :void
+/*		private function mixin_members (methods:XMLList) :void
 		{
 			// for each public controller method named "on_some_element_event",
 			// add event listener some_element
@@ -478,7 +464,7 @@ package metafas3
 				}
 			}
 		}
-	}
+*/	}
 }
 
 

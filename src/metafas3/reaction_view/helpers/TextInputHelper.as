@@ -1,6 +1,7 @@
 package metafas3.reaction_view.helpers
 {
 	import fl.controls.*;
+	import flash.events.*;
 	import flash.net.*;
 	import flash.text.*;
 	import flash.utils.*;
@@ -39,6 +40,27 @@ package metafas3.reaction_view.helpers
 		public var display_object:TextInput = new TextInput();
 
 		/**
+		*	sets up label clicks to trigger focus
+		**/
+		public function set label (helper:TextFieldHelper) :void
+		{
+			helper.display_object.addEventListener('click', function (e:Event) :void
+			{
+				proxied_object.setFocus();
+			});
+			
+		}
+
+		/**
+		*	textInputHelper.maxlength: HTML5 property alias for TextInput.maxChars
+		**/
+		public function set maxlength (n:Number) :void
+		{
+			this.maxChars = n;
+		}
+
+
+		/**
 		*	textInputHelper.padding: applied to "textPadding" style of TextInput
 		**/
 		public function set padding (padding:Number) :void
@@ -60,6 +82,14 @@ package metafas3.reaction_view.helpers
 			return getProperty('text');
 		}
 
+		/**
+		*	textInputHelper.maxlength: HTML5 property alias for TextInput.maxChars
+		**/
+		public function set value (s:String) :void
+		{
+			setProperty('text', s);
+		}
+
 
 		// >>> PUBLIC METHODS
 		/**
@@ -76,8 +106,16 @@ package metafas3.reaction_view.helpers
 		**/
 		override public function bind_to (object:*, property:String) :void
 		{
-			// initialize "text" w/ current value of object[property]:
-			if (object[property] !== null) text = object[property];
+			// initialize object[property] w/ text, if defined:
+			if (text) 
+			{
+				object[property] = text;
+			}
+			// set text w/ current value of object[property]:
+			else if (object[property] !== null)
+			{
+				text = object[property];
+			}
 
 			// helper responds to changes to object[property]
 			object.addEventListener(property + '_change', after_property_change);
@@ -112,7 +150,7 @@ package metafas3.reaction_view.helpers
 		*	position custom text_field where radio_button's
 		*	internal textField is positioned
 		**/
-		private function after_display_object_render (e:Object) :void
+		private function after_display_object_render (e:Event) :void
 		{
 			// vertically align text field with background
 			display_object.textField.y = Math.floor((display_object.height - display_object.textHeight) / 2);

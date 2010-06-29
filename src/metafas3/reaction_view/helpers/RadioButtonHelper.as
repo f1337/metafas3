@@ -2,9 +2,13 @@ package metafas3.reaction_view.helpers
 {
 	import fl.controls.*;
 	import flash.display.*;
+	import flash.events.*;
 	import flash.text.*;
+	import flash.utils.*;
 	import mx.events.PropertyChangeEvent;
 	import metafas3.*;
+
+	use namespace flash_proxy;
 
 	dynamic public class RadioButtonHelper extends UIComponentHelper
 	{
@@ -29,17 +33,36 @@ package metafas3.reaction_view.helpers
 
 		// >>> PUBLIC PROPERTIES
 		/**
-		*	public display_object interface
-		*	container for radio_button and text_field
+		*	radioButtonHelper.checked: HTML5 property alias for RadioButton.selected
 		**/
-		public var display_object:Sprite = new Sprite();
+		public function set checked (checked:Boolean) :void
+		{
+			this.selected = true;
+		}
+
+		/**
+		*	public display_object interface
+		*	RadioButton to proxy
+		**/
+		public var display_object:RadioButton = new RadioButton();
+
+		/**
+		*	sets up label clicks to trigger checkbox clicks
+		**/
+		public function set label (helper:TextFieldHelper) :void
+		{
+			helper.display_object.addEventListener('click', function (e:Event) :void
+			{
+				display_object.dispatchEvent(new MouseEvent('click'));
+			});
+		}
 
 		/**
 		*	proxy for radio_button.group
 		**/
 		public function get group () :*
 		{
-			return radio_button.group;
+			return getProperty('group');
 		}
 
 		public function set group (g:*) :void
@@ -49,66 +72,7 @@ package metafas3.reaction_view.helpers
 			{
 				group = new RadioButtonGroup(g);
 			}
-			radio_button.group = group;
-		}
-
-		/**
-		*	proxy for text_field.label
-		**/
-		public function get label () :String
-		{
-			return text_field.htmlText;
-		}
-
-		public function set label (val:String) :void
-		{
-			text_field.htmlText = val;
-		}
-
-		/**
-		*	RadioButton to proxy
-		**/
-		public var radio_button:RadioButton = new RadioButton();
-
-		public function get selected () :Boolean
-		{
-			return radio_button.selected;
-		}
-
-		public function set selected (selected:Boolean) :void
-		{
-			radio_button.selected = selected;
-		}
-
-		/**
-		*	TextField for wrapped text, finite layout control
-		**/
-		public var text_field:TextField = new TextField();
-
-		/**
-		*	proxy for display_object.width
-		**/
-		public function get width () :Number
-		{
-			return display_object.width;
-		}
-
-		public function set width (w:Number) :void
-		{
-			text_field.width = (w - text_field.x);
-		}
-
-		/**
-		*	proxy for radio_button.value
-		**/
-		public function get value () :Object
-		{
-			return radio_button.value;
-		}
-
-		public function set value (val:Object) :void
-		{
-			radio_button.value = val;
+			setProperty('group', group);
 		}
 
 
@@ -116,14 +80,7 @@ package metafas3.reaction_view.helpers
 		public function RadioButtonHelper ()
 		{
 			super(display_object);
-			radio_button.label = '';
-			text_field.autoSize = 'left';
-			text_field.multiline = true;
-			text_field.selectable = false;
-			text_field.wordWrap = true;
-			display_object.addChild(radio_button);
-			display_object.addChild(text_field);
-			radio_button.addEventListener('render', after_radio_button_render);
+			display_object.label = '';
 		}
 
 		/**
@@ -131,6 +88,17 @@ package metafas3.reaction_view.helpers
 		**/
 		override public function bind_to (object:*, property:String) :void
 		{
+			// initialize object[property] w/ value if selected:
+			if (this.selected) 
+			{
+				object[property] = this.value;
+			}
+			// toggle "selected" w/ current value of object[property]:
+			else if (object[property] !== null)
+			{
+				this.selected = (object[property] == this.value);
+			}
+
 			// helper responds to changes to object[property]
 			object.addEventListener(property + '_change', after_property_change);
 
@@ -138,46 +106,15 @@ package metafas3.reaction_view.helpers
 			display_object.addEventListener('change', function (e:Object) :void
 			{
 				// prevent superfluous event firing
-				if (selected && object[property] != value)
+				if (this.selected != null && object[property] != this.value)
 				{
 					// update data object
-					object[property] = value;
+					object[property] = this.value;
 				}
 			});
 
 			// setup validation handlers
 			super.bind_to(object, property);
-		}
-
-		/**
-		*	radioButtonHelper.getStyle('textFormat');
-		*	returns 'textFormat', 'embedFonts' styles from RadioButtonHelper text_field
-		*	all other styles are returned from RadioButton itself
-		**/
-		public function getStyle (key:String) :Object
-		{
-			return (key == 'textFormat' ? text_field.defaultTextFormat : radio_button.getStyle(key));
-		}
-
-		/**
-		*	radioButtonHelper.setStyle('textFormat', textFormat);
-		*	applies 'textFormat' and 'embedFonts' styles to both
-		*	the RadioButtonHelper's text_field and its radio_button
-		*	all other styles are applied only to the RadioButton itself
-		**/
-		public function setStyle (key:String, value:*) :void
-		{
-			switch (key)
-			{
-				case 'textFormat':
-					text_field.defaultTextFormat = value;
-					text_field.setTextFormat(value);
-					break;
-				case 'embedFonts':
-					text_field.embedFonts = value;
-					break;
-			}
-			radio_button.setStyle(key, value);
 		}
 
 		/**
@@ -188,18 +125,7 @@ package metafas3.reaction_view.helpers
 			// prevent superfluous event firing
 			if (e.newValue == this.value && this.selected) return;
 			// update display object
-			selected = (e.newValue == value);
-		}
-
-		/**
-		*	position custom text_field where radio_button's
-		*	internal textField is positioned
-		**/
-		private function after_radio_button_render (e:Object) :void
-		{
-			text_field.x = radio_button.textField.x;
-			// vertically align text field with icon
-			text_field.y = Math.floor((radio_button.height - text_field.textHeight) / 2);
+			this.selected = (e.newValue == this.value);
 		}
 	}
 }

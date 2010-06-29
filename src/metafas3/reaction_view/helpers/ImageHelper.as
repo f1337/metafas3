@@ -45,9 +45,9 @@ package metafas3.reaction_view.helpers
 		**/
 		public function set click (url:String) :void
 		{
-			display_object.addEventListener('click', function (e:Event) :void
+			display_object.addEventListener('click', function (e:MouseEvent) :void
 			{
-				SupervisingController.redirect_to_url(url);
+				display_object.dispatchEvent(new TextEvent('link', false, true, url));
 			});
 		}
 

@@ -8,24 +8,18 @@ package
 	{
 		public static function load (env:String) :void
 		{
-			// override env if StandAlone player
-			if (Capabilities.playerType == 'StandAlone')
+			if (env !== 'test')
 			{
-				// test: test.swf
-				if (Application.application.url.search(/test\.swf$/) > -1)
-				{
-					env = 'test';
-				}
-				// standalone: DEFAULT if Capabilities.playerType == 'StandAlone'
-				else
+				// override env if StandAlone player
+				if (Capabilities.playerType == 'StandAlone')
 				{
 					env = 'standalone';
 				}
-			}
-			// development: DEFAULT if env undefined
-			else if (! env)
-			{
-				env = 'development';
+				// development: DEFAULT if env undefined
+				else if (! env)
+				{
+					env = 'development';
+				}
 			}
 
 			// lookup environment class

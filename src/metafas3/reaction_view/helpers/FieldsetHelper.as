@@ -21,9 +21,9 @@ package metafas3.reaction_view.helpers
 
 		// >>> PUBLIC PROPERTIES
 		/**
-		*	imageHelper.display_object
+		*	fieldsetHelper.display_object
 		*	Every Helper is expected to provide a display_object.
-		*	This one is an Image
+		*	This one is a BoxPane
 		**/
 		public var display_object:BoxPane = new BoxPane;
 

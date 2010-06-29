@@ -1,9 +1,11 @@
 package metafas3.reaction_view.helpers
 {
 	import flash.display.*;
+	import flash.events.*;
 	import flash.text.*;
 	import flash.utils.*;
 	import metafas3.*;
+	import mx.events.PropertyChangeEvent;
 
 	use namespace flash_proxy;
 
@@ -29,6 +31,7 @@ package metafas3.reaction_view.helpers
 
 		static public function create (options:Object = null) :TextFieldHelper
 		{
+			if (options['for']) options.element = options.remove('for');
 			return (Helper.create(TextFieldHelper, options, create_helper_callback) as TextFieldHelper);
 		}
 
@@ -92,9 +95,10 @@ package metafas3.reaction_view.helpers
 		*	Every Helper is expected to provide a display_object.
 		*	This one is a TextField
 		**/
-/*		public var display_object:* = new TextField;*/
 		public var display_object:Sprite = new Sprite();
 		public var text_field:TextField = new TextField();
+
+		public var element:String;
 
 		/**
 		*	proxy for display_object.filters
@@ -111,7 +115,7 @@ package metafas3.reaction_view.helpers
 
 		/**
 		*	textFieldHelper.format = textFormat
-		*		applies textFormat to "textFormat" style on display_object
+		*		applies textFormat to "textFormat" style on TextField
 		**/
 		public function set format (fmt:Object) :void
 		{
@@ -128,7 +132,7 @@ package metafas3.reaction_view.helpers
 
 		/**
 		*	textFieldHelper.format => defaultTextFormat
-		*		returns display_object.defaultTextFormat
+		*		returns TextField.defaultTextFormat
 		**/
 		public function get format () :Object
 		{
@@ -147,7 +151,16 @@ package metafas3.reaction_view.helpers
 		public function set height (val:Number) :void
 		{
             _height = val;
-			text_field.height = (text_field.y - val);
+/*			text_field.height = (text_field.y - val);*/
+			text_field.height = (val - text_field.y);
+		}
+
+		/**
+		*	"html" alias to "htmlText"
+		**/
+		public function set html (t:String) :void
+		{
+			htmlText = t;
 		}
 
 		/**
@@ -155,6 +168,10 @@ package metafas3.reaction_view.helpers
 		**/
 		public function set htmlText (t:String) :void
 		{
+			// strip <span>s and convert to <font>
+			// <span style="color: #b87236; font-family: 'Helvetica Neue LT Std 56 Italic'; font-style: italic;"> special discount </span>
+			t = t.replace(/\s{2,}/gs, ' ').replace(/<span[^>]*style="([^>]+)"[^>]*>([^<]+)<\/span>/g, ' $2 ');
+			this.condenseWhite = true;
 			set_text_property('htmlText', t);
 		}
 
@@ -220,7 +237,8 @@ package metafas3.reaction_view.helpers
 		public function set width (val:Number) :void
 		{
 			_width = val;
-			text_field.width = (text_field.x - val);
+/*			text_field.width = (text_field.x - val);*/
+			text_field.width = (val - text_field.x);
 		}
 
 		/**
@@ -252,7 +270,7 @@ package metafas3.reaction_view.helpers
 
 		// >>> PUBLIC METHODS
 		/**
-		*	Constructor. Proxies a display_object.
+		*	Constructor. Proxies a TextField.
 		**/
 		public function TextFieldHelper (proxied_object:Object = null)
 		{
@@ -271,21 +289,41 @@ package metafas3.reaction_view.helpers
 			object.addEventListener(property + '_change', after_property_change);
 		}
 
+		/**
+		*	use TextField as another component's label
+		**/
+		public function events_for (document:*, element_id:String) :void
+		{
+			if (document[element_id])
+			{
+				logger.info('events for: ' + document[element_id]);
+				document[element_id].label = this;
+			}
+			else
+			{
+				document.addEventListener(element_id + '_created', function (e:Event) :void
+				{
+					logger.info(element_id + '_created');
+					events_for(document, element_id);
+				});
+			}
+		}
+
 
 		// >>> PROTECTED METHODS
 		// >>> EVENT HANDLERS
 		/**
 		*	update text
 		**/
-		private function after_property_change (e:Object) :void
+		private function after_property_change (e:PropertyChangeEvent) :void
 		{
 			// prevent superfluous event firing
 			if (e.newValue == this.htmlText) return;
 			// update display object
-			this.htmlText = e.newValue;
+			this.htmlText = (e.newValue as String);
 		}
 
-		protected function after_textfield_render (e:Object) :void
+		protected function after_textfield_render (e:Event) :void
 		{
 			// if autoSizing, work around scroll bug with this height hack
 			if (_autoSize != 'none')

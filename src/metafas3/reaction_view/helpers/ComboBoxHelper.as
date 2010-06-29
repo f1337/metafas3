@@ -1,10 +1,14 @@
 package metafas3.reaction_view.helpers
 {
 	import fl.controls.*;
+	import flash.events.*;
 	import flash.text.*;
+	import flash.utils.*;
 	import mx.events.*;
 	import metafas3.*;
 	import metafas3.controls.*;
+
+	use namespace flash_proxy;
 
 	dynamic public class ComboBoxHelper extends UIComponentHelper
 	{
@@ -23,7 +27,15 @@ package metafas3.reaction_view.helpers
 		**/
 		static public function create (options:Object = null) :ComboBoxHelper
 		{
-			return (UIComponentHelper.create(ComboBoxHelper, options) as ComboBoxHelper);
+			options = UIComponentHelper.default_options.merge(default_options).update(options);
+			return (Helper.create(ComboBoxHelper, options, create_helper_callback) as ComboBoxHelper);
+		}
+
+		static protected function create_helper_callback (helper:Helper, hoptions:Object) :void
+		{
+			// apply dataProvider before all other attributes
+			helper.dataProvider = hoptions.remove('dataProvider');
+			FormattableHelper.create_helper_callback(helper, hoptions);
 		}
 
 
@@ -34,6 +46,49 @@ package metafas3.reaction_view.helpers
 		*	This one is a ComboBox
 		**/
 		public var display_object:ComboBox = new ReComboBox();
+
+		/**
+		*	sets up label clicks to trigger focus
+		**/
+		public function set label (helper:TextFieldHelper) :void
+		{
+			helper.display_object.addEventListener('click', function (e:Event) :void
+			{
+				proxied_object.setFocus();
+			});
+			
+		}
+
+		/**
+		*	override "selectedItem" property setter to juggle objects/string interchangeably
+		**/
+		public function set selectedItem (o:Object) :void
+		{
+			var index:uint = 0;
+
+			// normalize strings and objects
+			var value:Object = ((o is String) ? { data: o, label: o } : o);
+
+			if (value)
+			{
+				// manually lookup item in dataProvider
+				var data:Array = this.dataProvider.toArray();
+
+				for (var i:uint = 0; i < data.length; i++)
+				{
+					if (data[i].data == value.data)
+					{
+						setProperty('selectedItem', this.getItemAt(i));
+						break;
+					}
+				}
+			}
+		}
+
+		public function get selectedItem () :Object
+		{
+			return proxied_object.selectedItem;
+		}
 
 
 		// >>> PUBLIC METHODS
@@ -53,14 +108,19 @@ package metafas3.reaction_view.helpers
 			// infer collection name from selection
 			var collection:String = Inflector.pluralize(selection);
 
+			// initialize object[selection] w/ selectedItem, if defined:
+			if (selectedItem) 
+			{
+				object[selection] = selectedItem;
+			}
+			// set selectedItem w/ current value of object[selection]:
+			else if (object[selection] !== null)
+			{
+				selectedItem = object[selection];
+			}
+
 			// helper responds to changes to object[selection]
 			object.addEventListener(selection + '_change', after_selection_change);
-
-			// initialize selectedItem with object[selection], if defined
-			if (object[selection])
-			{
-				this.selectedItem = object[selection];
-			}
 
 			// object[selection] responds to changes to display_object.selectedItem
 			// "change" fires when value changes by:
@@ -69,9 +129,21 @@ package metafas3.reaction_view.helpers
 			display_object.addEventListener('change', function (e:Object) :void
 			{
 				// prevent superfluous event firing
-				if (object[selection] && e.target.selectedItem && object[selection].data == e.target.selectedItem.data) return;
-				// update data object
-				object[selection] = e.target.selectedItem;
+				if (
+					// object[selection] defined?
+					object[selection] &&
+					// and selectedItem defined?
+					selectedItem &&
+					(
+						// and e.newValue equals selectedItem
+						object[selection].hasOwnProperty('data') ?
+						(object[selection].data == selectedItem.data) : // compare as objects for XML/JSON support
+						(object[selection] == selectedItem.data) // compare as string for HTML5 hidden input support
+					)
+				// then return now to prevent superfluous event firing
+				) return;
+
+				object[selection] = selectedItem;
 			});
 
 			// helper responds to changes to object[collection]
@@ -132,19 +204,19 @@ package metafas3.reaction_view.helpers
 			if (
 				// e.newValue defined?
 				e.newValue &&
-				// and this.selectedItem defined?
-				this.selectedItem &&
+				// and selectedItem defined?
+				selectedItem &&
 				(
-					// and e.newValue equals this.selectedItem
+					// and e.newValue equals selectedItem
 					e.newValue.hasOwnProperty('data') ?
-					(e.newValue.data == this.selectedItem.data) : // compare as objects for XML/JSON support
-					(e.newValue == this.selectedItem.data) // compare as string for HTML5 hidden input support
+					(e.newValue.data == selectedItem.data) : // compare as objects for XML/JSON support
+					(e.newValue == selectedItem.data) // compare as string for HTML5 hidden input support
 				)
 			// then return now to prevent superfluous event firing
 			) return;
 
 			// update display object
-			this.selectedItem = e.newValue;
+			selectedItem = e.newValue;
 			display_object.drawNow();
 		}
 	}

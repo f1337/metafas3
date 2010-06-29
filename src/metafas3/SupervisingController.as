@@ -8,6 +8,7 @@ package metafas3
 	import flash.system.*;
 	import flash.ui.*;
 	import flash.utils.*;
+	import metafas3.reaction_view.helpers.*;
 	import ru.etcs.utils.FontLoader;
 
 	public class SupervisingController extends Sprite
@@ -83,6 +84,7 @@ package metafas3
 		}
 
 		/**
+		*	Factory method:
 		*	Creates a Controller, adds it to container (swf root), returns ref
 		**/
 		static protected function controller (name:String) :*
@@ -182,6 +184,38 @@ package metafas3
 			if (s is String) s = SupervisingController.url_request_for(s.toString());
 			if (after_load != null) loader.addEventListener('complete', after_load);
 			loader.load(s);
+		}
+
+		public function map_event_listeners (view:ReactionView) :void
+		{
+			// for each public controller method named
+			// "on_some_element_event" or "after_some_element_event",
+			// add event listener some_element
+			var element:String;
+			var event:String;
+			var parts:Array;
+
+			var method:String;
+			var methods:XMLList = describeType(this).method.(@name.match(/^(after_|on_)/) != null);
+            for (var n:String in methods)
+			{
+				method = methods.@name[n];
+				parts = method.split('_');
+				parts.shift(); // drop on_
+				event = parts.pop(); // grab _event
+				element = parts.join('_');
+
+				// attach on_instance_event and after_instance_event listeners
+				if (! element)
+				{
+					addEventListener(event, this[method], true);
+				}
+				// attach on_instance_event and after_instance_event listeners
+				else if (view.hasOwnProperty(element))
+				{
+					((view[element] is Helper) ? view[element].display_object : view[element]).addEventListener(event, this[method]);
+				}
+			}
 		}
 
 		public function process (action_name:String, params:Hash) :void
@@ -362,6 +396,7 @@ package metafas3
 		// render('robots/show', { layout: false, width: 100, height: 100 })
 		// render('show', { layout: 'monkeys' })
 		// render('list')
+		// render('http://www.example.com/robots/show/1.html')
 		protected function render (template:String, options:Object = null) :*
 		{
 			// allow _show() to pass layout via params:

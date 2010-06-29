@@ -61,9 +61,8 @@ package metafas3
 			{
 				var p:String = e.property.toString();
 				var valid:Boolean = (object[p] == object[p.replace('_confirmation', '')]);
-				// dispatch event for field_confirmation
-				dispatch_result_event_for(e, object, valid, options.message);
-				// IFF valid, dispatch second event to clear field errors
+
+				// IFF valid, dispatch event to clear field errors
 				if (valid)
 				{
 					e.property = p.replace('_confirmation', '');

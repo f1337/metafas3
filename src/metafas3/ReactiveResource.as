@@ -211,7 +211,7 @@ package metafas3
 		}
 
 		// For use ONLY in ReactiveResource subclasses for static init:
-		// extend(prototype.constructor)
+		// model(prototype.constructor)
 		static public function model (c:Class) :void
 		{
 			// define find method
@@ -285,9 +285,13 @@ package metafas3
 		{
 			for (var pname:String in attrs)
 			{
-				// strip JSON namespaces
-				var lname:String = pname.replace(/\w+:/, '');
-				this[lname] = attrs[pname];
+			    // HACK: prohibit previous response body from being loaded as a param on this model
+			    if(pname != '0')
+			    {
+			        // strip JSON namespaces
+    				var lname:String = pname.replace(/\w+:/, '');
+    				this[lname] = attrs[pname];
+			    }
 			}
 			if (e) dispatchEvent(e);
 		}
@@ -313,6 +317,21 @@ package metafas3
 			return prefix_options;
 		}
 
+		public function post (path:String, options:Object = null) :void
+		{
+			// clear errors
+			errors = new Array();
+
+			if (options && options.complete is Function)
+			{
+				// bubble complete event
+				addEventListener('complete', options.complete);
+			}
+
+			path = (path.indexOf('http') == 0) ? path : collection_path().replace(/(\/[^\/\.]+)(\.\w+)$/, ("$1/" + path + "$2"));
+			create(path);
+		}
+
 		public function put (path:String, options:Object = null) :void
 		{
 			// clear errors
@@ -324,8 +343,8 @@ package metafas3
 				addEventListener('complete', options.complete);
 			}
 
-			path = element_path().replace(/(\/[^\/\.]*)(\.\w+)/, '$1/' + path + '$2');
-			send('PUT', path, after_update, after_update_failed);
+			path = (path.indexOf('http') == 0) ? path : element_path().replace(/(\/[^\/\.]*)(\.\w+)/, '$1/' + path + '$2');
+			update(path);
 		}
 
 		public function reload (args:Object = null) :void
@@ -377,10 +396,10 @@ package metafas3
 				// every child's value must be cast to String
 				var value:String = String(this[i]);
 				// trap combobox serialization bug: value serializes as [object Object]
-				if (value == '[object Object]' && this[i].data) value = String(this[i].data);
+				if (value == '[object Object]') value = String(this[i].data);
 				// assign to collection
 /*				params[i] = value;*/
-				params['data[' + root + '][' + i + ']'] = value;
+                params['data[' + root + '][' + i + ']'] = value;
 			}
 
 			// send it back
@@ -453,9 +472,10 @@ package metafas3
 			}
 */		}
 
-		protected function create () :void
+		protected function create (path:String = null) :void
 		{
-			send('POST', collection_path(), after_create, after_create_failed);
+			if (! path) path = collection_path();
+			send('POST', path, after_create, after_create_failed);
 		}
 
 		protected function collection_path (options:Object = null) :String
@@ -489,8 +509,9 @@ package metafas3
 			}
         }
 
-		protected function update () :void
+		protected function update (path:String = null) :void
 		{
+			if (! path) path = element_path();
 			send('PUT', element_path(), after_update, after_update_failed);
 		}
 
