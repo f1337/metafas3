@@ -6,7 +6,7 @@ Metafas3 (pronounced "metaphase") is a small [MVP](http://martinfowler.com/eaaDe
 
 * **MVP:** Metafas3 implements the [Supervising Controller/Presenter](http://martinfowler.com/eaaDev/SupervisingPresenter.html) pattern as defined by Martin Fowler. Metafas3 is [opinionated](http://gettingreal.37signals.com/ch04_Make_Opinionated_Software.php) software, where Views are meant to be declarative and "dumb", Controllers to be event handlers for user gestures, and Models to provide business logic and data validation.
 * **Runtime Views:** Metafas3 X/HTML5 views may be compiled into the .swf, or loaded and rendered at *runtime*.
-* **Lightweight:** Less than 70k for a fully-loaded .swf compiled with fl.controls.ComboBox, RadioButton, CheckBox, TextInput, Button and UILoader. The equivalent .swf built with Flex exceeds 400k.
+* **Lightweight:** Less than 150k (and dropping) for a fully-loaded .swf compiled with fl.controls.ComboBox, RadioButton, CheckBox, TextInput, Button and UILoader. The equivalent .swf built with Flex exceeds 400k.
 * **Declarative:** Like Flex, Metafas3 provides a declarative markup language (X/HTML5) for views.
 * **Data Bindings:** Like Flex, Metafas3 provides a simple declarative data-binding syntax.
 * **Validations:** Like Flex, Metafas3 provides in-UX validations. Unlike Flex, Metafas3 applies validations in the Model layer, not in the View layer. The only exception: Like Flex, Metafas3 provides a shortcut 'required="true"' syntax for simple view-defined validations.
@@ -48,3 +48,7 @@ Windows users do not type "sudo". Mac users should also install the rb-appscript
 #### Why Sprouts? ####
 
 The [Sprouts project](http://www.projectsprouts.org) provides a well written answer to that question. I'm not going to copy the *entire* Sprouts manual here. ;P
+
+### Try the Examples ###
+
+See the examples/ directory.

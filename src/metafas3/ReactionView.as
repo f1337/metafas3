@@ -83,7 +83,7 @@ package metafas3
 				catch (exception:*)
 				{
 					var view:* = (new XHTMLView());
-					view.path = ((template.indexOf('http') == 0) ? template : SupervisingController.view_path + template);
+					view.path = template;
 					return view;
 				}
 			}

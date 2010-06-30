@@ -1,4 +1,4 @@
-class Ras3rGenerator < Sprout::Generator::NamedBase  # :nodoc:
+class Metafas3Generator < Sprout::Generator::NamedBase  # :nodoc:
   protected
   # Get the list of controllers (which are files) as a
   # list of fully qualified class names

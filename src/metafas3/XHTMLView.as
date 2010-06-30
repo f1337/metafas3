@@ -46,23 +46,6 @@ package metafas3
 			span:		'label'
 		};
 
-		/**
-		*	TEMPLATE CACHING: DEPRECATED 2010/06/27 per @mfleet
-		* 	Now that XHTML views are truly dynamic, runtime views,
-		*	caching interferes with dynamic content.
-		**/
-/*		private static var _templates_cache:Object = {};
-		private static function templates_cache (klass:Object, xml:XML = null) :XML
-		{
-			// TODO: watch to ensure this doesn't break order's dynamic templates
-			// determine key for cache array:
-			//		if exists, use view's 'path'
-			//		else, use view's class name
-			var key:String = (klass['path'] ? klass['path'].toString() : getQualifiedClassName(klass));
-			if (xml) _templates_cache[key] = xml;
-			return _templates_cache[key];
-		}
-*/
 		private var loader:URLLoader;
 		private function load_template (path:String) :void
 		{

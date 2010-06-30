@@ -1,4 +1,4 @@
-class ControllerGenerator < Ras3rGenerator  # :nodoc:
+class ControllerGenerator < Metafas3Generator  # :nodoc:
   def manifest
     record do |m|
       if (!user_requested_test)
