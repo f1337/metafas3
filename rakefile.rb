@@ -40,19 +40,6 @@ debug :debug
 #unit :test
 desc 'Compile run the test harness'
 spec :spec
-# flashplayer :spec => model.test_output
-# mxmlc model.test_output => :model do |t|
-# 	t.debug					= true
-# 	t.use_network		= false # for using filesystem fixtures
-# 	t.input					= "#{model.src_dir}/#{model.project_name}Runner.as"
-# 	t.output				= model.test_output
-# 	t.source_path		<< model.test_dir
-# 	t.source_path		<< "#{model.lib_dir}/metafas3"
-# 	t.library_path	<< "#{model.swc_dir}/as3spec.swc"
-# 	t.library_path	<< "#{model.swc_dir}/corelib.swc"
-# 	t.library_path	<< "#{model.swc_dir}/cs3_components.swc"
-# end
-# task :test => :spec
 
 desc 'Compile the optimized deployment'
 deploy :deploy
