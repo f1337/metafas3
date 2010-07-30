@@ -52,3 +52,8 @@ The [Sprouts project](http://www.projectsprouts.org) provides a well written ans
 ### Try the Examples ###
 
 See the examples/ directory.
+
+
+## Copyright
+
+Copyright (c) 2009, 2010 Michael Fleet <fantasticmf.com> & friends. See LICENSE for details.
