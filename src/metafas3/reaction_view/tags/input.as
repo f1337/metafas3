@@ -12,9 +12,6 @@ package metafas3.reaction_view.tags
 			case 'checkbox':
 				return CheckBoxHelper.create(options);
 				break;
-			case 'radio':
-				return RadioButtonHelper.create(options);
-				break;
 			// hidden fields don't render any components
 			case 'hidden':
 				return null;
@@ -23,6 +20,13 @@ package metafas3.reaction_view.tags
 				options.remove('name'); // discard name
 				options.source = options.remove('src');
 				return ImageButtonHelper.create(options);
+				break;
+			// 'password', is a TextInput w/ displayAsPassword=true
+			case 'password':
+				options.displayAsPassword = true;
+				break;
+			case 'radio':
+				return RadioButtonHelper.create(options);
 				break;
 			// 'text', 'email', 'tel', etc. use fail-safe TextInput
 			default:

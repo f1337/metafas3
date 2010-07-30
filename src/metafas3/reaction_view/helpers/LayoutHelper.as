@@ -13,8 +13,9 @@ package metafas3.reaction_view.helpers
 	dynamic public class LayoutHelper extends UIComponentHelper
 	{
 		static public var default_options:Hash = new Hash({
-			horizontalGap: 0,
-			verticalGap: 0
+			direction:		'vertical',
+			horizontalGap: 	0,
+			verticalGap: 	0
 		});
 
 		/**
@@ -26,6 +27,14 @@ package metafas3.reaction_view.helpers
 		static protected function create (klass:Class, options:Object = null) :LayoutHelper
 		{
 			options = default_options.merge(klass.default_options).update(options);
+
+			// setup custom layout config for Astra layout containers
+			options.configuration = [];
+			for each (var child:* in options.children)
+			{
+				options.configuration.push({ target: child.display_object, includeInLayout: (child.position != 'absolute') })
+			}
+
 			return (Helper.create(klass, options) as LayoutHelper);
 		}
 

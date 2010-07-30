@@ -8,8 +8,5 @@ package metafas3.reaction_view.tags
 	{
 		options.children = args;
 		return FormHelper.create(options);
-/*
-		args.unshift(options);
-		return div.apply(null, args);
-*/	}
+	}
 }

@@ -296,14 +296,12 @@ package metafas3.reaction_view.helpers
 		{
 			if (document[element_id])
 			{
-				logger.info('events for: ' + document[element_id]);
 				document[element_id].label = this;
 			}
 			else
 			{
 				document.addEventListener(element_id + '_created', function (e:Event) :void
 				{
-					logger.info(element_id + '_created');
 					events_for(document, element_id);
 				});
 			}

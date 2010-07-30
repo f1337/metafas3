@@ -37,7 +37,6 @@ end
 desc 'Compile and debug the application'
 debug :debug
 
-#unit :test
 desc 'Compile run the test harness'
 spec :spec
 

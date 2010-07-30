@@ -292,9 +292,9 @@ package metafas3
 
 
 		// >>> VISUAL EFFECTS
-		private function appear (target:Object, options:Hash) :void
+		protected function appear (target:Object, options:Object = null) :void
 		{
-			options.update({ alpha: 1 });
+			options = new Hash(options).update({ alpha: 1 });
 			target.alpha = 0;
 			tween(target, options);
 		}

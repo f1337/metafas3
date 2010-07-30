@@ -34,12 +34,8 @@ package metafas3.reaction_view.helpers
 		public var action:String;
 
 		/**
-		*	boxHelper.display_object
-		*	Every Helper is expected to provide a display_object.
-		*	This one is a FlowPane
+		*	look for submit buttons among children
 		**/
-		public var display_object:FlowPane = new FlowPane;
-
 		override public function set children (a:Array) :void
 		{
 			var buttons:Array = submit_buttons_from_children(a);
@@ -55,6 +51,13 @@ package metafas3.reaction_view.helpers
 
 			super.children = a;
 		}
+
+		/**
+		*	boxHelper.display_object
+		*	Every Helper is expected to provide a display_object.
+		*	This one is a FlowPane
+		**/
+		public var display_object:FlowPane = new FlowPane;
 
 		/**
 		*	form method (GET or POST)

@@ -19,6 +19,7 @@ package metafas3
 		private static var __a:Function = a;
 		private static var __div:Function = div;
 		private static var __embed:Function = embed;
+		private static var __fieldset:Function = fieldset;
 		private static var __form:Function = form;
 		private static var __img:Function = img;
 		private static var __input:Function = input;

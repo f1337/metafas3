@@ -95,6 +95,23 @@ package metafas3.reaction_view.helpers
 
 			// setup validation handlers
 			// super.bind_to(object, property);
+
+			// helper responds to object[property] validation events
+			// use lower priority, so controllers may use stopImmediatePropagation()
+			// to prevent background color changes. -12 is an arbitrary index less than -1.
+			object.addEventListener(property + '_invalid', after_property_invalid, false, -12);
+			object.addEventListener(property + '_valid', after_property_valid, false, -12);
+
+			// HACK? if required == true, applies an ad-hoc
+			//	validates_acceptance_of constraint to model
+			if (required)
+			{
+				logger.info('trigger validation for required field: ' + property);
+				Validates.acceptance_of(object, property);
+
+				// SUPER HACK? manually trigger validation to catch nulls?
+				object.validate(property);
+			}
 		}
 
 

@@ -28,6 +28,23 @@ package metafas3
 		}
 
 		/**
+		* Validates.acceptance_of(model, 'first_name', {
+		* 	message: 	'must be accepted',
+		*	accept:		'1',
+		* 	iff: 		function,
+		*	unless: 	function
+		* })
+		**/
+		static public function acceptance_of (object:Object, ...attr_names) :void
+		{
+			var options:Hash = new Hash({ accept: '1', message: "{attr} must be accepted" }).update(extract_options(attr_names));
+			add_validator(object, attr_names, options, function (e:PropertyChangeEvent) :void
+			{
+				dispatch_result_event_for(e, object, Boolean(e.newValue == options.accept), options.message);
+			});
+		}
+
+		/**
 		* validates_confirmation_of('password', {
 		* 	message: 	'should match confirmation',
 		* 	iff: 		function,
