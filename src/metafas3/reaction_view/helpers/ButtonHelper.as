@@ -82,7 +82,7 @@ package metafas3.reaction_view.helpers
 		/**
 		*	Set up data binding
 		**/
-		override public function bind_to (object:*, property:String) :void
+		public function bind_to (object:*, property:String) :void
 		{
 			// helper responds to changes to object[property]
 			object.addEventListener(property + '_change', after_property_change);

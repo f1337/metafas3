@@ -10,7 +10,7 @@ package metafas3.reaction_view.helpers
 
 	use namespace flash_proxy;
 
-	dynamic public class RadioButtonHelper extends UIComponentHelper
+	dynamic public class RadioButtonHelper extends FormItemHelper
 	{
 		/**
 		*	RadioButtonHelper.default_options
@@ -27,7 +27,7 @@ package metafas3.reaction_view.helpers
 		**/
 		static public function create (options:Object = null) :RadioButtonHelper
 		{
-			return (UIComponentHelper.create(RadioButtonHelper, options) as RadioButtonHelper);
+			return (FormItemHelper.create(RadioButtonHelper, options) as RadioButtonHelper);
 		}
 
 

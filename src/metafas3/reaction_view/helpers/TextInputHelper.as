@@ -10,7 +10,7 @@ package metafas3.reaction_view.helpers
 
 	use namespace flash_proxy;
 
-	dynamic public class TextInputHelper extends UIComponentHelper
+	dynamic public class TextInputHelper extends FormItemHelper
 	{
 		/**
 		*	TextInputHelper.default_options:
@@ -27,7 +27,7 @@ package metafas3.reaction_view.helpers
 		**/
 		static public function create (options:Object = null) :TextInputHelper
 		{
-			return (UIComponentHelper.create(TextInputHelper, options) as TextInputHelper);
+			return (FormItemHelper.create(TextInputHelper, options) as TextInputHelper);
 		}
 
 
@@ -59,7 +59,6 @@ package metafas3.reaction_view.helpers
 			this.maxChars = n;
 		}
 
-
 		/**
 		*	textInputHelper.padding: applied to "textPadding" style of TextInput
 		**/
@@ -83,7 +82,7 @@ package metafas3.reaction_view.helpers
 		}
 
 		/**
-		*	textInputHelper.maxlength: HTML5 property alias for TextInput.maxChars
+		*	textInputHelper.value: HTML5 alias
 		**/
 		public function set value (s:String) :void
 		{

@@ -9,7 +9,7 @@ package metafas3.reactive_resource
 
 	public class Request extends EventDispatcher
 	{
-		public var contentType:String;
+		public var contentType:String = 'application/x-www-form-urlencoded';
 		public var data:Object;
 		public var method:String;
 		public var path:String;

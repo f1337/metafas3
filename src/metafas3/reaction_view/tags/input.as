@@ -14,7 +14,7 @@ package metafas3.reaction_view.tags
 				break;
 			// hidden fields don't render any components
 			case 'hidden':
-				return null;
+				return HiddenInputHelper.create(options);
 				break;
 			case 'image':
 				options.remove('name'); // discard name

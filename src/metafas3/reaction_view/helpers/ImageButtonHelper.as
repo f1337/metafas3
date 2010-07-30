@@ -10,7 +10,7 @@ package metafas3.reaction_view.helpers
 
 	use namespace flash_proxy;
 
-	dynamic public class ImageButtonHelper extends UIComponentHelper
+	dynamic public class ImageButtonHelper extends FormItemHelper
 	{
 		/**
 		*	ImageButtonHelper.default_options:
@@ -30,7 +30,7 @@ package metafas3.reaction_view.helpers
 		**/
 		static public function create (options:Object = null) :ImageButtonHelper
 		{
-			return (UIComponentHelper.create(ImageButtonHelper, options) as ImageButtonHelper);
+			return (FormItemHelper.create(ImageButtonHelper, options) as ImageButtonHelper);
 		}
 
 

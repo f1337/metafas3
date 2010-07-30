@@ -283,10 +283,13 @@ package metafas3
 				{
 					// sanitize model name
 					matches[1] = matches[1].toLowerCase();
+					// create a dummy model if one doesn't exist
+					if (this[matches[1]] == null) this[matches[1]] = (new ReactiveResource());
 					// set id to object_property
 					options.name = id = matches[1] + '_' + matches[2];
 					// allow <input type="hidden"> fields to assign model properties
-					if (node == 'input' && options.type == 'hidden') this[matches[1]][matches[2]] = options.value;
+					// DEPRECATED: moved to HiddenInputHelper#bind_to
+					// if (node == 'input' && options.type == 'hidden') this[matches[1]][matches[2]] = options.value;
 				}
 			}
 

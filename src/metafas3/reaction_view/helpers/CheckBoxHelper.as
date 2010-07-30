@@ -8,7 +8,7 @@ package metafas3.reaction_view.helpers
 
 	use namespace flash_proxy;
 
-	public class CheckBoxHelper extends UIComponentHelper
+	public class CheckBoxHelper extends FormItemHelper
 	{
 		/**
 		*	CheckBoxHelper.default_options:
@@ -25,7 +25,7 @@ package metafas3.reaction_view.helpers
 		**/
 		static public function create (options:Object = null) :CheckBoxHelper
 		{
-			return (UIComponentHelper.create(CheckBoxHelper, options) as CheckBoxHelper);
+			return (FormItemHelper.create(CheckBoxHelper, options) as CheckBoxHelper);
 		}
 
 

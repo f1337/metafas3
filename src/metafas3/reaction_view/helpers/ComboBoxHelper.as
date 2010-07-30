@@ -10,7 +10,7 @@ package metafas3.reaction_view.helpers
 
 	use namespace flash_proxy;
 
-	dynamic public class ComboBoxHelper extends UIComponentHelper
+	dynamic public class ComboBoxHelper extends FormItemHelper
 	{
 		/**
 		*	ComboBoxHelper.default_options:
@@ -27,7 +27,7 @@ package metafas3.reaction_view.helpers
 		**/
 		static public function create (options:Object = null) :ComboBoxHelper
 		{
-			options = UIComponentHelper.default_options.merge(default_options).update(options);
+			options = UIComponentHelper.default_options.merge(FormItemHelper.default_options).update(default_options).update(options);
 			return (Helper.create(ComboBoxHelper, options, create_helper_callback) as ComboBoxHelper);
 		}
 
@@ -158,7 +158,7 @@ package metafas3.reaction_view.helpers
 		*	returns 'textFormat', 'embedFonts' styles from ComboBox label textField
 		*	all other styles are returned from ComboBox itself
 		**/
-		public function getStyle (key:String) :Object
+		override public function getStyle (key:String) :Object
 		{
 			return (key == 'textFormat' ? this.textField : display_object).getStyle(key);
 		}
@@ -170,7 +170,7 @@ package metafas3.reaction_view.helpers
 		*	ref: blogs.adobe.com/pdehaan/2008-03/using_embedded_fonts_with_the_3.html
 		*	all other styles are applied only to the ComboBox itself
 		**/
-		public function setStyle (key:String, value:Object) :void
+		override public function setStyle (key:String, value:Object) :void
 		{
 			if (key == 'textFormat' || key == 'embedFonts')
 			{

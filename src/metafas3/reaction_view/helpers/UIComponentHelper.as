@@ -195,31 +195,19 @@ package metafas3.reaction_view.helpers
 			super(proxied_object);
 		}
 
-		/**
-		*	Set up validation binding. Override for data binding.
-		*	Use super.bind_to() in subclass to use validation bindings.
-		**/
-		public function bind_to (object:*, property:String) :void
+		public function getStyle (key:String) :Object
 		{
-			// helper responds to object[property] validation events
-			// use lower priority, so controllers may use stopImmediatePropagation()
-			// to prevent background color changes. -12 is an arbitrary index less than -1.
-			object.addEventListener(property + '_invalid', after_property_invalid, false, -12);
-			object.addEventListener(property + '_valid', after_property_valid, false, -12);
+			return (proxied_object.hasOwnProperty('getStyle') ? proxied_object.getStyle(key) : null);
+		}
 
-
-			// HACK? if required == true, applies an ad-hoc
-			//	validates_presence_of constraint to model
-			if (required)
+		public function setStyle (key:String, value:Object) :void
+		{
+			if (proxied_object.hasOwnProperty('setStyle'))
 			{
-				Validates.presence_of(object, property, {
-					message: 'Please enter a valid {attr}.'
-				});
-
-				// SUPER HACK? manually trigger validation to catch nulls?
-				object.validate(property);
+				proxied_object.setStyle(key, value);
 			}
 		}
+		
 
 
 		// >>> EVENT HANDLERS
