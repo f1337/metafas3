@@ -56,4 +56,4 @@ See the examples/ directory.
 
 ## Copyright
 
-Copyright (c) 2009, 2010 Michael Fleet <fantasticmf.com> & friends. See LICENSE for details.
+Copyright (c) 2009, 2010 Michael Fleet <fantasticmf.com> and friends. See LICENSE for details.
