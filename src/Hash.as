@@ -64,7 +64,7 @@ package
 				}
 				catch (exception:*)
 				{
-					logger.info('Unable to apply hash property "' + key + '" to ' + object);
+					//logger.info('Unable to apply hash property "' + key + '" to ' + object);
 					//logger.info(">>>EXCEPTION:\n" + exception);
 				}
 			}

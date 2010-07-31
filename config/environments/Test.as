@@ -1,4 +1,4 @@
-package config.environments
+package environments
 {
 	public class Test
 	{

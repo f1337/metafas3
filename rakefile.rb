@@ -12,8 +12,8 @@ model = project_model :model do |m|
   m.project_name            = 'metafas3'
   m.language                = 'as3'
   m.background_color        = '#FFFFFF'
-  m.width                   = 970
-  m.height                  = 550
+  m.width                   = 520
+  m.height                  = 780
   # m.use_fdb               = true
   # m.use_fcsh              = true
   # m.preprocessor          = 'cpp -D__DEBUG=false -P - - | tail -c +3'
@@ -28,10 +28,12 @@ model = project_model :model do |m|
   # m.compiler_gem_name     = 'sprout-flex4sdk-tool'
   # m.compiler_gem_version  = '>= 4.0.0'
   # m.source_path           	<< "#{m.lib_dir}/metafas3"
-	m.libraries								<< :corelib
-	m.libraries								<< :as3spec
-	m.test_output							= "#{m.bin_dir}/#{m.project_name}-test.swf"
-	m.library_path						<< "#{m.swc_dir}/cs4_components.swc"
+  m.source_path             << 'application'
+  m.source_path             << 'config'
+  m.libraries				<< :corelib
+  m.libraries				<< :as3spec
+  m.test_output				= "#{m.bin_dir}/#{m.project_name}-test.swf"
+  m.library_path		    << "#{m.swc_dir}/cs4_components.swc"
 end
 
 desc 'Compile and debug the application'
