@@ -14,11 +14,9 @@ package metafas3.reaction_view.helpers
 		static public var default_options:Hash = new Hash({
 			// autosize to end-run the 100x100 base size
 			autoSize:	'left',
-			/**
-			* 	NOTE: condenseWhite interferes with
-			*		some HTML rendering and multiline text
-			*		probably best to EXCLUDE from default_options
-			**/
+			//	NOTE: condenseWhite interferes with
+			//		some HTML rendering and multiline text
+			//		probably best to EXCLUDE from default_options
 			// condenseWhite: true,
 			// multiline: true for HTML5 support!
 			multiline: true,
