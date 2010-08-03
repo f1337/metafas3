@@ -33,6 +33,7 @@ model = project_model :model do |m|
   m.libraries				<< :corelib
   m.libraries				<< :as3spec
   m.test_output				= "#{m.bin_dir}/#{m.project_name}-test.swf"
+  m.library_path            << "#{m.swc_dir}/astra-flash-1.4.swc"
   m.library_path		    << "#{m.swc_dir}/cs4_components.swc"
 end
 
@@ -46,7 +47,10 @@ desc 'Compile the optimized deployment'
 deploy :deploy
 
 desc 'Create documentation'
-document :doc
+document :doc do |t|
+    t.source_path = [ 'application', 'src', 'config' ]
+    t.exclude_classes = [ 'com.greensock.TweenLite', 'ru.etcs.utils.FontLoader' ]
+end
 
 desc 'Compile a SWC file'
 swc :swc
