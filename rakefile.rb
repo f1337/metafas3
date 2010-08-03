@@ -20,7 +20,6 @@ model = project_model :model do |m|
   # m.preprocessed_path     = '.preprocessed'
   # m.src_dir               = 'src'
   m.lib_dir               	= 'vendor'
-  m.swc_dir               	= 'vendor'
   # m.bin_dir               = 'bin'
   # m.test_dir              = 'test'
   # m.doc_dir               = 'doc'
@@ -33,7 +32,11 @@ model = project_model :model do |m|
   m.libraries				<< :corelib
   m.libraries				<< :as3spec
   m.test_output				= "#{m.bin_dir}/#{m.project_name}-test.swf"
-  m.library_path            << "#{m.swc_dir}/astra-flash-1.4.swc"
+
+  # vendor libraries
+  m.swc_dir               	= 'vendor'
+  m.source_path             << "#{m.swc_dir}/astra-flash-1.4/Source"
+  # m.library_path            << "#{m.swc_dir}/astra-flash-1.4.swc"
   m.library_path		    << "#{m.swc_dir}/cs4_components.swc"
 end
 
@@ -49,6 +52,7 @@ deploy :deploy
 desc 'Create documentation'
 document :doc do |t|
     t.source_path       = [ 'application', 'src', 'config' ]
+    t.library_path      << 'vendor/astra-flash-1.4.swc'
     t.exclude_classes   = [ 'com.greensock.TweenLite', 'ru.etcs.utils.FontLoader' ]
 end
 
