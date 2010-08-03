@@ -54,6 +54,6 @@ The [Sprouts project](http://www.projectsprouts.org) provides a well written ans
 See the examples/ directory.
 
 
-## Copyright
+## Copyright and License
 
-Copyright (c) 2009, 2010 Michael Fleet <fantasticmf.com> and friends. See LICENSE for details.
+Copyright (c) 2009, 2010 Michael Fleet <fantasticmf.com> and friends. metafAS3 is free software, licensed under the terms of the MIT license. See LICENSE for details.

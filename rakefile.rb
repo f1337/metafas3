@@ -48,8 +48,8 @@ deploy :deploy
 
 desc 'Create documentation'
 document :doc do |t|
-    t.source_path = [ 'application', 'src', 'config' ]
-    t.exclude_classes = [ 'com.greensock.TweenLite', 'ru.etcs.utils.FontLoader' ]
+    t.source_path       = [ 'application', 'src', 'config' ]
+    t.exclude_classes   = [ 'com.greensock.TweenLite', 'ru.etcs.utils.FontLoader' ]
 end
 
 desc 'Compile a SWC file'
