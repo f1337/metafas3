@@ -17,7 +17,7 @@ package metafas3.reaction_view.tags
 			// re-key "text" as "label"
 			o.label = o.remove('_text');
 			// assign selected item
-			if (o.remove('selected')) options.selectedItem = o;
+			if (o.remove('selected')) options.selectedItem = o.data;
 			return true;
 		});
 		// cast choices to DataProvider

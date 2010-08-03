@@ -62,12 +62,9 @@ package metafas3.reaction_view.helpers
 		/**
 		*	override "selectedItem" property setter to juggle objects/string interchangeably
 		**/
-		public function set selectedItem (o:Object) :void
+		public function set selectedItem (value:String) :void
 		{
 			var index:uint = 0;
-
-			// normalize strings and objects
-			var value:Object = ((o is String) ? { data: o, label: o } : o);
 
 			if (value)
 			{
@@ -76,7 +73,7 @@ package metafas3.reaction_view.helpers
 
 				for (var i:uint = 0; i < data.length; i++)
 				{
-					if (data[i].data == value.data)
+					if (data[i].data == value)
 					{
 						setProperty('selectedItem', this.getItemAt(i));
 						break;
@@ -85,9 +82,9 @@ package metafas3.reaction_view.helpers
 			}
 		}
 
-		public function get selectedItem () :Object
+		public function get selectedItem () :String
 		{
-			return proxied_object.selectedItem;
+			return proxied_object.selectedItem.data.toString();
 		}
 
 
@@ -129,20 +126,7 @@ package metafas3.reaction_view.helpers
 			display_object.addEventListener('change', function (e:Object) :void
 			{
 				// prevent superfluous event firing
-				if (
-					// object[selection] defined?
-					object[selection] &&
-					// and selectedItem defined?
-					selectedItem &&
-					(
-						// and e.newValue equals selectedItem
-						object[selection].hasOwnProperty('data') ?
-						(object[selection].data == selectedItem.data) : // compare as objects for XML/JSON support
-						(object[selection] == selectedItem.data) // compare as string for HTML5 hidden input support
-					)
-				// then return now to prevent superfluous event firing
-				) return;
-
+				if (object[selection] == selectedItem) return;
 				object[selection] = selectedItem;
 			});
 
@@ -201,19 +185,8 @@ package metafas3.reaction_view.helpers
 		**/
 		private function after_selection_change (e:Object) :void
 		{
-			if (
-				// e.newValue defined?
-				e.newValue &&
-				// and selectedItem defined?
-				selectedItem &&
-				(
-					// and e.newValue equals selectedItem
-					e.newValue.hasOwnProperty('data') ?
-					(e.newValue.data == selectedItem.data) : // compare as objects for XML/JSON support
-					(e.newValue == selectedItem.data) // compare as string for HTML5 hidden input support
-				)
-			// then return now to prevent superfluous event firing
-			) return;
+			// prevent superfluous event firing
+			if (e.newValue == selectedItem) return;
 
 			// update display object
 			selectedItem = e.newValue;
