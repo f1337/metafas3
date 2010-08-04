@@ -84,7 +84,7 @@ package metafas3.reaction_view.helpers
 
 		public function get selectedItem () :String
 		{
-			return proxied_object.selectedItem.data.toString();
+			return ((proxied_object.selectedItem && proxied_object.selectedItem.data) ? proxied_object.selectedItem.data.toString() : proxied_object.selectedItem);
 		}
 
 
