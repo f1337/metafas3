@@ -83,7 +83,7 @@ package metafas3.reaction_view.helpers
 			// prevent superfluous event firing
 			if (e.newValue == value) return;
 			// update display object
-			value = e.newValue.toString();
+			value = (e.newValue ? e.newValue.toString() : '');
 		}
 	}
 }
