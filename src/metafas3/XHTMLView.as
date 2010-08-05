@@ -71,7 +71,7 @@ package metafas3
 
 		override public function build () :void
 		{
-			xml_children_to_display_objects(xml.children());
+			xml_children_to_helpers(xml.children());
 		}
 
 
@@ -88,16 +88,16 @@ package metafas3
 			return options;
 		}
 
-		private function xml_children_to_display_objects (xml_children:XMLList) :Array
+		private function xml_children_to_helpers (xml_children:XMLList) :Array
 		{
 			var children:Array;
-			var display_objects:Array = new Array;
-			var display_object:Object;
+			var helpers:Array = new Array;
+			var helper:Helper;
 			var method:String;
 
 			for each (var child:XML in xml_children)
 			{
-				display_object = null;
+				helper = null;
 				method = child.localName();
 
 				if (method)
@@ -124,7 +124,7 @@ package metafas3
 					else if (layout_tags[method])
 					{
 						method = layout_tags[method];
-						args = xml_children_to_display_objects(child.children());
+						args = xml_children_to_helpers(child.children());
 						args.unshift(attributes_to_hash(child));
 					}
 					// other UI elements
@@ -135,7 +135,7 @@ package metafas3
 						// HACK! to support <a> attaching event handlers to children
 						if (method == 'a')
 						{
-							children = xml_children_to_display_objects(child.children());
+							children = xml_children_to_helpers(child.children());
 							if (children && children.length) options.children = children;
 							// re-serialize HTML for tag helpers
 							options.update({
@@ -147,26 +147,26 @@ package metafas3
 					}
 
 					args.unshift(method);
-					display_object = tag.apply(this, args);
+					helper = tag.apply(this, args);
 
 					// add resulting object to display list
-					if (display_object)
+					if (helper)
 					{
-/*						logger.info('method: ' + method + ', display object: ' + display_object);*/
-						display_objects.push(display_object);
+/*						logger.info('method: ' + method + ', helper: ' + helper);*/
+						helpers.push(helper);
 					}
 					// helper method unknown: ignore the parent tag,
 					//	process its children as siblings
 					else
 					{
-						children ||= xml_children_to_display_objects(child.children());
+						children ||= xml_children_to_helpers(child.children());
 /*						logger.info('method: ' + method + ', display object children: ' + children);*/
-						display_objects.push.apply(display_objects, children);
+						helpers.push.apply(helpers, children);
 					}
 				}
 			}
 
-			return display_objects;
+			return helpers;
 		}
 
 		private function xml_to_hash (xml:XML) :Hash
@@ -220,17 +220,6 @@ package metafas3
 		{
 			removeEventListener('addedToStage', after_added_to_stage);
 
-/*			// cache the XML, if defined
-			if (xml)
-			{
-				templates_cache(this, xml);
-			}
-			// else lookup XML from cache
-			else
-			{
-				xml = templates_cache(this);
-			}
-*/
 			if (xml)
 			{
 				// resume event chain and build()
@@ -314,10 +303,14 @@ package metafas3
 				if (matches && helper.hasOwnProperty('bind_to')) helper.bind_to(this[matches[1]], matches[2]);
 
 				// add to display list and return
-				addChild(helper.display_object);
+				if (helper.display_object)
+				{
+					addChild(helper.display_object);
+					return helper;
+				}
 			}
 
-			return helper;
+			return null;
 		}
 	}
 }

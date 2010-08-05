@@ -34,7 +34,7 @@ package metafas3.reaction_view.helpers
 		*	Every Helper is expected to provide a display_object.
 		*	This one is a Sprite
 		**/
-		public var display_object:Sprite = new Sprite;
+		public var display_object:Sprite;// = new Sprite;
 
 		public var value:String = '';
 
@@ -61,6 +61,16 @@ package metafas3.reaction_view.helpers
 
 			// setup validation handlers
 			super.bind_to(object, property);
+		}
+
+		override public function getStyle (key:String) :Object
+		{
+			return null;
+		}
+
+		override public function setStyle (key:String, value:Object) :void
+		{
+			// do nothing, this is a hidden input
 		}
 
 
