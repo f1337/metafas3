@@ -3,7 +3,6 @@ package metafas3.reaction_view.helpers
 	import flash.net.*;
 	import flash.text.*;
 	import flash.utils.*;
-	import mx.events.*;
 	import metafas3.*;
 
 	dynamic public class UIComponentHelper extends FormattableHelper
@@ -205,34 +204,6 @@ package metafas3.reaction_view.helpers
 			if (proxied_object.hasOwnProperty('setStyle'))
 			{
 				proxied_object.setStyle(key, value);
-			}
-		}
-		
-
-
-		// >>> EVENT HANDLERS
-		protected function after_property_invalid (e:ValidationResultEvent) :void
-		{
-			var newEvent:ValidationResultEvent = new ValidationResultEvent('invalid', false, true);
-			newEvent.field = e.field;
-			newEvent.results = e.results;
-			proxied_object.dispatchEvent(newEvent);
-
-			if (! newEvent.isDefaultPrevented())
-			{
-				proxied_object.opaqueBackground = 0xff0000;
-			}
-		}
-
-		protected function after_property_valid (e:ValidationResultEvent) :void
-		{
-			var newEvent:ValidationResultEvent = new ValidationResultEvent('valid', false, true);
-			newEvent.field = e.field;
-			proxied_object.dispatchEvent(newEvent);
-
-			if (! newEvent.isDefaultPrevented())
-			{
-				proxied_object.opaqueBackground = null;
 			}
 		}
 	}

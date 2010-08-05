@@ -213,7 +213,7 @@ package metafas3
 				// attach on_instance_event and after_instance_event listeners
 				else if (view.hasOwnProperty(element))
 				{
-					((view[element] is Helper) ? view[element].display_object : view[element]).addEventListener(event, this[method]);
+					(((view[element] is Helper) && view[element].display_object) ? view[element].display_object : view[element]).addEventListener(event, this[method]);
 				}
 			}
 		}

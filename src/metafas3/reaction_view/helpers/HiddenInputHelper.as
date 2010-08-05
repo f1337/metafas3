@@ -46,6 +46,7 @@ package metafas3.reaction_view.helpers
 		public function HiddenInputHelper ()
 		{
 			super(display_object);
+			validates = false;
 		}
 
 		/**

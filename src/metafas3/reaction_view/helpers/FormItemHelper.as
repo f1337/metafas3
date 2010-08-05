@@ -1,9 +1,10 @@
 package metafas3.reaction_view.helpers
 {
-	import metafas3.*;
 	import flash.display.*;
 	import flash.events.*;
 	import flash.utils.*;
+	import metafas3.*;
+	import mx.events.*;
 
 	use namespace flash_proxy;
 
@@ -28,6 +29,7 @@ package metafas3.reaction_view.helpers
 		public var form:FormHelper;
 		public var model:ReactiveResource;
 		public var name:String;
+		public var validates:Boolean = true;
 
 		// >>> PUBLIC METHODS
 		/**
@@ -53,22 +55,50 @@ package metafas3.reaction_view.helpers
 			// helper responds to object[property] validation events
 			// use lower priority, so controllers may use stopImmediatePropagation()
 			// to prevent background color changes. -12 is an arbitrary index less than -1.
-			model.addEventListener(property + '_invalid', after_property_invalid, false, -12);
-			model.addEventListener(property + '_valid', after_property_valid, false, -12);
-
-
-			// HACK? if required == true, applies an ad-hoc
-			//	validates_presence_of constraint to model
-			if (required)
+			if (validates)
 			{
-				Validates.presence_of(object, property, {
-					message: 'Please enter a valid {attr}.'
-				});
+				model.addEventListener(property + '_invalid', after_property_invalid, false, -12);
+				model.addEventListener(property + '_valid', after_property_valid, false, -12);
 
-				// SUPER HACK? manually trigger validation to catch nulls?
-				model.validate(property);
+				// HACK? if required == true, applies an ad-hoc
+				//	validates_presence_of constraint to model
+				if (required)
+				{
+					Validates.presence_of(object, property, {
+						message: 'Please enter a valid {attr}.'
+					});
+
+					// SUPER HACK? manually trigger validation to catch nulls?
+					model.validate(property);
+				}
 			}
 		}
 
+
+		// >>> EVENT HANDLERS
+		protected function after_property_invalid (e:ValidationResultEvent) :void
+		{
+			var newEvent:ValidationResultEvent = new ValidationResultEvent('invalid', false, true);
+			newEvent.field = e.field;
+			newEvent.results = e.results;
+			proxied_object.dispatchEvent(newEvent);
+
+			if (! newEvent.isDefaultPrevented())
+			{
+				proxied_object.opaqueBackground = 0xff0000;
+			}
+		}
+
+		protected function after_property_valid (e:ValidationResultEvent) :void
+		{
+			var newEvent:ValidationResultEvent = new ValidationResultEvent('valid', false, true);
+			newEvent.field = e.field;
+			proxied_object.dispatchEvent(newEvent);
+
+			if (! newEvent.isDefaultPrevented())
+			{
+				proxied_object.opaqueBackground = null;
+			}
+		}
 	}
 }
