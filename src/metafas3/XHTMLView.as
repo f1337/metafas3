@@ -276,9 +276,6 @@ package metafas3
 					if (this[matches[1]] == null) this[matches[1]] = (new ReactiveResource());
 					// set id to object_property
 					options.name = id = matches[1] + '_' + matches[2];
-					// allow <input type="hidden"> fields to assign model properties
-					// DEPRECATED: moved to HiddenInputHelper#bind_to
-					// if (node == 'input' && options.type == 'hidden') this[matches[1]][matches[2]] = options.value;
 				}
 			}
 
