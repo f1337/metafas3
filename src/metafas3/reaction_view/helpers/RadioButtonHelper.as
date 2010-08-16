@@ -37,7 +37,7 @@ package metafas3.reaction_view.helpers
 		**/
 		public function set checked (checked:Boolean) :void
 		{
-			this.selected = true;
+			selected = true;
 		}
 
 		/**
@@ -45,17 +45,6 @@ package metafas3.reaction_view.helpers
 		*	RadioButton to proxy
 		**/
 		public var display_object:RadioButton = new RadioButton();
-
-		/**
-		*	sets up label clicks to trigger checkbox clicks
-		**/
-		public function set label (helper:TextFieldHelper) :void
-		{
-			helper.display_object.addEventListener('click', function (e:Event) :void
-			{
-				display_object.dispatchEvent(new MouseEvent('click'));
-			});
-		}
 
 		/**
 		*	proxy for radio_button.group
@@ -75,6 +64,49 @@ package metafas3.reaction_view.helpers
 			setProperty('group', group);
 		}
 
+		/**
+		*	sets up label clicks to trigger checkbox clicks
+		**/
+		public function set label (helper:TextFieldHelper) :void
+		{
+			helper.display_object.addEventListener('click', function (e:Event) :void
+			{
+				display_object.dispatchEvent(new MouseEvent('click'));
+			});
+		}
+
+		/**
+		*	"selected" property helper for databinding:
+		*	ObjectProxy descendants lose track of "this" in scope-chaining contexts
+		*	(anonymous functions or closures, for ex.)
+		*	this getter/setter pair allows us to access the property w/o using "this"
+		**/
+		public function set selected (b:Boolean) :void
+		{
+			setProperty('selected', b)
+		}
+
+		public function get selected () :Boolean
+		{
+			return getProperty('selected');
+		}
+
+		/**
+		*	"value" property helper for databinding:
+		*	ObjectProxy descendants lose track of "this" in scope-chaining contexts
+		*	(anonymous functions or closures, for ex.)
+		*	this getter/setter pair allows us to access the property w/o using "this"
+		**/
+		public function set value (s:String) :void
+		{
+			setProperty('value', s)
+		}
+
+		public function get value () :String
+		{
+			return getProperty('value');
+		}
+
 
 		// >>> PUBLIC METHODS
 		public function RadioButtonHelper ()
@@ -89,14 +121,14 @@ package metafas3.reaction_view.helpers
 		override public function bind_to (object:*, property:String) :void
 		{
 			// initialize object[property] w/ value if selected:
-			if (this.selected) 
+			if (selected) 
 			{
-				object[property] = this.value;
+				object[property] = value;
 			}
 			// toggle "selected" w/ current value of object[property]:
 			else if (object[property] !== null)
 			{
-				this.selected = (object[property] == this.value);
+				selected = (object[property] == value);
 			}
 
 			// helper responds to changes to object[property]
@@ -106,10 +138,10 @@ package metafas3.reaction_view.helpers
 			display_object.addEventListener('change', function (e:Object) :void
 			{
 				// prevent superfluous event firing
-				if (this.selected != null && object[property] != this.value)
+				if (selected && object[property] != value)
 				{
 					// update data object
-					object[property] = this.value;
+					object[property] = value;
 				}
 			});
 
@@ -123,9 +155,9 @@ package metafas3.reaction_view.helpers
 		private function after_property_change (e:PropertyChangeEvent) :void
 		{
 			// prevent superfluous event firing
-			if (e.newValue == this.value && this.selected) return;
+			if (e.newValue == value && selected) return;
 			// update display object
-			this.selected = (e.newValue == this.value);
+			selected = (e.newValue == value);
 		}
 	}
 }
