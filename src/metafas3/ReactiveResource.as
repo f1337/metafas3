@@ -491,17 +491,26 @@ package metafas3
         protected function id_from_response (request:Object) :void
         {
 			var fmt:String = model_format(self());
+			var matches:Array;
 
 			if (fmt == 'html')
 			{
 				var root:String = Inflector.underscore(Inflector.demodulize(getQualifiedClassName(this)));
-				var re:RegExp = new RegExp('<input[^>]*id="' + root + '_id"[^>]*>');
-				var input:XML = XML(request.response.raw.match(re).toString());
-				this.id = input.@value.toString();
+				var re:RegExp = new RegExp('<input[^>]+id="' + root + '_id"[^>]*>');
+				matches = request.response.raw.match(re);
+				// prevent errors on no id
+				if (matches)
+				{
+					var input:XML = XML(matches.toString());
+					this.id = input.@value.toString();
+				}
+				else
+				{
+					logger.info('>>> ERROR: Expected response to contain <input type="hidden" id="' + root + '_id" />');
+				}
 			}
 			else if (fmt == 'xml')
 			{
-				var matches:Array;
 				// parse id from location
 				if (request.data.location) matches = request.data.location.toString().match(/\/([^\/]*?)(\.\w+)?$/);
 				// assign id IFF match is not null
