@@ -49,6 +49,9 @@ package metafas3.reaction_view.helpers
 			// store local reference to the bound model/object
 			model = (object as ReactiveResource);
 
+            // model defaults to a generic ReactiveResource instance
+            model ||= (new ReactiveResource);
+
 			// store local reference to the bound property
 			name = property;
 
