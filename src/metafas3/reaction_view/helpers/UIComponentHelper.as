@@ -59,6 +59,12 @@ package metafas3.reaction_view.helpers
 			this.setStyle('upSkin', skin);
 		}
 
+        // HTML5 property alias:
+        public function set disabled (b:Boolean) :void
+        {
+            this.enabled = (! b);
+        }
+
 		/**
 		*	helper.embedFonts = true
 		*		applies value to "embedFonts" style on proxied_object
