@@ -168,7 +168,9 @@ package metafas3.reaction_view.helpers
 		// >>> EVENTS
 		private function after_submit (e:Event) :void
 		{
-			logger.info('after_submit!');
+			var event:NetStatusEvent = new NetStatusEvent('submitted');
+			event.info = e.target.response;
+			display_object.dispatchEvent(event);
 		}
 
 		private function after_submit_failed (e:Event) :void
