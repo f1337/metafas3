@@ -55,7 +55,7 @@ package metafas3.reaction_view.helpers
 		override public function bind_to (object:*, property:String) :void
 		{
 			// initialize object[property] w/ value, if defined:
-			if (value) object[property] = value;
+			object[property] = (value) ? value : '';
 
 			// helper responds to changes to object[property]
 			object.addEventListener(property + '_change', after_property_change);

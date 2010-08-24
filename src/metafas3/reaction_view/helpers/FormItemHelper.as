@@ -31,6 +31,7 @@ package metafas3.reaction_view.helpers
 		public var name:String;
 		public var validates:Boolean = true;
 
+
 		// >>> PUBLIC METHODS
 		/**
 		*	Constructor. Proxies a display_object.
@@ -67,9 +68,7 @@ package metafas3.reaction_view.helpers
 				//	validates_presence_of constraint to model
 				if (required)
 				{
-					Validates.presence_of(object, property, {
-						message: 'Please enter a valid {attr}.'
-					});
+					apply_required_validator(object, property);
 
 					// SUPER HACK? manually trigger validation to catch nulls?
 					model.validate(property);
@@ -77,6 +76,15 @@ package metafas3.reaction_view.helpers
 			}
 		}
 
+
+        // >>> PROTECTED METHODS
+        protected function apply_required_validator (object:*, property:String) :void
+        {
+            Validates.presence_of(object, property, {
+    			message: 'Please enter a valid {attr}.'
+    		});
+        }
+		
 
 		// >>> EVENT HANDLERS
 		protected function after_property_invalid (e:ValidationResultEvent) :void
